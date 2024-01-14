@@ -1,10 +1,31 @@
   
 <script setup lang="ts">
-import type { BoardData } from '@/types/types';
+import type { BoardData, IndicatorPosition } from '@/types/types';
+import { ref, watch } from 'vue';
 
 const props = defineProps({
     board: Object as () => BoardData | null
 });
+const indicators = ref<IndicatorPosition[] | undefined>();
+async function loadIndicators(): Promise<IndicatorPosition[] | undefined> {
+    try {
+        if (props.board) {
+            const response = await fetch(props.board.pins);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return await response.json() as IndicatorPosition[];
+        }
+    } catch (error) {
+        console.error("Could not load boards data:", error);
+    }
+}
+// Watch for changes in the board prop and call loadIndicators
+watch(() => props.board, async (newBoard, oldBoard) => {
+    if (newBoard && newBoard !== oldBoard) {
+        indicators.value = await loadIndicators();
+    }
+}, { immediate: true }); // immediate: true ensures the effect runs on mount
 </script>
   
 <template>
