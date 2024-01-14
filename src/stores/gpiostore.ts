@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue';
 import type { BoardData } from '@/types/types';
 
-export const useCounterStore = defineStore('gpioviewer', () => {
+export const gpioStore = defineStore('gpioviewer', () => {
   const currentBoard = ref<BoardData | null>(null);
   // const count = ref(0)
   // const name = ref('Eduardo')

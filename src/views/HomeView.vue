@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import ParamsError from '../components/ParamsError.vue';
 import BoardImage from '../views/BoardImage.vue';
 import type { BoardData } from "../types/types";
 
@@ -8,12 +7,7 @@ const props = defineProps({
   ipaddress: String,
   port: String
 });
-const isDataAvailable = computed(() => props.ipaddress && props.port);
-interface State {
-  s: number;
-  t: number;
-  v: number;
-}
+
 
 const gpioStates = ref<Record<string, State>>({});
 const colors: string[] = ["#00ff00",
@@ -44,12 +38,6 @@ const newBoardImage = ref<BoardData | null>(null);
 
 <template>
   <main>
-    <div v-if="isDataAvailable">
-      <h1>IP Address and Port</h1>
-      <p>IP Address: {{ props.ipaddress }}</p>
-      <p>Port: {{ props.port }}</p>
-      <BoardImage :board="newBoardImage"  @update:newBoardImage="newBoardImage = $event"/>
-    </div>
-    <ParamsError v-else />
+
   </main>
 </template>

@@ -4,4 +4,8 @@ export interface BoardData {
     image: string;
     pins: string;
   }
-  
+  export interface GPIOStates {
+    s: number;
+    t: number;
+    v: number;
+  }
