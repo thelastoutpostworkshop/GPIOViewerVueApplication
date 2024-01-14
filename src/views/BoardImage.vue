@@ -10,7 +10,8 @@ console.log(props.board);
   
 <template>
     <div v-if="board">
-        <img :src="board.image" :alt="board.name" />
+            <v-img  :src="board.image" cover></v-img>
+
     </div>
 </template>
 <style scoped>

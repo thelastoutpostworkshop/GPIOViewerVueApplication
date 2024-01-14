@@ -26,7 +26,7 @@ const isDataAvailable = computed(() => window.gpio_settings.ip && window.gpio_se
         </v-list>
       </v-navigation-drawer>
   
-      <v-main class="d-inline-flex">
+      <v-main class="">
         <RouterView />
       </v-main>
     </div>
