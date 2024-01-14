@@ -30,14 +30,14 @@ watch(() => props.board, async (newBoard, oldBoard) => {
   
 <template>
     <div v-if="board" class="board-container">
-        <img v-if="board.image" :src="board.image" class="image" />
-        <div v-if="indicators">
-            <div v-for="indicator in indicators" :key="indicator.gpioid" class="indicator"
-                :style="{ top: indicator.top, left: indicator.left }" :id="'indicator.gpioid'"></div>
-        </div>
-
+      <img v-if="board.image" :src="board.image" class="board-image" />
+      <div v-for="indicator in indicators" :key="indicator.gpioid"
+           class="indicator"
+           :style="{ top: indicator.top + '%', left: indicator.left + '%' }"
+           :id="`gpio${indicator.gpioid}`">
+      </div>
     </div>
-</template>
+  </template>
 <style scoped>
 .image {
     max-width: 80vw;
