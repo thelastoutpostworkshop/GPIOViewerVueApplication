@@ -5,16 +5,18 @@ import type { BoardData } from '@/types/types';
 const props = defineProps({
     board: Object as () => BoardData | null
 });
-console.log(props.board);
 </script>
   
 <template>
-    <div v-if="board">
-            <v-img  :src="board.image" cover></v-img>
-
-    </div>
+        <div v-if="board">
+            <img v-if="board.image" :src="board.image" class="image" />
+        </div>
 </template>
 <style scoped>
-/* Your styles here */
+.image {
+    max-width: 100%;
+    max-height: 80vh;
+}
+
 </style>
   

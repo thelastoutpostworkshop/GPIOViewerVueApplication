@@ -16,23 +16,19 @@ const isDataAvailable = computed(() => window.gpio_settings.ip && window.gpio_se
 </script>
 
 <template>
-  <v-layout class="rounded rounded-md">
+  <v-layout>
     <div v-if="isDataAvailable">
       <AppBar />
-  
-      <v-navigation-drawer>
-        <v-list>
-          <v-list-item title="Navigation drawer"></v-list-item>
-        </v-list>
-      </v-navigation-drawer>
-  
-      <v-main class="">
+
+
+      <v-main>
         <RouterView />
       </v-main>
     </div>
-    <ParamsError v-else/>
+    <ParamsError v-else />
 
   </v-layout>
+
 
   <!-- <nav>
         <RouterLink to="/">Home</RouterLink>

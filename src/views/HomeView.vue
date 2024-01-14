@@ -32,5 +32,5 @@ const colors: string[] = ["#00ff00",
 </script>
 
 <template>
-  <BoardImage :board="store.currentBoard"></BoardImage>
+      <BoardImage :board="store.currentBoard"></BoardImage>
 </template>
