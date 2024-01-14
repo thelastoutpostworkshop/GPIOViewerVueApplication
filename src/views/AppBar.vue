@@ -10,7 +10,7 @@ onMounted(async () => {
 
 async function loadBoardsData(): Promise<BoardData[] | undefined> {
     try {
-        const response = await fetch("/boards.json");
+        const response = await fetch("boards.json");
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
