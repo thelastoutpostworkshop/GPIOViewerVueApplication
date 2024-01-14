@@ -29,8 +29,13 @@ watch(() => props.board, async (newBoard, oldBoard) => {
 </script>
   
 <template>
-    <div v-if="board">
+    <div v-if="board" class="board-container">
         <img v-if="board.image" :src="board.image" class="image" />
+        <div v-if="indicators">
+            <div v-for="indicator in indicators" :key="indicator.gpioid" class="indicator"
+                :style="{ top: indicator.top, left: indicator.left }" :id="'indicator.gpioid'"></div>
+        </div>
+
     </div>
 </template>
 <style scoped>
@@ -40,6 +45,17 @@ watch(() => props.board, async (newBoard, oldBoard) => {
     display: flex;
     align-items: flex-start;
     justify-content: center;
+}
+
+.indicator {
+    position: absolute;
+    border-radius: 50%;
+    padding: 5px;
+    transform: translate(-50%, -50%);
+    background-color: gray;
+}
+.board-container {
+  position: relative; /* Relative positioning for the container */
 }
 </style>
   
