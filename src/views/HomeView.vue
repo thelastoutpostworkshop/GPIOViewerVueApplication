@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import BoardImage from '../views/BoardImage.vue';
-import type { BoardData } from "../types/types";
+import type { BoardData,GPIOStates } from "../types/types";
+import { gpioStore } from '@/stores/gpiostore'
+
+const store = gpioStore();
 
 const props = defineProps({
   ipaddress: String,
@@ -9,7 +12,7 @@ const props = defineProps({
 });
 
 
-const gpioStates = ref<Record<string, State>>({});
+const gpioStates = ref<Record<string, GPIOStates>>({});
 const colors: string[] = ["#00ff00",
   "#1fff00",
   "#3eff00",
@@ -32,12 +35,10 @@ const colors: string[] = ["#00ff00",
   "#ff0000", // Red
 ];
 
-const newBoardImage = ref<BoardData | null>(null);
-
 </script>
 
 <template>
   <main>
-
+<BoardImage :board="store.currentBoard"></BoardImage>
   </main>
 </template>

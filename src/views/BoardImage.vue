@@ -5,6 +5,7 @@ import type { BoardData } from '@/types/types';
 const props = defineProps({
     board: Object as () => BoardData | null
 });
+console.log(props.board);
 </script>
   
 <template>

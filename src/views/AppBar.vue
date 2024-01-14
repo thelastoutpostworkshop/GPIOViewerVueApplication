@@ -19,20 +19,12 @@ async function loadBoardsData(): Promise<BoardData[] | undefined> {
         console.error("Could not load boards data:", error);
     }
 }
-const boardSelectRef = ref();
-const selectedBoard = ref<BoardData | null>(null);
-const emit = defineEmits(['update:newBoardImage']);
 
-watch(selectedBoard, (newBoard) => {
-    console.log(newBoard);
-    emit('update:newBoardImage', newBoard);
-});
 // Expo
 </script>
 <template>
     <v-app-bar>
-        <BoardSelect ref="boardSelectRef" v-if="boardsData" :boards="boardsData"
-            @update:selectedBoard="selectedBoard = $event" />
+        <BoardSelect v-if="boardsData" :boards="boardsData" />
 
     </v-app-bar>
 </template>
