@@ -21,7 +21,7 @@ const isDataAvailable = computed(() => window.gpio_settings.ip && window.gpio_se
       <AppBar />
 
 
-      <v-main>
+      <v-main class="main">
         <RouterView />
       </v-main>
     </div>
@@ -36,4 +36,8 @@ const isDataAvailable = computed(() => window.gpio_settings.ip && window.gpio_se
       </nav> -->
 </template>
 
-<style scoped></style>
+<style scoped>
+.main {
+
+}
+</style>

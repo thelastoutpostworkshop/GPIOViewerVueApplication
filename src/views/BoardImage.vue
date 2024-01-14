@@ -8,15 +8,17 @@ const props = defineProps({
 </script>
   
 <template>
-        <div v-if="board">
-            <img v-if="board.image" :src="board.image" class="image" />
-        </div>
+    <div v-if="board">
+        <img v-if="board.image" :src="board.image" class="image" />
+    </div>
 </template>
 <style scoped>
 .image {
-    max-width: 100%;
+    max-width: 80vw;
     max-height: 80vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
 }
-
 </style>
   
