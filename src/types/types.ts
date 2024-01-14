@@ -3,6 +3,7 @@ export interface BoardData {
     css: string;
     image: string;
     pins: string;
+    chipname:string
   }
   export interface GPIOStates {
     s: number;
