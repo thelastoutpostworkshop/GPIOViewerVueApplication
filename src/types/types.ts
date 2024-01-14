@@ -9,3 +9,8 @@ export interface BoardData {
     t: number;
     v: number;
   }
+  export interface IndicatorPosition {
+    gpioid:number;
+    top:number;
+    left:number
+  }
