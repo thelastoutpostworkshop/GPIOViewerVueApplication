@@ -2,10 +2,13 @@
 <script setup lang="ts">
 import type { BoardData, PinsDefinition } from '@/types/types';
 import { ref, watch } from 'vue';
+import { gpioStore } from '@/stores/gpiostore'
 
 const props = defineProps({
     board: Object as () => BoardData | null
 });
+const store = gpioStore();
+
 const colors: string[] = ["#00ff00",
     "#1fff00",
     "#3eff00",
@@ -49,6 +52,12 @@ watch(() => props.board, async (newBoard, oldBoard) => {
         pinsDefinition.value = await loadIndicators();
     }
 }, { immediate: true }); // immediate: true ensures the effect runs on mount
+
+watch(() => store.currentStates, (newStates, oldBoard) => {
+  if (newStates) {
+    console.log(newStates);
+  }
+});
 </script>
   
 <template>

@@ -28,7 +28,6 @@ function initEventSource(): void {
     (e: MessageEvent) => {
       const states = JSON.parse(e.data) as GPIOStates;
       store.currentStates = states; 
-      console.log(states)
       // saveBoardStates(states);
       // setAllIndicatorColor(states);
       // showWifiActivity();
