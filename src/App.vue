@@ -77,18 +77,18 @@ const isDataAvailable = computed(() => window.gpio_settings.ip && window.gpio_se
 </script>
 
 <template>
-  <v-layout>
+  <VLayout>
     <div v-if="isDataAvailable">
       <AppBar />
 
 
-      <v-main class="main">
+      <VMain class="main">
         <RouterView />
-      </v-main>
+      </VMain>
     </div>
     <ParamsError v-else />
 
-  </v-layout>
+  </VLayout>
 
 
   <!-- <nav>
