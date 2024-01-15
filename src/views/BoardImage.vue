@@ -56,7 +56,7 @@ watch(() => props.board, async (newBoard, oldBoard) => {
 
 watch(
     () => store.currentStates, 
-    (newStates: PinStateMap) => {
+    (newStates) => {
         if (newStates && pinsDefinition.value) {
             Object.entries(newStates).forEach(([gpioId, pinState]) => {
                 const pinPosition = pinsDefinition.value?.pins.find((position: PinsPositions) => position.gpioid === parseInt(gpioId));
