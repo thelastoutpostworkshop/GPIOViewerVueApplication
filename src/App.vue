@@ -26,7 +26,8 @@ function initEventSource(): void {
   source.addEventListener(
     "gpio-state",
     (e: MessageEvent) => {
-      const states = JSON.parse(e.data) as Record<string, GPIOStates>; 
+      const states = JSON.parse(e.data) as GPIOStates;
+      store.currentStates = states; 
       console.log(states)
       // saveBoardStates(states);
       // setAllIndicatorColor(states);

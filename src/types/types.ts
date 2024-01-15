@@ -5,10 +5,13 @@ export interface BoardData {
   pins: string;
   chipname: string;
 }
-export interface GPIOStates {
+export interface PinStates {
   s: number;
   t: number;
   v: number;
+}
+export interface GPIOStates {
+  pinStates:PinStates[];
 }
 export interface PinsSettings {
   pinWidth: number;
