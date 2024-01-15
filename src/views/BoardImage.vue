@@ -1,20 +1,20 @@
   
 <script setup lang="ts">
-import type { BoardData, IndicatorPosition } from '@/types/types';
+import type { BoardData, PinsDefinition } from '@/types/types';
 import { ref, watch } from 'vue';
 
 const props = defineProps({
     board: Object as () => BoardData | null
 });
-const indicators = ref<IndicatorPosition[] | undefined>();
-async function loadIndicators(): Promise<IndicatorPosition[] | undefined> {
+const pinsDefinition = ref<PinsDefinition[] | undefined>();
+async function loadIndicators(): Promise<PinsDefinition[] | undefined> {
     try {
         if (props.board) {
             const response = await fetch(props.board.pins);
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
-            return await response.json() as IndicatorPosition[];
+            return await response.json() as PinsDefinition[];
         }
     } catch (error) {
         console.error("Could not load boards data:", error);
@@ -23,21 +23,20 @@ async function loadIndicators(): Promise<IndicatorPosition[] | undefined> {
 // Watch for changes in the board prop and call loadIndicators
 watch(() => props.board, async (newBoard, oldBoard) => {
     if (newBoard && newBoard !== oldBoard) {
-        indicators.value = await loadIndicators();
+        pinsDefinition.value = await loadIndicators();
     }
 }, { immediate: true }); // immediate: true ensures the effect runs on mount
 </script>
   
 <template>
     <div v-if="board" class="board-container">
-      <img v-if="board.image" :src="board.image" class="board-image" />
-      <div v-for="indicator in indicators" :key="indicator.gpioid"
-           class="indicator"
-           :style="{ top: indicator.top + '%', left: indicator.left + '%' }"
-           :id="`gpio${indicator.gpioid}`">
-      </div>
+        <img v-if="board.image" :src="board.image" class="board-image" />
+        <div v-if="pinsDefinition" v-for="pin in pinsDefinition.pins" :key="pin.gpioid" class="indicator"
+            :style="{ top: pin.top + '%', left: pin.left + '%', width: pinsDefinition.settings.pinWidth + '%', height: pinsDefinition.settings.pinHeight + '%' }"
+            :id="`gpio${pin.gpioid}`">
+        </div>
     </div>
-  </template>
+</template>
 <style scoped>
 .image {
     max-width: 80vw;
@@ -54,8 +53,10 @@ watch(() => props.board, async (newBoard, oldBoard) => {
     transform: translate(-50%, -50%);
     background-color: gray;
 }
+
 .board-container {
-  position: relative; /* Relative positioning for the container */
+    position: relative;
+    /* Relative positioning for the container */
 }
 </style>
   
