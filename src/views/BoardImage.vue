@@ -6,6 +6,27 @@ import { ref, watch } from 'vue';
 const props = defineProps({
     board: Object as () => BoardData | null
 });
+const colors: string[] = ["#00ff00",
+    "#1fff00",
+    "#3eff00",
+    "#5dff00",
+    "#7cff00",
+    "#9bff00",
+    "#baff00",
+    "#d9ff00",
+    "#f8ff00",
+    "#ffff00", // Yellow
+    "#ffef00",
+    "#ffdf00",
+    "#ffcf00",
+    "#ffbf00",
+    "#ffaf00",
+    "#ff9f00",
+    "#ff8f00",
+    "#ff7f00",
+    "#FE5454",
+    "#ff0000", // Red
+];
 const pinsDefinition = ref<PinsDefinition[] | undefined>();
 async function loadIndicators(): Promise<PinsDefinition[] | undefined> {
     try {
@@ -20,6 +41,8 @@ async function loadIndicators(): Promise<PinsDefinition[] | undefined> {
         console.error("Could not load boards data:", error);
     }
 }
+
+
 // Watch for changes in the board prop and call loadIndicators
 watch(() => props.board, async (newBoard, oldBoard) => {
     if (newBoard && newBoard !== oldBoard) {
