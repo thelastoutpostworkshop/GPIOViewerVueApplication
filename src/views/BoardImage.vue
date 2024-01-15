@@ -38,7 +38,7 @@ watch(() => props.board, async (newBoard, oldBoard) => {
     </div>
 </template>
 <style scoped>
-.image {
+.board-image {
     max-width: 80vw;
     max-height: 80vh;
     display: flex;
