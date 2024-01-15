@@ -1,7 +1,8 @@
   
 <script setup lang="ts">
-import type { BoardData, PinsDefinition } from '@/types/types';
-import { ref, watch } from 'vue';
+import type { BoardData, PinsDefinition,PinState,PinStateMap,PinsPositions } from '@/types/types';
+import { ref, watch,computed } from 'vue';
+import type { ComputedRef } from 'vue';
 import { gpioStore } from '@/stores/gpiostore'
 
 const props = defineProps({
@@ -53,18 +54,33 @@ watch(() => props.board, async (newBoard, oldBoard) => {
     }
 }, { immediate: true }); // immediate: true ensures the effect runs on mount
 
-watch(() => store.currentStates, (newStates, oldBoard) => {
-  if (newStates) {
-    console.log(newStates);
-  }
-});
+watch(
+    () => store.currentStates, 
+    (newStates: PinStateMap) => {
+        if (newStates && pinsDefinition.value) {
+            Object.entries(newStates).forEach(([gpioId, pinState]) => {
+                const pinPosition = pinsDefinition.value?.pins.find((position: PinsPositions) => position.gpioid === parseInt(gpioId));
+                if (pinPosition) {
+                    const pinColor = getColorForPin(pinState); // Assuming getColorForPin takes a PinState object
+                    pinPosition.color = pinColor;
+                }
+            });
+        }
+    }
+);
+
+const getColorForPin = (pinState: PinState): string => {
+    const value = Math.max(0, Math.min(pinState.s, 255));
+    const index = Math.floor((value / 255) * (colors.length - 1));
+    return colors[index];
+};
 </script>
   
 <template>
     <div v-if="board" class="board-container">
         <img v-if="board.image" :src="board.image" class="board-image" />
         <div v-if="pinsDefinition" v-for="pin in pinsDefinition.pins" :key="pin.gpioid" class="indicator"
-            :style="{ top: pin.top + '%', left: pin.left + '%', width: pinsDefinition.settings.pinWidth + '%', height: pinsDefinition.settings.pinHeight + '%' }"
+            :style="{ top: pin.top + '%', left: pin.left + '%', width: pinsDefinition.settings.pinWidth + '%', height: pinsDefinition.settings.pinHeight + '%',backgroundColor: pin.color }"
             :id="`gpio${pin.gpioid}`">
         </div>
     </div>

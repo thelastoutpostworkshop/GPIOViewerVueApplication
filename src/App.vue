@@ -4,7 +4,7 @@ import { ref, computed, onMounted } from 'vue';
 import AppBar from '../src/views/AppBar.vue';
 import ParamsError from '../src/components/ParamsError.vue';
 import { gpioStore } from '@/stores/gpiostore'
-import type { BoardData, GPIOStates } from "../src/types/types";
+import type { BoardData, PinStateMap } from "../src/types/types";
 
 const store = gpioStore();
 
@@ -26,7 +26,7 @@ function initEventSource(): void {
   source.addEventListener(
     "gpio-state",
     (e: MessageEvent) => {
-      const states = JSON.parse(e.data) as GPIOStates;
+      const states = JSON.parse(e.data) as PinStateMap;
       store.currentStates = states; 
       // saveBoardStates(states);
       // setAllIndicatorColor(states);
