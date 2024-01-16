@@ -1,6 +1,6 @@
   
 <script setup lang="ts">
-import type { BoardData, PinsConfiguration, PinState, PinStateMap, PinsPositions } from '@/types/types';
+import type { BoardData, PinsConfiguration, PinState, PinStateMap, Pins } from '@/types/types';
 import { ref, watch, computed } from 'vue';
 import type { ComputedRef } from 'vue';
 import { gpioStore } from '@/stores/gpiostore'
@@ -59,7 +59,7 @@ watch(
     (newStates) => {
         if (newStates && pinsDefinition.value) {
             Object.entries(newStates).forEach(([gpioId, pinState]) => {
-                const pinPosition = pinsDefinition.value?.pins.find((position: PinsPositions) => position.gpioid === parseInt(gpioId));
+                const pinPosition = pinsDefinition.value?.pins.find((position: Pins) => position.gpioid === parseInt(gpioId));
                 if (pinPosition) {
                     const pinColor = getColorForPin(pinState); // Assuming getColorForPin takes a PinState object
                     pinPosition.color = pinColor;

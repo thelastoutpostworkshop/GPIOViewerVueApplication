@@ -13,7 +13,7 @@ export interface PinsSettings {
   pinWidth: number;
   pinHeight: number;
 }
-export interface PinsPositions {
+export interface Pins {
   gpioid: number;
   top: number;
   left: number;
@@ -22,7 +22,7 @@ export interface PinsPositions {
   value:number;
 }
 export interface PinsConfiguration {
-  pins: PinsPositions[];
+  pins: Pins[];
   settings: PinsSettings;
 }
 
