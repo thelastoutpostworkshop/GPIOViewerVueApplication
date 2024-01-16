@@ -14,20 +14,20 @@ onMounted(() => {
   if (window.gpio_settings) {
     store.ipAddress = window.gpio_settings.ip;
     store.httpPort = window.gpio_settings.port;
-    console.log(window.gpio_settings); 
+    console.log(window.gpio_settings);
     initEventSource();
   }
 });
 
 function initEventSource(): void {
   console.log("Waiting to connect to ESP32: with EventSource: ");
-  const source = new EventSource("http://"+store.ipAddress+":"+store.httpPort+"/events");
+  const source = new EventSource("http://" + store.ipAddress + ":" + store.httpPort + "/events");
 
   source.addEventListener(
     "gpio-state",
     (e: MessageEvent) => {
       const states = JSON.parse(e.data) as PinStateMap;
-      store.currentStates = states; 
+      store.currentStates = states;
       // saveBoardStates(states);
       // setAllIndicatorColor(states);
       // showWifiActivity();
@@ -77,12 +77,12 @@ const isDataAvailable = computed(() => window.gpio_settings.ip && window.gpio_se
 </script>
 
 <template>
-  <VLayout class="layout">
+  <VLayout>
     <div v-if="isDataAvailable">
       <AppBar />
 
 
-      <VMain class="main">
+      <VMain>
         <RouterView />
       </VMain>
     </div>
@@ -97,9 +97,4 @@ const isDataAvailable = computed(() => window.gpio_settings.ip && window.gpio_se
       </nav> -->
 </template>
 
-<style scoped>
-.layout {
-  width: 100vw;
-  height: 100vh;
-}
-</style>
+<style scoped></style>
