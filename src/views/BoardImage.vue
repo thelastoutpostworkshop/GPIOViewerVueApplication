@@ -31,7 +31,7 @@ const colors: string[] = ["#00ff00",
     "#FE5454",
     "#ff0000", // Red
 ];
-const pinsDefinition = ref<PinsConfiguration[] | undefined>();
+const pinsConfiguration = ref<PinsConfiguration[] | undefined>();
 async function loadIndicators(): Promise<PinsConfiguration[] | undefined> {
     try {
         if (props.board) {
@@ -50,19 +50,19 @@ async function loadIndicators(): Promise<PinsConfiguration[] | undefined> {
 // Watch for changes in the board prop and call loadIndicators
 watch(() => props.board, async (newBoard, oldBoard) => {
     if (newBoard && newBoard !== oldBoard) {
-        pinsDefinition.value = await loadIndicators();
+        pinsConfiguration.value = await loadIndicators();
     }
 }, { immediate: true }); // immediate: true ensures the effect runs on mount
 
 watch(
     () => store.currentStates,
     (newStates) => {
-        if (newStates && pinsDefinition.value) {
+        if (newStates && pinsConfiguration.value) {
             Object.entries(newStates).forEach(([gpioId, pinState]) => {
-                const pinPosition = pinsDefinition.value?.pins.find((position: Pins) => position.gpioid === parseInt(gpioId));
-                if (pinPosition) {
+                const pin = pinsConfiguration.value?.pins.find((position: Pins) => position.gpioid === parseInt(gpioId));
+                if (pin) {
                     const pinColor = getColorForPin(pinState); // Assuming getColorForPin takes a PinState object
-                    pinPosition.color = pinColor;
+                    pin.color = pinColor;
                 }
             });
         }
@@ -80,13 +80,13 @@ const getColorForPin = (pinState: PinState): string => {
 <template>
     <div v-if="board" class="board-container">
         <img v-if="board.image" :src="board.image" class="board-image" />
-        <div v-if="pinsDefinition" v-for="pin in pinsDefinition.pins" :key="pin.gpioid" class="indicator"
-            :style="{ top: pin.top + '%', left: pin.left + '%', width: pinsDefinition.settings.pinWidth + '%', height: pinsDefinition.settings.pinHeight + '%', backgroundColor: pin.color }"
+        <div v-if="pinsConfiguration" v-for="pin in pinsConfiguration.pins" :key="pin.gpioid" class="indicator"
+            :style="{ top: pin.top + '%', left: pin.left + '%', width: pinsConfiguration.settings.pinWidth + '%', height: pinsConfiguration.settings.pinHeight + '%', backgroundColor: pin.color }"
             :id="`gpio${pin.gpioid}`">
         </div>
-        <div v-if="pinsDefinition" v-for="pin in pinsDefinition.pins" :key="pin.gpioid"
+        <div v-if="pinsConfiguration" v-for="pin in pinsConfiguration.pins" :key="pin.gpioid"
             :class="pin.valueJustify === -1 ? 'value value_right' : 'value'"
-            :style="{ top: pin.top + '%', left: pin.left + '%', height: pinsDefinition.settings.pinHeight - 0.25 + '%', backgroundColor: pin.color }"
+            :style="{ top: pin.top + '%', left: pin.left + '%', height: pinsConfiguration.settings.pinHeight - 0.25 + '%', backgroundColor: pin.color }"
             :id="`gpio${pin.gpioid}`">
         </div>
     </div>
