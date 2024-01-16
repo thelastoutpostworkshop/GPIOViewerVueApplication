@@ -12,6 +12,7 @@ export interface BoardData {
 export interface PinsSettings {
   pinWidth: number;
   pinHeight: number;
+  valueBackGroundColor:string;
 }
 export interface Pins {
   gpioid: number;

@@ -105,7 +105,7 @@ const getColorForPin = (pinState: PinState): string => {
         </div>
         <div v-if="pinsConfiguration" v-for="pin in pinsConfiguration.pins" :key="pin.gpioid"
             :class="pin.valueJustify === -1 ? 'value value_right' : 'value'"
-            :style="{ top: pin.top + '%', left: pin.left + '%', height: pinsConfiguration.settings.pinHeight - 0.25 + '%' }"
+            :style="{ top: pin.top + '%', left: pin.left + '%', height: pinsConfiguration.settings.pinHeight - 0.25 + '%', backgroundColor: pinsConfiguration.settings.valueBackGroundColor }"
             :id="`gpio${pin.gpioid}`">
             <div class="value-text">{{ pin.showValue }}</div>
         </div>
@@ -137,7 +137,6 @@ const getColorForPin = (pinState: PinState): string => {
     font-family: "Lucida Console", monospace;
     font-weight: bold;
     color: rgb(6, 23, 175);
-    background-color: aqua;
     display: flex;
     align-items: center;
     /* Vertical alignment */
