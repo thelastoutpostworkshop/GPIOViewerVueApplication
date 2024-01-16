@@ -1,7 +1,7 @@
   
 <script setup lang="ts">
-import type { BoardData, PinsConfiguration,PinState,PinStateMap,PinsPositions } from '@/types/types';
-import { ref, watch,computed } from 'vue';
+import type { BoardData, PinsConfiguration, PinState, PinStateMap, PinsPositions } from '@/types/types';
+import { ref, watch, computed } from 'vue';
 import type { ComputedRef } from 'vue';
 import { gpioStore } from '@/stores/gpiostore'
 
@@ -55,7 +55,7 @@ watch(() => props.board, async (newBoard, oldBoard) => {
 }, { immediate: true }); // immediate: true ensures the effect runs on mount
 
 watch(
-    () => store.currentStates, 
+    () => store.currentStates,
     (newStates) => {
         if (newStates && pinsDefinition.value) {
             Object.entries(newStates).forEach(([gpioId, pinState]) => {
@@ -74,17 +74,19 @@ const getColorForPin = (pinState: PinState): string => {
     const index = Math.floor((value / 255) * (colors.length - 1));
     return colors[index];
 };
+
 </script>
   
 <template>
     <div v-if="board" class="board-container">
         <img v-if="board.image" :src="board.image" class="board-image" />
         <div v-if="pinsDefinition" v-for="pin in pinsDefinition.pins" :key="pin.gpioid" class="indicator"
-            :style="{ top: pin.top + '%', left: pin.left + '%', width: pinsDefinition.settings.pinWidth + '%', height: pinsDefinition.settings.pinHeight + '%',backgroundColor: pin.color }"
+            :style="{ top: pin.top + '%', left: pin.left + '%', width: pinsDefinition.settings.pinWidth + '%', height: pinsDefinition.settings.pinHeight + '%', backgroundColor: pin.color }"
             :id="`gpio${pin.gpioid}`">
         </div>
-        <div v-if="pinsDefinition" v-for="pin in pinsDefinition.pins" :key="pin.gpioid" class="value"
-            :style="{ top: pin.top + '%', left: pin.left + '%',  height: pinsDefinition.settings.pinHeight-0.25 + '%',backgroundColor: pin.color }"
+        <div v-if="pinsDefinition" v-for="pin in pinsDefinition.pins" :key="pin.gpioid"
+            :class="pin.valueJustify === -1 ? 'value value_right' : 'value'"
+            :style="{ top: pin.top + '%', left: pin.left + '%', height: pinsDefinition.settings.pinHeight - 0.25 + '%', backgroundColor: pin.color }"
             :id="`gpio${pin.gpioid}`">
         </div>
     </div>
@@ -107,32 +109,40 @@ const getColorForPin = (pinState: PinState): string => {
     position: relative;
     /* Relative positioning for the container */
 }
+
 .value {
-  position: absolute;
-  font-size: 1.2vh;
-  min-width: 15%;
-  font-family: "Lucida Console", monospace;
-  font-weight: bold;
-  color: rgb(6, 23, 175);
-  background-color: aqua;
-  display: flex;
-  align-items: center; /* Vertical alignment */
-  justify-content: left; /* Horizontal alignment */
+    position: absolute;
+    font-size: 1.2vh;
+    min-width: 15%;
+    font-family: "Lucida Console", monospace;
+    font-weight: bold;
+    color: rgb(6, 23, 175);
+    background-color: aqua;
+    display: flex;
+    align-items: center;
+    /* Vertical alignment */
+    justify-content: left;
+    /* Horizontal alignment */
 }
+
 .value_right {
-  position: absolute;
-  justify-content: right; /* Horizontal alignment */
+    position: absolute;
+    justify-content: right;
+    /* Horizontal alignment */
 }
-.value .value-bar, .value_right .value-bar {
-  position: absolute;
-  bottom: 0;
-  height: 100%;
-  background-color: rgba(0, 0, 255, 0.25); 
-  transition: width 0.5s ease; /* Animate the width change over 0.5 seconds */
+
+.value .value-bar,
+.value_right .value-bar {
+    position: absolute;
+    bottom: 0;
+    height: 100%;
+    background-color: rgba(0, 0, 255, 0.25);
+    transition: width 0.5s ease;
+    /* Animate the width change over 0.5 seconds */
 }
 
 .value_right .value-bar {
-  right: 0; /* For right-aligned bars */
-}  
-</style>
+    right: 0;
+    /* For right-aligned bars */
+}</style>
   

@@ -7,6 +7,7 @@ export interface BoardData {
   chipname: string;
 }
 
+
 //Pins configuration for the board
 export interface PinsSettings {
   pinWidth: number;
@@ -17,6 +18,7 @@ export interface PinsPositions {
   top: number;
   left: number;
   color:string;
+  valueJustify:number;
   value:number;
 }
 export interface PinsConfiguration {
