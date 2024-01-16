@@ -63,11 +63,31 @@ watch(
                 if (pin) {
                     const pinColor = getColorForPin(pinState); // Assuming getColorForPin takes a PinState object
                     pin.color = pinColor;
+                    pin.showValue = getValueForPin(pinState);
                 }
             });
         }
     }
 );
+
+const getValueForPin = (pinState: PinState): string => {
+    var displayValue = "";
+    if (pinState.t == 0) {
+        //it's a digital pin
+        if (pinState.v == 0) {
+            displayValue = "LOW";
+        } else {
+            if (pinState.v == 1) {
+                displayValue = "HIGH";
+            } else {
+                displayValue = pinState.v.toString();
+            }
+        }
+    } else {
+        displayValue = pinState.v.toString();
+    }
+    return displayValue;
+};
 
 const getColorForPin = (pinState: PinState): string => {
     const value = Math.max(0, Math.min(pinState.s, 255));
@@ -88,6 +108,7 @@ const getColorForPin = (pinState: PinState): string => {
             :class="pin.valueJustify === -1 ? 'value value_right' : 'value'"
             :style="{ top: pin.top + '%', left: pin.left + '%', height: pinsConfiguration.settings.pinHeight - 0.25 + '%', backgroundColor: pin.color }"
             :id="`gpio${pin.gpioid}`">
+            <div class="value-text">{{ pin.showValue }}</div>
         </div>
     </div>
 </template>
@@ -144,5 +165,6 @@ const getColorForPin = (pinState: PinState): string => {
 .value_right .value-bar {
     right: 0;
     /* For right-aligned bars */
-}</style>
+}
+</style>
   

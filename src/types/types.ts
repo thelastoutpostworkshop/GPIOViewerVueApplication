@@ -19,7 +19,7 @@ export interface Pins {
   left: number;
   color:string;
   valueJustify:number;
-  value:number;
+  showValue:number;
 }
 export interface PinsConfiguration {
   pins: Pins[];
