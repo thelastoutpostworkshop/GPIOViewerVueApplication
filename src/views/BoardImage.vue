@@ -89,9 +89,6 @@ const getColorForPin = (pinState: PinState): string => {
 .board-image {
     max-width: 80vw;
     max-height: 80vh;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
 }
 
 .indicator {

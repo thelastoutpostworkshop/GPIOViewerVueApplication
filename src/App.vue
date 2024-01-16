@@ -77,7 +77,7 @@ const isDataAvailable = computed(() => window.gpio_settings.ip && window.gpio_se
 </script>
 
 <template>
-  <VLayout>
+  <VLayout class="layout">
     <div v-if="isDataAvailable">
       <AppBar />
 
@@ -97,4 +97,9 @@ const isDataAvailable = computed(() => window.gpio_settings.ip && window.gpio_se
       </nav> -->
 </template>
 
-<style scoped></style>
+<style scoped>
+.layout {
+  width: 100vw;
+  height: 100vh;
+}
+</style>
