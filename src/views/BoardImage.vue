@@ -61,8 +61,7 @@ watch(
             Object.entries(newStates).forEach(([gpioId, pinState]) => {
                 const pin = pinsConfiguration.value?.pins.find((position: Pins) => position.gpioid === parseInt(gpioId));
                 if (pin) {
-                    const pinColor = getColorForPin(pinState); // Assuming getColorForPin takes a PinState object
-                    pin.color = pinColor;
+                    pin.color = getColorForPin(pinState); ;
                     pin.showValue = getValueForPin(pinState);
                 }
             });
