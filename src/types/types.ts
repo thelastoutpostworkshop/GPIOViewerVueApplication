@@ -1,3 +1,4 @@
+//Boards types
 export interface BoardData {
   name: string;
   css: string;
@@ -5,15 +6,8 @@ export interface BoardData {
   pins: string;
   chipname: string;
 }
-export interface PinState {
-  s: number;
-  t: number;
-  v: number;
-}
 
-export type PinStateMap = {
-  [gpio: number]: PinState;
-}
+//Pins configuration for the board
 export interface PinsSettings {
   pinWidth: number;
   pinHeight: number;
@@ -23,8 +17,19 @@ export interface PinsPositions {
   top: number;
   left: number;
   color:string;
+  value:number;
 }
-export interface PinsDefinition {
+export interface PinsConfiguration {
   pins: PinsPositions[];
   settings: PinsSettings;
+}
+
+// Pins state sent by GPIOViewer Library
+export interface PinState {
+  s: number;
+  t: number;
+  v: number;
+}
+export type PinStateMap = {
+  [gpio: number]: PinState;
 }

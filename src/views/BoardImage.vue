@@ -1,6 +1,6 @@
   
 <script setup lang="ts">
-import type { BoardData, PinsDefinition,PinState,PinStateMap,PinsPositions } from '@/types/types';
+import type { BoardData, PinsConfiguration,PinState,PinStateMap,PinsPositions } from '@/types/types';
 import { ref, watch,computed } from 'vue';
 import type { ComputedRef } from 'vue';
 import { gpioStore } from '@/stores/gpiostore'
@@ -31,15 +31,15 @@ const colors: string[] = ["#00ff00",
     "#FE5454",
     "#ff0000", // Red
 ];
-const pinsDefinition = ref<PinsDefinition[] | undefined>();
-async function loadIndicators(): Promise<PinsDefinition[] | undefined> {
+const pinsDefinition = ref<PinsConfiguration[] | undefined>();
+async function loadIndicators(): Promise<PinsConfiguration[] | undefined> {
     try {
         if (props.board) {
             const response = await fetch(props.board.pins);
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
-            return await response.json() as PinsDefinition[];
+            return await response.json() as PinsConfiguration[];
         }
     } catch (error) {
         console.error("Could not load boards data:", error);
@@ -102,6 +102,24 @@ const getColorForPin = (pinState: PinState): string => {
 .board-container {
     position: relative;
     /* Relative positioning for the container */
+}
+.value {
+  position: absolute;
+  padding: 5px;
+  font-size: 1.2vh;
+  min-width: 15%;
+  height: 1%;
+  font-family: "Lucida Console", monospace;
+  font-weight: bold;
+  color: rgb(6, 23, 175);
+  background-color: aqua;
+  display: flex;
+  align-items: center; /* Vertical alignment */
+  justify-content: left; /* Horizontal alignment */
+}
+.value_right {
+  position: absolute;
+  justify-content: right; /* Horizontal alignment */
 }
 </style>
   
