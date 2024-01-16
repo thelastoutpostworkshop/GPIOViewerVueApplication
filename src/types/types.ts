@@ -14,6 +14,7 @@ export interface PinsSettings {
   pinHeight: number;
   valueBackGroundColor:string;
   valueMinWidth:number
+  valuePinMargin:number
 }
 export interface Pins {
   gpioid: number;

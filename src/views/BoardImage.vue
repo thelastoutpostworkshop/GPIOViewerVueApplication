@@ -31,7 +31,7 @@ const colors: string[] = ["#00ff00",
     "#FE5454",
     "#ff0000", // Red
 ];
-const pinsConfiguration = ref<PinsConfiguration[] | undefined>();
+const pinsConf = ref<PinsConfiguration[] | undefined>();
 async function loadIndicators(): Promise<PinsConfiguration[] | undefined> {
     try {
         if (props.board) {
@@ -50,16 +50,16 @@ async function loadIndicators(): Promise<PinsConfiguration[] | undefined> {
 // Watch for changes in the board prop and call loadIndicators
 watch(() => props.board, async (newBoard, oldBoard) => {
     if (newBoard && newBoard !== oldBoard) {
-        pinsConfiguration.value = await loadIndicators();
+        pinsConf.value = await loadIndicators();
     }
 }, { immediate: true }); // immediate: true ensures the effect runs on mount
 
 watch(
     () => store.currentStates,
     (newStates) => {
-        if (newStates && pinsConfiguration.value) {
+        if (newStates && pinsConf.value) {
             Object.entries(newStates).forEach(([gpioId, pinState]) => {
-                const pin = pinsConfiguration.value?.pins.find((position: Pins) => position.gpioid === parseInt(gpioId));
+                const pin = pinsConf.value?.pins.find((position: Pins) => position.gpioid === parseInt(gpioId));
                 if (pin) {
                     pin.color = getColorForPin(pinState);;
                     pin.showValue = getValueForPin(pinState);
@@ -99,17 +99,17 @@ const getColorForPin = (pinState: PinState): string => {
 <template>
     <div v-if="board" class="board-container">
         <img v-if="board.image" :src="board.image" class="board-image" />
-        <div v-if="pinsConfiguration" v-for="pin in pinsConfiguration.pins" :key="pin.gpioid" class="indicator"
-            :style="{ top: pin.top + '%', left: pin.left + '%', width: pinsConfiguration.settings.pinWidth + '%', height: pinsConfiguration.settings.pinHeight + '%', backgroundColor: pin.color }"
+        <div v-if="pinsConf" v-for="pin in pinsConf.pins" :key="pin.gpioid" class="indicator"
+            :style="{ top: pin.top + '%', left: pin.left + '%', width: pinsConf.settings.pinWidth + '%', height: pinsConf.settings.pinHeight + '%', backgroundColor: pin.color }"
             :id="`gpio${pin.gpioid}`">
         </div>
-        <div v-if="pinsConfiguration" v-for="pin in pinsConfiguration.pins" :key="pin.gpioid"
+        <div v-if="pinsConf" v-for="pin in pinsConf.pins" :key="pin.gpioid"
             :class="pin.valueJustify === -1 ? 'value value_right' : 'value'" :style="{
-                top: pin.top - (pinsConfiguration.settings.pinHeight / 2) + '%',
-                left: (pin.valueJustify === -1 ? pin.left - 20 : pin.left+2) + '%',
-                height: pinsConfiguration.settings.pinHeight - 0.25 + '%',
-                backgroundColor: pinsConfiguration.settings.valueBackGroundColor,
-                minWidth: pinsConfiguration.settings.valueMinWidth+'%'
+                top: pin.top - (pinsConf.settings.pinHeight / 2) + '%',
+                left: (pin.valueJustify === -1 ? pin.left - pinsConf.settings.valueMinWidth - pinsConf.settings.valuePinMargin : pin.left + pinsConf.settings.valuePinMargin) + '%',
+                height: pinsConf.settings.pinHeight - 0.25 + '%',
+                backgroundColor: pinsConf.settings.valueBackGroundColor,
+                minWidth: pinsConf.settings.valueMinWidth + '%'
             }" :id="`gpio${pin.gpioid}`">
             <div class="value-text">{{ pin.showValue }}</div>
         </div>
