@@ -137,7 +137,7 @@ const getColorForPin = (pinState: PinState): string => {
 
 .value {
     position: absolute;
-    font-size: 1.2vh;
+    font-size: 1.3dvb;
     font-family: "Lucida Console", monospace;
     font-weight: bold;
     color: rgb(6, 23, 175);
