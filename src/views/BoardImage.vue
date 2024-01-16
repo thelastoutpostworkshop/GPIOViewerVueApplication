@@ -83,6 +83,10 @@ const getColorForPin = (pinState: PinState): string => {
             :style="{ top: pin.top + '%', left: pin.left + '%', width: pinsDefinition.settings.pinWidth + '%', height: pinsDefinition.settings.pinHeight + '%',backgroundColor: pin.color }"
             :id="`gpio${pin.gpioid}`">
         </div>
+        <div v-if="pinsDefinition" v-for="pin in pinsDefinition.pins" :key="pin.gpioid" class="value"
+            :style="{ top: pin.top + '%', left: pin.left + '%', width: pinsDefinition.settings.pinWidth + '%', height: pinsDefinition.settings.pinHeight + '%',backgroundColor: pin.color }"
+            :id="`gpio${pin.gpioid}`">
+        </div>
     </div>
 </template>
 <style scoped>
@@ -121,5 +125,16 @@ const getColorForPin = (pinState: PinState): string => {
   position: absolute;
   justify-content: right; /* Horizontal alignment */
 }
+.value .value-bar, .value_right .value-bar {
+  position: absolute;
+  bottom: 0;
+  height: 100%;
+  background-color: rgba(0, 0, 255, 0.25); 
+  transition: width 0.5s ease; /* Animate the width change over 0.5 seconds */
+}
+
+.value_right .value-bar {
+  right: 0; /* For right-aligned bars */
+}  
 </style>
   
