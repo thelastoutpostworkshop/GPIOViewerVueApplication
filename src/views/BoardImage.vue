@@ -84,7 +84,7 @@ const getColorForPin = (pinState: PinState): string => {
             :id="`gpio${pin.gpioid}`">
         </div>
         <div v-if="pinsDefinition" v-for="pin in pinsDefinition.pins" :key="pin.gpioid" class="value"
-            :style="{ top: pin.top + '%', left: pin.left + '%', width: pinsDefinition.settings.pinWidth + '%', height: pinsDefinition.settings.pinHeight + '%',backgroundColor: pin.color }"
+            :style="{ top: pin.top + '%', left: pin.left + '%',  height: pinsDefinition.settings.pinHeight-0.25 + '%',backgroundColor: pin.color }"
             :id="`gpio${pin.gpioid}`">
         </div>
     </div>
@@ -109,10 +109,8 @@ const getColorForPin = (pinState: PinState): string => {
 }
 .value {
   position: absolute;
-  padding: 5px;
   font-size: 1.2vh;
   min-width: 15%;
-  height: 1%;
   font-family: "Lucida Console", monospace;
   font-weight: bold;
   color: rgb(6, 23, 175);
