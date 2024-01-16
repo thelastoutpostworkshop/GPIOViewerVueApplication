@@ -109,7 +109,8 @@ const getColorForPin = (pinState: PinState): string => {
                 left: (pin.valueJustify === -1 ? pin.left - pinsConf.settings.valueMinWidth - pinsConf.settings.valuePinMargin : pin.left + pinsConf.settings.valuePinMargin) + '%',
                 height: pinsConf.settings.pinHeight - 0.25 + '%',
                 backgroundColor: pinsConf.settings.valueBackGroundColor,
-                minWidth: pinsConf.settings.valueMinWidth + '%'
+                minWidth: pinsConf.settings.valueMinWidth + '%',
+                fontSize: pinsConf.settings.valueFontSize + 'dvb'
             }" :id="`gpio${pin.gpioid}`">
             <div class="">{{ pin.showValue }}</div>
         </div>
@@ -137,7 +138,6 @@ const getColorForPin = (pinState: PinState): string => {
 
 .value {
     position: absolute;
-    font-size: 1.3dvb;
     font-family: "Lucida Console", monospace;
     font-weight: bold;
     color: rgb(6, 23, 175);
