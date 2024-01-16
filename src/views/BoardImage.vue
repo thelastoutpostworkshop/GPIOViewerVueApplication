@@ -111,7 +111,7 @@ const getColorForPin = (pinState: PinState): string => {
                 backgroundColor: pinsConf.settings.valueBackGroundColor,
                 minWidth: pinsConf.settings.valueMinWidth + '%'
             }" :id="`gpio${pin.gpioid}`">
-            <div class="value-text">{{ pin.showValue }}</div>
+            <div class="">{{ pin.showValue }}</div>
         </div>
 
     </div>
