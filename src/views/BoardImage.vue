@@ -105,7 +105,7 @@ const getColorForPin = (pinState: PinState): string => {
         </div>
         <div v-if="pinsConfiguration" v-for="pin in pinsConfiguration.pins" :key="pin.gpioid"
             :class="pin.valueJustify === -1 ? 'value value_right' : 'value'"
-            :style="{ top: pin.top + '%', left: pin.left + '%', height: pinsConfiguration.settings.pinHeight - 0.25 + '%', backgroundColor: pin.color }"
+            :style="{ top: pin.top + '%', left: pin.left + '%', height: pinsConfiguration.settings.pinHeight - 0.25 + '%' }"
             :id="`gpio${pin.gpioid}`">
             <div class="value-text">{{ pin.showValue }}</div>
         </div>
