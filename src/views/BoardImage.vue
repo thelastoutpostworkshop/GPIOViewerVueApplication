@@ -61,7 +61,7 @@ watch(
             Object.entries(newStates).forEach(([gpioId, pinState]) => {
                 const pin = pinsConfiguration.value?.pins.find((position: Pins) => position.gpioid === parseInt(gpioId));
                 if (pin) {
-                    pin.color = getColorForPin(pinState); ;
+                    pin.color = getColorForPin(pinState);;
                     pin.showValue = getValueForPin(pinState);
                 }
             });
@@ -104,11 +104,16 @@ const getColorForPin = (pinState: PinState): string => {
             :id="`gpio${pin.gpioid}`">
         </div>
         <div v-if="pinsConfiguration" v-for="pin in pinsConfiguration.pins" :key="pin.gpioid"
-            :class="pin.valueJustify === -1 ? 'value value_right' : 'value'"
-            :style="{ top: pin.top-(pinsConfiguration.settings.pinHeight/2) + '%', left: pin.left + '%', height: pinsConfiguration.settings.pinHeight - 0.25 + '%', backgroundColor: pinsConfiguration.settings.valueBackGroundColor }"
-            :id="`gpio${pin.gpioid}`">
+            :class="pin.valueJustify === -1 ? 'value value_right' : 'value'" :style="{
+                top: pin.top - (pinsConfiguration.settings.pinHeight / 2) + '%',
+                left: (pin.valueJustify === -1 ? pin.left - 20 : pin.left+2) + '%',
+                height: pinsConfiguration.settings.pinHeight - 0.25 + '%',
+                backgroundColor: pinsConfiguration.settings.valueBackGroundColor,
+                minWidth: pinsConfiguration.settings.valueMinWidth+'%'
+            }" :id="`gpio${pin.gpioid}`">
             <div class="value-text">{{ pin.showValue }}</div>
         </div>
+
     </div>
 </template>
 <style scoped>
@@ -133,7 +138,6 @@ const getColorForPin = (pinState: PinState): string => {
 .value {
     position: absolute;
     font-size: 1.2vh;
-    min-width: 15%;
     font-family: "Lucida Console", monospace;
     font-weight: bold;
     color: rgb(6, 23, 175);
