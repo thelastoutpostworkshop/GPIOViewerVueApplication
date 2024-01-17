@@ -136,7 +136,7 @@ const getBarValue = (pinState: PinState): number => {
         <img v-if="store.freeHeap" src="../assets/images/wifiicon.png" style="top: 1%; left: 20%; width: 15%;"
             class="wifi-icon-light animate-wifi-light" id="wifi-icon" />
         <img v-else src="../assets/images/wifiicon.png" style="top: 1%; left: 20%; width: 15%;"
-            class="wifi-icon-light animate-wifi-light" id="wifi-icon"/>
+            class="wifi-icon-dark" id="wifi-icon"/>
 
     </div>
 </template>
