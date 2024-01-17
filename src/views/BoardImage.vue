@@ -101,7 +101,9 @@ const getColorForPin = (pinState: PinState): string => {
         <img v-if="board.image" :src="board.image" class="board-image" />
         <div v-if="pinsConf" v-for="pin in pinsConf.pins" :key="pin.gpioid" class="indicator"
             :style="{ top: pin.top + '%', left: pin.left + '%', width: pinsConf.settings.pinWidth + '%', height: pinsConf.settings.pinHeight + '%', backgroundColor: pin.color }"
-            :id="`gpio${pin.gpioid}`">1</div>
+            :id="`gpio${pin.gpioid}`">
+            <div v-if="pinsConf.settings.showPinNumber" :style="{fontSize: pinsConf.settings.valueFontSize + 'dvb'}">{{ pin.gpioid }}</div>
+        </div>
         <div v-if="pinsConf" v-for="pin in pinsConf.pins" :key="pin.gpioid"
             :class="pin.valueJustify === -1 ? 'value value_right' : 'value'" :style="{
                 top: pin.top - (pinsConf.settings.pinHeight / 2) + '%',
@@ -172,5 +174,6 @@ const getColorForPin = (pinState: PinState): string => {
 .value_right .value-bar {
     right: 0;
     /* For right-aligned bars */
-}</style>
+}
+</style>
   
