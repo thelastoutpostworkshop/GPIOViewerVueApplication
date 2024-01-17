@@ -23,13 +23,21 @@ export interface Pins {
   left: number;
   color:string;
   valueJustify:number;
+  valueFontSize:number;
   showValue:number;
   showBarValue:number
   showPinNumber:boolean;
 }
+expert interface StatsConfiguration {
+  top:number;
+  left:number;
+  gap:number;
+  fontSize:number;
+}
 export interface PinsConfiguration {
   pins: Pins[];
   settings: PinsSettings;
+  stats:StatsConfiguration;
 }
 
 // Pins state sent by GPIOViewer Library

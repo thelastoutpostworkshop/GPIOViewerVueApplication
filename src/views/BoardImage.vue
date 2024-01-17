@@ -1,6 +1,6 @@
   
 <script setup lang="ts">
-import type { BoardData, PinsConfiguration, PinState, PinStateMap, Pins } from '@/types/types';
+import type { BoardData, PinsConfiguration, PinState, Pins, StatsConfiguration } from '@/types/types';
 import { ref, watch, computed } from 'vue';
 import type { ComputedRef } from 'vue';
 import { gpioStore } from '@/stores/gpiostore'
@@ -109,7 +109,8 @@ const getBarValue = (pinState: PinState): number => {
         <div v-if="pinsConf" v-for="pin in pinsConf.pins" :key="pin.gpioid" class="indicator"
             :style="{ top: pin.top + '%', left: pin.left + '%', width: pinsConf.settings.pinWidth + '%', height: pinsConf.settings.pinHeight + '%', backgroundColor: pin.color }"
             :id="`gpio${pin.gpioid}`">
-            <div v-if="pinsConf.settings.showPinNumber" :style="{fontSize: pinsConf.settings.valueFontSize + 'dvb'}">{{ pin.gpioid }}</div>
+            <div v-if="pinsConf.settings.showPinNumber" :style="{ fontSize: pinsConf.settings.valueFontSize + 'dvb' }">{{
+                pin.gpioid }}</div>
         </div>
         <div v-if="pinsConf" v-for="pin in pinsConf.pins" :key="pin.gpioid"
             :class="pin.valueJustify === -1 ? 'value value_right' : 'value'" :style="{
@@ -121,25 +122,27 @@ const getBarValue = (pinState: PinState): number => {
                 fontSize: pinsConf.settings.valueFontSize + 'dvb'
             }" :id="`gpio${pin.gpioid}`">
             <div>{{ pin.showValue }}</div>
-            <div class="value-bar" :style="{width:pin.showBarValue+'%'}"></div>
+            <div class="value-bar" :style="{ width: pin.showBarValue + '%' }"></div>
         </div>
-        <div class="stats" style="top: 35%; left: 15%">{{store.freeHeap}}</div>
+        <div v-if="pinsConf" class="stats" :style="{ top: pinsConf.stats.top + '%', left: pinsConf.stats.left+'%' }">
+            {{ store.freeHeap }}</div>
 
     </div>
 </template>
 <style scoped>
 .stats {
-  position: absolute;
-  padding: 5px;
-  background-color: rgba(8, 246, 24, 0.9);
-  font-size: 1.6vb;
-  height: 2%;
-  font-family: "Lucida Console", monospace;
-  font-weight: bold;
-  color: rgb(7, 7, 247);
-  display: flex;
-  align-items: center; /* Vertical alignment */
+    position: absolute;
+    padding: 5px;
+    background-color: rgba(8, 246, 24, 0.9);
+    font-size: 1.6vb;
+    height: 2%;
+    font-family: "Lucida Console", monospace;
+    font-weight: bold;
+    color: rgb(7, 7, 247);
+    display: flex;
+    align-items: center;
 }
+
 .board-image {
     max-width: 80vw;
     max-height: 80vh;
@@ -195,6 +198,5 @@ const getBarValue = (pinState: PinState): number => {
 .value_right .value-bar {
     right: 0;
     /* For right-aligned bars */
-}
-</style>
+}</style>
   
