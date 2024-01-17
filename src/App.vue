@@ -49,10 +49,8 @@ function initEventSource(): void {
   source.addEventListener(
     "free_psram",
     (e: MessageEvent) => {
-      const freePSRAM = document.getElementById("freePSRAM");
-      if (freePSRAM) {
-        freePSRAM.innerHTML = "Free PSRAM:" + e.data;
-      }
+      const freePSRAM = e.data as Memory;
+      store.freePSRAM = freePSRAM;
       // showWifiActivity();
     },
     false

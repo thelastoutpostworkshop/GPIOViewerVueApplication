@@ -6,6 +6,8 @@ export const gpioStore = defineStore('gpioviewer', () => {
   const currentBoard = ref<BoardData | null>(null);
   const currentStates = ref<PinStateMap | null>(null);
   const freeHeap = ref<Memory | null>(null);
+  const freeSketch = ref<Memory | null>(null);
+  const freePSRAM = ref<Memory | null>(null);
   const ipAddress = ref("");
   const httpPort = ref(0)
   // const count = ref(0)
@@ -15,5 +17,5 @@ export const gpioStore = defineStore('gpioviewer', () => {
   //   count.value++
   // }
 
-  return { currentBoard, ipAddress, httpPort, currentStates, freeHeap }
+  return { currentBoard, ipAddress, httpPort, currentStates, freeHeap,freePSRAM,freeSketch }
 })
