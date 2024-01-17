@@ -123,6 +123,7 @@ const getBarValue = (pinState: PinState): number => {
             <div>{{ pin.showValue }}</div>
             <div class="value-bar" :style="{width:pin.showBarValue+'%'}"></div>
         </div>
+        <div class="stats" style="top: 35%; left: 15%">{{store.freeHeap}}</div>
 
     </div>
 </template>
