@@ -133,10 +133,33 @@ const getBarValue = (pinState: PinState): number => {
         <div v-if="pinsConf && pinsConf.stats" class="stats"
             :style="{ top: pinsConf.stats.top + pinsConf.stats.gap*2 + '%', left: pinsConf.stats.left + '%', fontSize: pinsConf.stats.fontSize + 'dvb' }">
             Free PSRAM:{{  store.freePSRAM || 'No PSRAM' }}</div>
+            <img src="../assets/images/wifiicon.png" style="top: 1%; left: 20%; width: 15%;" class="wifi-icon-dark" id="wifi-icon"/>
 
     </div>
 </template>
 <style scoped>
+.wifi-icon-dark {
+  position: absolute;
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5)); /* Subtle glow */
+  transition: filter 0.05s ease-in-out;
+}
+
+.animate-wifi-dark {
+  position: absolute;
+  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 1)); /* Pronounced glow */
+}
+
+/* Style for light background */
+.wifi-icon-light {
+  position: absolute;
+  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5)); /* Subtle glow */
+  transition: filter 0.05s ease-in-out;
+}
+
+.animate-wifi-light {
+  position: absolute;
+  filter: drop-shadow(0 0 20px rgba(0, 0, 0, 1)); /* Pronounced glow */
+}
 .stats {
     position: absolute;
     background-color: rgba(8, 246, 24, 0.9);
