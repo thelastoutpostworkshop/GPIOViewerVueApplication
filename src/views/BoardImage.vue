@@ -129,7 +129,10 @@ const getBarValue = (pinState: PinState): number => {
             Free Heap:{{ store.freeHeap }}</div>
         <div v-if="pinsConf && pinsConf.stats" class="stats"
             :style="{ top: pinsConf.stats.top + pinsConf.stats.gap + '%', left: pinsConf.stats.left + '%', fontSize: pinsConf.stats.fontSize + 'dvb' }">
-            Free Sketch:{{ store.freeHeap }}</div>
+            Free Sketch:{{ store.freeSketch }}</div>
+        <div v-if="pinsConf && pinsConf.stats" class="stats"
+            :style="{ top: pinsConf.stats.top + pinsConf.stats.gap*2 + '%', left: pinsConf.stats.left + '%', fontSize: pinsConf.stats.fontSize + 'dvb' }">
+            Free PSRAM:{{  store.freePSRAM || 'No PSRAM' }}</div>
 
     </div>
 </template>
