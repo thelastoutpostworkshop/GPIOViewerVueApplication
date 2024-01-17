@@ -1,6 +1,6 @@
   
 <script setup lang="ts">
-import type { BoardData, PinsConfiguration, PinState, Pins, StatsConfiguration } from '@/types/types';
+import type { BoardData, PinsConfiguration, PinState, Pins } from '@/types/types';
 import { ref, watch, computed } from 'vue';
 import type { ComputedRef } from 'vue';
 import { gpioStore } from '@/stores/gpiostore'
@@ -141,7 +141,7 @@ const getBarValue = (pinState: PinState): number => {
         <div v-if="pinsConf && pinsConf.stats" class="stats"
             :style="{ top: pinsConf.stats.top + pinsConf.stats.gap * 2 + '%', left: pinsConf.stats.left + '%', fontSize: pinsConf.stats.fontSize + 'dvb' }">
             Free PSRAM:{{ store.freePSRAM || 'No PSRAM' }}</div>
-        <img src="../assets/images/wifiicon.png" :class="wifiClass" />
+        <img src="../assets/images/wifiicon.png" :class="wifiClass" :style="{ top: pinsConf.wifiFeedback.top + '%', left: pinsConf.wifiFeedback.left + '%', width: pinsConf.wifiFeedback.width + '%' }" />
 
     </div>
 </template>

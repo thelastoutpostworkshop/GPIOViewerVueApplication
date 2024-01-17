@@ -34,10 +34,16 @@ expert interface StatsConfiguration {
   gap:number;
   fontSize:number;
 }
+export interface WifiFeedbackConfiguration {
+  top:number;
+  left:number;
+  width:number;
+}
 export interface PinsConfiguration {
   pins: Pins[];
   settings: PinsSettings;
   stats:StatsConfiguration;
+  wifiFeedback:WifiFeedbackConfiguration;
 }
 
 // Pins state sent by GPIOViewer Library
