@@ -114,6 +114,7 @@ const getColorForPin = (pinState: PinState): string => {
                 fontSize: pinsConf.settings.valueFontSize + 'dvb'
             }" :id="`gpio${pin.gpioid}`">
             <div>{{ pin.showValue }}</div>
+            <div class="value-bar" :style="{width:110+'%'}"></div>
         </div>
 
     </div>
