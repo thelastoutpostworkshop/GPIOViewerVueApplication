@@ -127,6 +127,18 @@ const getBarValue = (pinState: PinState): number => {
     </div>
 </template>
 <style scoped>
+.stats {
+  position: absolute;
+  padding: 5px;
+  background-color: rgba(8, 246, 24, 0.9);
+  font-size: 1.6vb;
+  height: 2%;
+  font-family: "Lucida Console", monospace;
+  font-weight: bold;
+  color: rgb(7, 7, 247);
+  display: flex;
+  align-items: center; /* Vertical alignment */
+}
 .board-image {
     max-width: 80vw;
     max-height: 80vh;
