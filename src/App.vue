@@ -4,7 +4,7 @@ import { ref, computed, onMounted } from 'vue';
 import AppBar from '../src/views/AppBar.vue';
 import ParamsError from '../src/components/ParamsError.vue';
 import { gpioStore } from '@/stores/gpiostore'
-import type { BoardData, PinStateMap } from "../src/types/types";
+import type { Memory, PinStateMap } from "../src/types/types";
 
 const store = gpioStore();
 
@@ -38,10 +38,9 @@ function initEventSource(): void {
   source.addEventListener(
     "free_heap",
     (e: MessageEvent) => {
-      const freeHeap = document.getElementById("freeHeap");
-      if (freeHeap) {
-        freeHeap.innerHTML = "Free Heap:" + e.data;
-      }
+      const freeHeap = e.data as Memory;
+      store.freeHeap = freeHeap;
+
       // showWifiActivity();
     },
     false
