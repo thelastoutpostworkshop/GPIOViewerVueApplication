@@ -146,7 +146,6 @@ const getBarValue = (pinState: PinState): number => {
     max-height: 80vh;
 }
 
-
 .indicator {
     text-align: center;
     display: flex;
@@ -160,7 +159,6 @@ const getBarValue = (pinState: PinState): number => {
     font-family: "Lucida Console", monospace;
     font-weight: bold;
 }
-
 
 .board-container {
     position: relative;
