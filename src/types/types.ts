@@ -38,6 +38,7 @@ export interface WifiFeedbackConfiguration {
   top:number;
   left:number;
   width:number;
+  background:string;
 }
 export interface PinsConfiguration {
   pins: Pins[];
