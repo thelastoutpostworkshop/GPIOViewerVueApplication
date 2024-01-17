@@ -124,18 +124,16 @@ const getBarValue = (pinState: PinState): number => {
             <div>{{ pin.showValue }}</div>
             <div class="value-bar" :style="{ width: pin.showBarValue + '%' }"></div>
         </div>
-        <div v-if="pinsConf" class="stats" :style="{ top: pinsConf.stats.top + '%', left: pinsConf.stats.left+'%' }">
-            {{ store.freeHeap }}</div>
+        <div v-if="pinsConf" class="stats"
+            :style="{ top: pinsConf.stats.top + '%', left: pinsConf.stats.left + '%', fontSize: pinsConf.stats.fontSize + 'dvb' }">
+            Free Heap:{{ store.freeHeap }}</div>
 
     </div>
 </template>
 <style scoped>
 .stats {
     position: absolute;
-    padding: 5px;
     background-color: rgba(8, 246, 24, 0.9);
-    font-size: 1.6vb;
-    height: 2%;
     font-family: "Lucida Console", monospace;
     font-weight: bold;
     color: rgb(7, 7, 247);
@@ -198,5 +196,6 @@ const getBarValue = (pinState: PinState): number => {
 .value_right .value-bar {
     right: 0;
     /* For right-aligned bars */
-}</style>
+}
+</style>
   
