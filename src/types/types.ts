@@ -24,6 +24,7 @@ export interface Pins {
   color:string;
   valueJustify:number;
   showValue:number;
+  showBarValue:number
   showPinNumber:boolean;
 }
 export interface PinsConfiguration {

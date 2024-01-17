@@ -63,6 +63,7 @@ watch(
                 if (pin) {
                     pin.color = getColorForPin(pinState);;
                     pin.showValue = getValueForPin(pinState);
+                    pin.showBarValue = getBarValue(pinState);
                 }
             });
         }
@@ -94,6 +95,12 @@ const getColorForPin = (pinState: PinState): string => {
     return colors[index];
 };
 
+const getBarValue = (pinState: PinState): number => {
+    const value = Math.max(0, Math.min(pinState.s, 255));
+    const widthPercent = (value / 255) * 100;
+    return widthPercent;
+};
+
 </script>
   
 <template>
@@ -114,7 +121,7 @@ const getColorForPin = (pinState: PinState): string => {
                 fontSize: pinsConf.settings.valueFontSize + 'dvb'
             }" :id="`gpio${pin.gpioid}`">
             <div>{{ pin.showValue }}</div>
-            <div class="value-bar" :style="{width:110+'%'}"></div>
+            <div class="value-bar" :style="{width:pin.showBarValue+'%'}"></div>
         </div>
 
     </div>
