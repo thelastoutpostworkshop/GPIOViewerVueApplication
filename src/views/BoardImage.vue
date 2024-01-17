@@ -101,8 +101,7 @@ const getColorForPin = (pinState: PinState): string => {
         <img v-if="board.image" :src="board.image" class="board-image" />
         <div v-if="pinsConf" v-for="pin in pinsConf.pins" :key="pin.gpioid" class="indicator"
             :style="{ top: pin.top + '%', left: pin.left + '%', width: pinsConf.settings.pinWidth + '%', height: pinsConf.settings.pinHeight + '%', backgroundColor: pin.color }"
-            :id="`gpio${pin.gpioid}`">
-        </div>
+            :id="`gpio${pin.gpioid}`">1</div>
         <div v-if="pinsConf" v-for="pin in pinsConf.pins" :key="pin.gpioid"
             :class="pin.valueJustify === -1 ? 'value value_right' : 'value'" :style="{
                 top: pin.top - (pinsConf.settings.pinHeight / 2) + '%',
@@ -123,13 +122,21 @@ const getColorForPin = (pinState: PinState): string => {
     max-height: 80vh;
 }
 
+
 .indicator {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: absolute;
     border-radius: 50%;
     padding: 5px;
     transform: translate(-50%, -50%);
     background-color: gray;
+    font-family: "Lucida Console", monospace;
+    font-weight: bold;
 }
+
 
 .board-container {
     position: relative;
@@ -143,9 +150,7 @@ const getColorForPin = (pinState: PinState): string => {
     color: rgb(6, 23, 175);
     display: flex;
     align-items: center;
-    /* Vertical alignment */
     justify-content: left;
-    /* Horizontal alignment */
 }
 
 .value_right {
@@ -167,6 +172,5 @@ const getColorForPin = (pinState: PinState): string => {
 .value_right .value-bar {
     right: 0;
     /* For right-aligned bars */
-}
-</style>
+}</style>
   
