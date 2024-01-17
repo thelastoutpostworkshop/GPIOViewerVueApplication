@@ -9,6 +9,14 @@ const props = defineProps({
     board: Object as () => BoardData | null
 });
 const store = gpioStore();
+const wifiActivity = ref(false);
+watch([() => store.currentStates, () => store.freeHeap, () => store.freePSRAM, () => store.freeSketch], () => {
+    wifiActivity.value = !wifiActivity.value;
+}, { immediate: true });
+
+const wifiClass = computed(() => {
+    return wifiActivity.value ? 'wifi-icon-light animate-wifi-light' : 'wifi-icon-light';
+});
 
 const colors: string[] = ["#00ff00",
     "#1fff00",
@@ -133,10 +141,7 @@ const getBarValue = (pinState: PinState): number => {
         <div v-if="pinsConf && pinsConf.stats" class="stats"
             :style="{ top: pinsConf.stats.top + pinsConf.stats.gap * 2 + '%', left: pinsConf.stats.left + '%', fontSize: pinsConf.stats.fontSize + 'dvb' }">
             Free PSRAM:{{ store.freePSRAM || 'No PSRAM' }}</div>
-        <img v-if="store.freeHeap" src="../assets/images/wifiicon.png" style="top: 1%; left: 20%; width: 15%;"
-            class="wifi-icon-light animate-wifi-light" id="wifi-icon" />
-        <img v-else src="../assets/images/wifiicon.png" style="top: 1%; left: 20%; width: 15%;"
-            class="wifi-icon-dark" id="wifi-icon"/>
+        <img src="../assets/images/wifiicon.png" :class="wifiClass" />
 
     </div>
 </template>
