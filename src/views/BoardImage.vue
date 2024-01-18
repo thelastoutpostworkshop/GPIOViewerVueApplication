@@ -1,6 +1,6 @@
   
 <script setup lang="ts">
-import type { BoardData, PinsConfiguration, PinState, Pins } from '@/types/types';
+import type { BoardData, PinsConfiguration, PinState, Pins,PinStateMap } from '@/types/types';
 import { ref, watch, computed, onUnmounted } from 'vue';
 import type { ComputedRef } from 'vue';
 import { gpioStore } from '@/stores/gpiostore'
@@ -86,7 +86,7 @@ watch(() => props.board, async (newBoard, oldBoard) => {
     }
 }, { immediate: true }); // immediate: true ensures the effect runs on mount
 
-function updatePinStates(newStates, pinsConfiguration) {
+function updatePinStates(newStates:PinStateMap, pinsConfiguration:PinsConfiguration) {
     Object.entries(newStates).forEach(([gpioId, pinState]) => {
         const pin = pinsConfiguration?.pins.find((position: Pins) => position.gpioid === parseInt(gpioId));
         if (pin) {

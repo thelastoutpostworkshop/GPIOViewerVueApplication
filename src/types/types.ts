@@ -24,7 +24,7 @@ export interface Pins {
   color:string;
   valueJustify:number;
   valueFontSize:number;
-  showValue:number;
+  showValue:string;
   showBarValue:number
   showPinNumber:boolean;
 }
