@@ -77,8 +77,6 @@ const isDataAvailable = computed(() => window.gpio_settings.ip && window.gpio_se
 <template>
   <v-layout>
     <div v-if="isDataAvailable">
-      <AppBar />
-
       <v-navigation-drawer>
         <v-list-item title="My Application" subtitle="Vuetify"></v-list-item>
         <v-divider></v-divider>
@@ -86,6 +84,8 @@ const isDataAvailable = computed(() => window.gpio_settings.ip && window.gpio_se
         <v-list-item link title="List Item 2"></v-list-item>
         <v-list-item link title="List Item 3"></v-list-item>
       </v-navigation-drawer>
+      <AppBar />
+
       <v-main class="main">
         <RouterView />
       </v-main>
