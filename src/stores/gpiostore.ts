@@ -10,6 +10,7 @@ export const gpioStore = defineStore('gpioviewer', () => {
   const freeSketch = ref<Memory | null>(null);
   const ipAddress = ref("");
   const httpPort = ref(0)
+  const freeze = ref(false);
   // const count = ref(0)
   // const name = ref('Eduardo')
   // const doubleCount = computed(() => count.value * 2)
@@ -17,5 +18,5 @@ export const gpioStore = defineStore('gpioviewer', () => {
   //   count.value++
   // }
 
-  return { currentBoard, ipAddress, httpPort, currentStates, freeHeap,freePSRAM,freeSketch }
+  return { currentBoard, ipAddress, httpPort, currentStates, freeHeap,freePSRAM,freeSketch,freeze }
 })

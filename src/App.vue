@@ -5,6 +5,7 @@ import AppBar from '../src/components/AppBar.vue';
 import ParamsError from '../src/components/ParamsError.vue';
 import { gpioStore } from '@/stores/gpiostore'
 import type { Memory, PinStateMap } from "../src/types/types";
+import { storeToRefs } from 'pinia';
 
 const store = gpioStore();
 
@@ -26,11 +27,10 @@ function initEventSource(): void {
   source.addEventListener(
     "gpio-state",
     (e: MessageEvent) => {
-      const states = JSON.parse(e.data) as PinStateMap;
-      store.currentStates = states;
-      // saveBoardStates(states);
-      // setAllIndicatorColor(states);
-      // showWifiActivity();
+      if (!store.freeze) {
+        const states = JSON.parse(e.data) as PinStateMap;
+        store.currentStates = states;
+      }
     },
     false
   );
@@ -38,10 +38,10 @@ function initEventSource(): void {
   source.addEventListener(
     "free_heap",
     (e: MessageEvent) => {
-      const freeHeap = e.data as Memory;
-      store.freeHeap = freeHeap;
-
-      // showWifiActivity();
+      if(!store.freeze) {
+        const freeHeap = e.data as Memory;
+        store.freeHeap = freeHeap;
+      }
     },
     false
   );
@@ -49,9 +49,10 @@ function initEventSource(): void {
   source.addEventListener(
     "free_psram",
     (e: MessageEvent) => {
-      const freePSRAM = e.data as Memory;
-      store.freePSRAM = freePSRAM;
-      // showWifiActivity();
+      if(!store.freeze) {
+        const freePSRAM = e.data as Memory;
+        store.freePSRAM = freePSRAM;
+      }
     },
     false
   );

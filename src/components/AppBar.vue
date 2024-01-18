@@ -3,6 +3,9 @@ import { RouterLink, RouterView } from 'vue-router'
 import { ref, computed, onMounted, watch } from 'vue';
 import BoardSelect from '../components/BoardSelect.vue';
 import type { BoardData } from "../types/types";
+import { gpioStore } from '@/stores/gpiostore'
+
+const store = gpioStore();
 const boardsData = ref<BoardData[] | undefined>();
 onMounted(async () => {
     boardsData.value = await loadBoardsData();
@@ -25,12 +28,7 @@ async function loadBoardsData(): Promise<BoardData[] | undefined> {
 <template>
     <v-app-bar>
         <BoardSelect v-if="boardsData" :boards="boardsData" />
-        <v-switch
-              label="primary"
-              color="primary"
-              value="primary"
-              hide-details
-            ></v-switch>
+        <v-switch v-model="store.freeze" label="Freeze" color="primary" value="primary" hide-details></v-switch>
     </v-app-bar>
 </template>
   
