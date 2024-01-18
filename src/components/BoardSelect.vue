@@ -22,9 +22,9 @@ const selectFirstBoardIfNoneSelected = () => {
 
 // Watch for changes in boards and update currentBoard if necessary
 watch(() => store.currentBoard, (newBoard, oldBoard) => {
-  if (newBoard) {
-    setCookie('selectedBoard', newBoard.name, 7); // Save for 7 days
-  }
+    if (newBoard) {
+        setCookie('selectedBoard', newBoard.name, 7); // Save for 7 days
+    }
 });
 
 // Also check when the component is mounted
@@ -63,6 +63,7 @@ function getCookie(name: string): string | null {
 
 </script>
 <template>
-    <v-autocomplete density="compact" :items="$props.boards" item-title="name" v-model="store.currentBoard" return-object></v-autocomplete>
+    <v-autocomplete auto-select-first density="compact" :items="$props.boards" item-title="name"
+        v-model="store.currentBoard" return-object></v-autocomplete>
 </template>
   
