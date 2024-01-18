@@ -69,25 +69,20 @@ async function loadIndicators(): Promise<PinsConfiguration | undefined> {
 // Watch for changes in the board prop and call loadIndicators
 watch(() => props.board, async (newBoard, oldBoard) => {
     if (newBoard && newBoard !== oldBoard) {
-        if (store.freeze) {
-            let oldPinConf = pinsConf.value;
-            pinsConf.value = await loadIndicators();
-            pinsConf.value?.pins.forEach(newPin => {
-                // Find the corresponding pin in the old configuration
-                const oldPin = oldPinConf?.pins.find(oldP => oldP.gpioid === newPin.gpioid);
+        let oldPinConf = pinsConf.value;
+        pinsConf.value = await loadIndicators();
+        pinsConf.value?.pins.forEach(newPin => {
+            // Find the corresponding pin in the old configuration
+            const oldPin = oldPinConf?.pins.find(oldP => oldP.gpioid === newPin.gpioid);
 
-                // Update the color of the current pin with the color from the old configuration
-                if (oldPin) {
-                    newPin.color = oldPin.color;
-                    newPin.showValue = oldPin.showValue;
-                    newPin.showBarValue = oldPin.showBarValue;
-                }
-                ;
-            });
-
-        } else {
-            pinsConf.value = await loadIndicators();
-        }
+            // Update the color of the current pin with the color from the old configuration
+            if (oldPin) {
+                newPin.color = oldPin.color;
+                newPin.showValue = oldPin.showValue;
+                newPin.showBarValue = oldPin.showBarValue;
+            }
+            ;
+        });
     }
 }, { immediate: true }); // immediate: true ensures the effect runs on mount
 
