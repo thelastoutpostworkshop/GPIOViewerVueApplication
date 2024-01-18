@@ -15,7 +15,12 @@ watch([() => store.currentStates, () => store.freeHeap, () => store.freePSRAM, (
 }, { immediate: true });
 
 const wifiClass = computed(() => {
-    return wifiActivity.value ? 'wifi-icon-light animate-wifi-light' : 'wifi-icon-light';
+    if (pinsConf?.value?.wifiFeedback.background === "light") {
+
+        return wifiActivity.value ? 'wifi-icon-light animate-wifi-light' : 'wifi-icon-light';
+    } else {
+        return wifiActivity.value ? 'wifi-icon-dark animate-wifi-dark' : 'wifi-icon-dark';
+    }
 });
 
 const colors: string[] = ["#00ff00",
@@ -141,7 +146,8 @@ const getBarValue = (pinState: PinState): number => {
         <div v-if="pinsConf && pinsConf.stats" class="stats"
             :style="{ top: pinsConf.stats.top + pinsConf.stats.gap * 2 + '%', left: pinsConf.stats.left + '%', fontSize: pinsConf.stats.fontSize + 'dvb' }">
             Free PSRAM:{{ store.freePSRAM || 'No PSRAM' }}</div>
-        <img v-if="pinsConf" src="../assets/images/wifiicon.png" :class="wifiClass" :style="{ top: pinsConf.wifiFeedback.top + '%', left: pinsConf.wifiFeedback.left + '%', width: pinsConf.wifiFeedback.width + '% ' }" />
+        <img v-if="pinsConf" src="../assets/images/wifiicon.png" :class="wifiClass"
+            :style="{ top: pinsConf.wifiFeedback.top + '%', left: pinsConf.wifiFeedback.left + '%', width: pinsConf.wifiFeedback.width + '% ' }" />
 
     </div>
 </template>
