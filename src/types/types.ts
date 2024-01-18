@@ -12,39 +12,39 @@ export interface BoardData {
 export interface PinsSettings {
   pinWidth: number;
   pinHeight: number;
-  valueBackGroundColor:string;
-  valueMinWidth:number
-  valuePinMargin:number
-  valueFontSize:number
-  showPinNumber:boolean;
+  valueBackGroundColor: string;
+  valueMinWidth: number
+  valuePinMargin: number
+  valueFontSize: number
+  showPinNumber: boolean;
 }
 export interface Pins {
   gpioid: number;
   top: number;
   left: number;
-  color:string;
-  valueJustify:number;
-  valueFontSize:number;
-  showValue:string;
-  showBarValue:number
+  color: string;
+  valueJustify: number;
+  valueFontSize: number;
+  displayValue: string;
+  displayBarValue: number
 }
 export interface StatsConfiguration {
-  top:number;
-  left:number;
-  gap:number;
-  fontSize:number;
+  top: number;
+  left: number;
+  gap: number;
+  fontSize: number;
 }
 export interface WifiFeedbackConfiguration {
-  top:number;
-  left:number;
-  width:number;
-  background:string;
+  top: number;
+  left: number;
+  width: number;
+  background: string;
 }
 export interface PinsConfiguration {
   pins: Pins[];
   settings: PinsSettings;
-  stats:StatsConfiguration;
-  wifiFeedback:WifiFeedbackConfiguration;
+  stats: StatsConfiguration;
+  wifiFeedback: WifiFeedbackConfiguration;
 }
 
 // Pins state sent by GPIOViewer Library
@@ -57,5 +57,5 @@ export type PinStateMap = {
   [gpio: number]: PinState;
 }
 export type Memory = {
-  size:string
+  size: string
 }

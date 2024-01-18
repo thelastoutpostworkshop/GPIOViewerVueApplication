@@ -1,6 +1,6 @@
   
 <script setup lang="ts">
-import type { BoardData, PinsConfiguration, PinState, Pins,PinStateMap } from '@/types/types';
+import type { BoardData, PinsConfiguration, PinState, Pins, PinStateMap } from '@/types/types';
 import { ref, watch, computed, onUnmounted } from 'vue';
 import type { ComputedRef } from 'vue';
 import { gpioStore } from '@/stores/gpiostore'
@@ -78,21 +78,21 @@ watch(() => props.board, async (newBoard, oldBoard) => {
             // Update the color of the current pin with the color from the old configuration
             if (oldPin) {
                 newPin.color = oldPin.color;
-                newPin.showValue = oldPin.showValue;
-                newPin.showBarValue = oldPin.showBarValue;
+                newPin.displayValue = oldPin.displayValue;
+                newPin.displayBarValue = oldPin.displayBarValue;
             }
             ;
         });
     }
 }, { immediate: true }); // immediate: true ensures the effect runs on mount
 
-function updatePinStates(newStates:PinStateMap, pinsConfiguration:PinsConfiguration) {
+function updatePinStates(newStates: PinStateMap, pinsConfiguration: PinsConfiguration) {
     Object.entries(newStates).forEach(([gpioId, pinState]) => {
         const pin = pinsConfiguration?.pins.find((position: Pins) => position.gpioid === parseInt(gpioId));
         if (pin) {
             pin.color = getColorForPin(pinState);
-            pin.showValue = getValueForPin(pinState);
-            pin.showBarValue = getBarValue(pinState);
+            pin.displayValue = getValueForPin(pinState);
+            pin.displayBarValue = getBarValue(pinState);
         }
     });
 }
@@ -158,8 +158,8 @@ const getBarValue = (pinState: PinState): number => {
                 minWidth: pinsConf.settings.valueMinWidth + '%',
                 fontSize: pinsConf.settings.valueFontSize + 'dvb'
             }" :id="`gpio${pin.gpioid}`">
-            <div>{{ pin.showValue }}</div>
-            <div class="value-bar" :style="{ width: pin.showBarValue + '%' }"></div>
+            <div>{{ pin.displayValue }}</div>
+            <div class="value-bar" :style="{ width: pin.displayBarValue + '%' }"></div>
         </div>
         <div v-if="pinsConf && pinsConf.stats" class="stats"
             :style="{ top: pinsConf.stats.top + '%', left: pinsConf.stats.left + '%', fontSize: pinsConf.stats.fontSize + 'dvb' }">
