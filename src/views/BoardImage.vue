@@ -1,7 +1,7 @@
   
 <script setup lang="ts">
 import type { BoardData, PinsConfiguration, PinState, Pins } from '@/types/types';
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, onUnmounted } from 'vue';
 import type { ComputedRef } from 'vue';
 import { gpioStore } from '@/stores/gpiostore'
 
@@ -22,6 +22,12 @@ const wifiClass = computed(() => {
         return wifiActivity.value ? 'wifi-icon-dark animate-wifi-dark' : 'wifi-icon-dark';
     }
 });
+
+function savePinStates() {
+    // Logic to execute when the component is unmounted
+    console.log('Component is being unmounted');
+}
+
 
 const colors: string[] = ["#00ff00",
     "#1fff00",
@@ -44,15 +50,15 @@ const colors: string[] = ["#00ff00",
     "#FE5454",
     "#ff0000", // Red
 ];
-const pinsConf = ref<PinsConfiguration[] | undefined>();
-async function loadIndicators(): Promise<PinsConfiguration[] | undefined> {
+const pinsConf = ref<PinsConfiguration | undefined>();
+async function loadIndicators(): Promise<PinsConfiguration | undefined> {
     try {
         if (props.board) {
             const response = await fetch(props.board.pins);
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
-            return await response.json() as PinsConfiguration[];
+            return await response.json() as PinsConfiguration;
         }
     } catch (error) {
         console.error("Could not load boards data:", error);
@@ -63,25 +69,48 @@ async function loadIndicators(): Promise<PinsConfiguration[] | undefined> {
 // Watch for changes in the board prop and call loadIndicators
 watch(() => props.board, async (newBoard, oldBoard) => {
     if (newBoard && newBoard !== oldBoard) {
-        pinsConf.value = await loadIndicators();
+        if (store.freeze) {
+            let oldPinConf = pinsConf.value;
+            pinsConf.value = await loadIndicators();
+            pinsConf.value?.pins.forEach(newPin => {
+                // Find the corresponding pin in the old configuration
+                const oldPin = oldPinConf?.pins.find(oldP => oldP.gpioid === newPin.gpioid);
+
+                // Update the color of the current pin with the color from the old configuration
+                if (oldPin) {
+                    newPin.color = oldPin.color;
+                    newPin.showValue = oldPin.showValue;
+                    newPin.showBarValue = oldPin.showBarValue;
+                }
+                ;
+            });
+
+        } else {
+            pinsConf.value = await loadIndicators();
+        }
     }
 }, { immediate: true }); // immediate: true ensures the effect runs on mount
+
+function updatePinStates(newStates, pinsConfiguration) {
+    Object.entries(newStates).forEach(([gpioId, pinState]) => {
+        const pin = pinsConfiguration?.pins.find((position: Pins) => position.gpioid === parseInt(gpioId));
+        if (pin) {
+            pin.color = getColorForPin(pinState);
+            pin.showValue = getValueForPin(pinState);
+            pin.showBarValue = getBarValue(pinState);
+        }
+    });
+}
 
 watch(
     () => store.currentStates,
     (newStates) => {
         if (newStates && pinsConf.value) {
-            Object.entries(newStates).forEach(([gpioId, pinState]) => {
-                const pin = pinsConf.value?.pins.find((position: Pins) => position.gpioid === parseInt(gpioId));
-                if (pin) {
-                    pin.color = getColorForPin(pinState);;
-                    pin.showValue = getValueForPin(pinState);
-                    pin.showBarValue = getBarValue(pinState);
-                }
-            });
+            updatePinStates(newStates, pinsConf.value);
         }
     }
 );
+
 
 const getValueForPin = (pinState: PinState): string => {
     var displayValue = "";
