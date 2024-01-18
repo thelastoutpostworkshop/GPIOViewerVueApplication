@@ -16,6 +16,7 @@ export interface PinsSettings {
   valueMinWidth:number
   valuePinMargin:number
   valueFontSize:number
+  showPinNumber:boolean;
 }
 export interface Pins {
   gpioid: number;
@@ -26,7 +27,6 @@ export interface Pins {
   valueFontSize:number;
   showValue:string;
   showBarValue:number
-  showPinNumber:boolean;
 }
 export interface StatsConfiguration {
   top:number;
