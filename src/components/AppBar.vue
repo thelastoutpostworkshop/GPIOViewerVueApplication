@@ -28,6 +28,9 @@ async function loadBoardsData(): Promise<BoardData[] | undefined> {
 <template>
     <v-app-bar>
         <BoardSelect v-if="boardsData" :boards="boardsData" />
+        <v-btn class="ma-2" color="purple" icon="mdi-wrench"></v-btn>
+        <v-icon icon="mdi-home" />
+
         <v-switch v-model="store.freeze" label="Freeze" color="primary" value="primary" hide-details></v-switch>
     </v-app-bar>
 </template>
