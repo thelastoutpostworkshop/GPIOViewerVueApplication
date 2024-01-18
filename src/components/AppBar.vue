@@ -25,7 +25,12 @@ async function loadBoardsData(): Promise<BoardData[] | undefined> {
 <template>
     <v-app-bar>
         <BoardSelect v-if="boardsData" :boards="boardsData" />
-
+        <v-switch
+              label="primary"
+              color="primary"
+              value="primary"
+              hide-details
+            ></v-switch>
     </v-app-bar>
 </template>
   
