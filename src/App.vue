@@ -38,7 +38,7 @@ function initEventSource(): void {
   source.addEventListener(
     "free_heap",
     (e: MessageEvent) => {
-      if(!store.freeze) {
+      if (!store.freeze) {
         const freeHeap = e.data as Memory;
         store.freeHeap = freeHeap;
       }
@@ -49,7 +49,7 @@ function initEventSource(): void {
   source.addEventListener(
     "free_psram",
     (e: MessageEvent) => {
-      if(!store.freeze) {
+      if (!store.freeze) {
         const freePSRAM = e.data as Memory;
         store.freePSRAM = freePSRAM;
       }
@@ -75,18 +75,24 @@ const isDataAvailable = computed(() => window.gpio_settings.ip && window.gpio_se
 </script>
 
 <template>
-  <VLayout>
+  <v-layout>
     <div v-if="isDataAvailable">
       <AppBar />
 
-
-      <VMain class="main">
+      <v-navigation-drawer>
+        <v-list-item title="My Application" subtitle="Vuetify"></v-list-item>
+        <v-divider></v-divider>
+        <v-list-item link title="List Item 1"></v-list-item>
+        <v-list-item link title="List Item 2"></v-list-item>
+        <v-list-item link title="List Item 3"></v-list-item>
+      </v-navigation-drawer>
+      <v-main class="main">
         <RouterView />
-      </VMain>
+      </v-main>
     </div>
     <ParamsError v-else />
 
-  </VLayout>
+  </v-layout>
 
 
   <!-- <nav>

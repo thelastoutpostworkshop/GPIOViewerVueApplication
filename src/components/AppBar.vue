@@ -26,9 +26,10 @@ async function loadBoardsData(): Promise<BoardData[] | undefined> {
 // Expo
 </script>
 <template>
-    <v-app-bar  density="compact">
+    <v-app-bar color="secondary" rounded elevated density="compact">
         <BoardSelect v-if="boardsData" :boards="boardsData" />
-    
+        <v-spacer></v-spacer>
+
         <v-switch v-model="store.freeze" label="Freeze" color="primary" value="primary" hide-details></v-switch>
     </v-app-bar>
 </template>
