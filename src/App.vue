@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 import { ref, computed, onMounted } from 'vue';
-import AppBar from '../src/views/AppBar.vue';
+import AppBar from '../src/components/AppBar.vue';
 import ParamsError from '../src/components/ParamsError.vue';
 import { gpioStore } from '@/stores/gpiostore'
 import type { Memory, PinStateMap } from "../src/types/types";
