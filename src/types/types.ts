@@ -28,7 +28,7 @@ export interface Pins {
   showBarValue:number
   showPinNumber:boolean;
 }
-expert interface StatsConfiguration {
+export interface StatsConfiguration {
   top:number;
   left:number;
   gap:number;
