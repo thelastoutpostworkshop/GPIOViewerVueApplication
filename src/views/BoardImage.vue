@@ -234,6 +234,7 @@ const getBarValue = (pinState: PinState): number => {
 
 .board-container {
     position: relative;
+    margin-top: 2%;
     /* Relative positioning for the container */
 }
 
