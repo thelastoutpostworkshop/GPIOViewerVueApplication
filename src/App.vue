@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 import { ref, computed, onMounted } from 'vue';
-import AppBar from '../src/components/AppBar.vue';
 import ParamsError from '../src/components/ParamsError.vue';
 import type { Memory, PinStateMap } from "../src/types/types";
-import type { BoardData } from "../types/types";
+import type { BoardData } from "@/types/types";
 import { gpioStore } from '@/stores/gpiostore'
 import BoardSelect from '@/components/BoardSelect.vue';
 
