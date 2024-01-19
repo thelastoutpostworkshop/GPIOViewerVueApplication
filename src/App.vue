@@ -115,7 +115,7 @@ async function loadBoardsData(): Promise<BoardData[] | undefined> {
         <BoardSelect v-if="boardsData" :boards="boardsData" />
         <v-spacer></v-spacer>
 
-        <v-switch v-model="store.freeze" label="Freeze" color="primary" value="primary" hide-details></v-switch>
+        <v-switch v-model="store.freeze" label="Freeze" color="secondary" hide-details></v-switch>
       </v-app-bar>
 
       <v-navigation-drawer color="primary"  v-model="drawerOpen" temporary>
