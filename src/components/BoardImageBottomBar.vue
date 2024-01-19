@@ -11,8 +11,8 @@ const store = gpioStore();
         <v-icon :color="store.freeze ? 'blue' : ''">mdi-snowflake</v-icon>
         <span>Freeze</span>
     </v-btn>
-    <v-btn @click="">
-        <v-icon :color="store.freeze ? 'blue' : ''">mdi-pin</v-icon>
+    <v-btn @click="store.pintype = !store.pintype">
+        <v-icon :color="store.pintype ? 'blue' : ''">mdi-pin</v-icon>
         <span>Pins</span>
     </v-btn>
 
