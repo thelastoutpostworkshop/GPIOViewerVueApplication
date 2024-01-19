@@ -108,7 +108,7 @@ async function loadBoardsData(): Promise<BoardData[] | undefined> {
 <template>
   <v-layout>
     <div v-if="isDataAvailable">
-      <v-app-bar color="secondary" rounded elevated density="compact">
+      <v-app-bar color="primary" rounded elevated density="compact">
         <template v-slot:prepend>
           <v-app-bar-nav-icon @click="drawerOpen = !drawerOpen"></v-app-bar-nav-icon>
         </template>
@@ -118,7 +118,7 @@ async function loadBoardsData(): Promise<BoardData[] | undefined> {
         <v-switch v-model="store.freeze" label="Freeze" color="primary" value="primary" hide-details></v-switch>
       </v-app-bar>
 
-      <v-navigation-drawer v-model="drawerOpen" temporary>
+      <v-navigation-drawer color="primary"  v-model="drawerOpen" temporary>
         <v-list-item title="GPIOViewer" :subtitle="'v'+GPIOViewerRelease"></v-list-item>
         <v-divider></v-divider>
         <v-list-item link title="List Item 1"></v-list-item>
