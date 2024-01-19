@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView, useRoute } from 'vue-router'
 import { ref, computed, onMounted } from 'vue';
 import ParamsError from '@/components/ParamsError.vue';
-import type { Memory, PinStateMap,GPIOViewerRelease } from "../src/types/types";
+import type { Memory, PinStateMap, GPIOViewerRelease } from "../src/types/types";
 import type { BoardData } from "@/types/types";
 import { gpioStore } from '@/stores/gpiostore'
 import BoardSelect from '@/components/BoardSelect.vue';
@@ -91,7 +91,7 @@ async function loadBoardsData(): Promise<BoardData[] | undefined> {
     console.error("Could not load boards data:", error);
   }
 }
- async function fetchGPIOViewerReleaseVersion() {
+async function fetchGPIOViewerReleaseVersion() {
   try {
     const url = `http://${store.ipAddress}:${store.httpPort}/release`;
     const response = await fetch(url);
@@ -108,17 +108,20 @@ async function loadBoardsData(): Promise<BoardData[] | undefined> {
 <template>
   <v-layout>
     <div v-if="localNetworkAdressKnown">
-      <v-app-bar color="primary" rounded elevated density="compact">
-        <template v-slot:prepend>
-          <v-app-bar-nav-icon @click="drawerOpen = !drawerOpen"></v-app-bar-nav-icon>
-        </template>
-        <BoardSelect v-if="boardsData" :boards="boardsData" />
-        <v-spacer></v-spacer>
-        <v-switch v-model="store.freeze" label="Freeze" color="secondary" hide-details></v-switch>
-      </v-app-bar>
+      <template v-if="$route.name === 'gpioview'">
+        <v-app-bar color="primary" rounded elevated density="compact">
+  
+          <template v-slot:prepend>
+            <v-app-bar-nav-icon @click="drawerOpen = !drawerOpen"></v-app-bar-nav-icon>
+          </template>
+          <BoardSelect v-if="boardsData" :boards="boardsData" />
+          <v-spacer></v-spacer>
+          <v-switch v-model="store.freeze" label="Freeze" color="secondary" hide-details></v-switch>
+        </v-app-bar>
+      </template>
 
-      <v-navigation-drawer color="primary"  v-model="drawerOpen" temporary>
-        <v-list-item title="GPIOViewer" :subtitle="'v'+GPIOViewerRelease"></v-list-item>
+      <v-navigation-drawer color="primary" v-model="drawerOpen" temporary>
+        <v-list-item title="GPIOViewer" :subtitle="'v' + GPIOViewerRelease"></v-list-item>
         <v-divider></v-divider>
         <v-list-item link title="List Item 1"></v-list-item>
         <v-list-item link title="List Item 2"></v-list-item>
