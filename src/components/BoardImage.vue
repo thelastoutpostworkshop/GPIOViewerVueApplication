@@ -83,6 +83,7 @@ watch(() => props.board, async (newBoard, oldBoard) => {
                 newPin.color = oldPin.color;
                 newPin.displayValue = oldPin.displayValue;
                 newPin.displayBarValue = oldPin.displayBarValue;
+                newPin.displayType = oldPin.displayType;
             };
         });
     }
