@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import { gpioStore } from '@/stores/gpiostore'
-import BoardSelect from '@/components/BoardSelect.vue';
 import { ref } from 'vue';
 
 const store = gpioStore();
-const menu = ref(false);
+
 
 </script>
 
 <template>
-    <BoardSelect v-if="store.boards" :boards="store.boards" />
+  <v-btn @click="store.freeze = !store.freeze" value="recent">
+    <v-icon>mdi-history</v-icon>
+
+    <span>Freeze</span>
+  </v-btn>
 </template>

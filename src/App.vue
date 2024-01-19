@@ -107,9 +107,9 @@ async function fetchGPIOViewerReleaseVersion() {
 <template>
   <v-layout>
     <div v-if="localNetworkAdressKnown">
-      
+
       <v-app-bar color="primary" rounded elevated density="compact">
-        
+
         <template v-slot:prepend>
           <v-app-bar-nav-icon @click="drawerOpen = !drawerOpen"></v-app-bar-nav-icon>
         </template>
@@ -128,16 +128,13 @@ async function fetchGPIOViewerReleaseVersion() {
       <v-main class="main">
         <RouterView />
       </v-main>
+      <v-bottom-navigation>
+        <RouterView name="BottomBar" />
+      </v-bottom-navigation>
     </div>
     <ParamsError v-else />
 
   </v-layout>
-
-
-  <!-- <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav> -->
 </template>
 
 <style scoped>
