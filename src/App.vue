@@ -107,7 +107,7 @@ async function loadBoardsData(): Promise<BoardData[] | undefined> {
       </v-app-bar>
 
       <v-navigation-drawer v-model="drawerOpen" temporary>
-        <v-list-item title="My Application" subtitle="Vuetify"></v-list-item>
+        <v-list-item title="GPIOViewer" subtitle="Vuetify"></v-list-item>
         <v-divider></v-divider>
         <v-list-item link title="List Item 1"></v-list-item>
         <v-list-item link title="List Item 2"></v-list-item>
