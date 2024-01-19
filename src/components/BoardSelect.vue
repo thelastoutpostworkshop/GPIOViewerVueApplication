@@ -63,7 +63,7 @@ function getCookie(name: string): string | null {
 
 </script>
 <template>
-    <v-autocomplete auto-select-first density="compact" :items="$props.boards" item-title="name"
+    <v-autocomplete auto-select-first density="compact" clearable :items="$props.boards" item-title="name"
         v-model="store.currentBoard" return-object></v-autocomplete>
 </template>
   
