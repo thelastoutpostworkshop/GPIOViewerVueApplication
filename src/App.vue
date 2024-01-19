@@ -72,7 +72,7 @@ function initEventSource(): void {
   );
 }
 
-const isDataAvailable = computed(() => window.gpio_settings.ip && window.gpio_settings.port);
+const localNetworkAdressKnown = computed(() => window.gpio_settings.ip && window.gpio_settings.port);
 
 const boardsData = ref<BoardData[] | undefined>();
 onMounted(async () => {
@@ -107,7 +107,7 @@ async function loadBoardsData(): Promise<BoardData[] | undefined> {
 
 <template>
   <v-layout>
-    <div v-if="isDataAvailable">
+    <div v-if="localNetworkAdressKnown">
       <v-app-bar color="primary" rounded elevated density="compact">
         <template v-slot:prepend>
           <v-app-bar-nav-icon @click="drawerOpen = !drawerOpen"></v-app-bar-nav-icon>
