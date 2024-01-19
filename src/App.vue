@@ -128,7 +128,7 @@ async function fetchGPIOViewerReleaseVersion() {
       <v-main class="main">
         <RouterView />
       </v-main>
-      <v-bottom-navigation>
+      <v-bottom-navigation bg-color="secondary">
         <RouterView name="BottomBar" />
       </v-bottom-navigation>
     </div>
