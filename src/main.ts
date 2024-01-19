@@ -15,7 +15,7 @@ const GPIOViewerTheme: ThemeDefinition = {
   dark: false,
   colors: {
     background: '#FFFFFF',
-    surface: '#c24d2c',
+    surface: '#d9dad7',
     primary: '#1a2639',
     'primary-darken-1': '#3700B3',
     secondary: '#d9dad7',
