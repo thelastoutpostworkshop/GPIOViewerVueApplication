@@ -2,13 +2,14 @@
 import { RouterLink, RouterView } from 'vue-router'
 import { ref, computed, onMounted } from 'vue';
 import ParamsError from '@/components/ParamsError.vue';
-import type { Memory, PinStateMap } from "../src/types/types";
+import type { Memory, PinStateMap,GPIOViewerRelease } from "../src/types/types";
 import type { BoardData } from "@/types/types";
 import { gpioStore } from '@/stores/gpiostore'
 import BoardSelect from '@/components/BoardSelect.vue';
 
 const store = gpioStore();
 const drawerOpen = ref(false);
+const GPIOViewerRelease = ref("");
 
 declare var window: any;
 
@@ -76,6 +77,7 @@ const isDataAvailable = computed(() => window.gpio_settings.ip && window.gpio_se
 const boardsData = ref<BoardData[] | undefined>();
 onMounted(async () => {
   boardsData.value = await loadBoardsData();
+  fetchGPIOViewerReleaseVersion();
 });
 
 async function loadBoardsData(): Promise<BoardData[] | undefined> {
@@ -89,7 +91,18 @@ async function loadBoardsData(): Promise<BoardData[] | undefined> {
     console.error("Could not load boards data:", error);
   }
 }
+ async function fetchGPIOViewerReleaseVersion() {
+  try {
+    const url = `http://${store.ipAddress}:${store.httpPort}/release`;
+    const response = await fetch(url);
+    const data: GPIOViewerRelease = await response.json();
+    GPIOViewerRelease.value = data.release;
 
+  } catch (error) {
+    GPIOViewerRelease.value = "1.0.4 or less";
+    console.error("Error fetching release version:", error);
+  }
+}
 </script>
 
 <template>
@@ -106,7 +119,7 @@ async function loadBoardsData(): Promise<BoardData[] | undefined> {
       </v-app-bar>
 
       <v-navigation-drawer v-model="drawerOpen" temporary>
-        <v-list-item title="GPIOViewer" subtitle="Vuetify"></v-list-item>
+        <v-list-item title="GPIOViewer" :subtitle="'v'+GPIOViewerRelease"></v-list-item>
         <v-divider></v-divider>
         <v-list-item link title="List Item 1"></v-list-item>
         <v-list-item link title="List Item 2"></v-list-item>

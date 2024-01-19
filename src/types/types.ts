@@ -59,3 +59,6 @@ export type PinStateMap = {
 export type Memory = {
   size: string
 }
+export type GPIOViewerRelease = {
+  release:string
+}
