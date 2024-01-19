@@ -3,9 +3,10 @@ import { RouterLink, RouterView } from 'vue-router'
 import { ref, computed, onMounted } from 'vue';
 import AppBar from '../src/components/AppBar.vue';
 import ParamsError from '../src/components/ParamsError.vue';
-import { gpioStore } from '@/stores/gpiostore'
 import type { Memory, PinStateMap } from "../src/types/types";
-import { storeToRefs } from 'pinia';
+import type { BoardData } from "../types/types";
+import { gpioStore } from '@/stores/gpiostore'
+import BoardSelect from '@/components/BoardSelect.vue';
 
 const store = gpioStore();
 
@@ -72,19 +73,42 @@ function initEventSource(): void {
 
 const isDataAvailable = computed(() => window.gpio_settings.ip && window.gpio_settings.port);
 
+const boardsData = ref<BoardData[] | undefined>();
+onMounted(async () => {
+  boardsData.value = await loadBoardsData();
+});
+
+async function loadBoardsData(): Promise<BoardData[] | undefined> {
+  try {
+    const response = await fetch("boards.json");
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    return await response.json() as BoardData[];
+  } catch (error) {
+    console.error("Could not load boards data:", error);
+  }
+}
+
 </script>
 
 <template>
   <v-layout>
     <div v-if="isDataAvailable">
-      <v-navigation-drawer>
+      <v-app-bar color="secondary" rounded elevated density="compact">
+        <BoardSelect v-if="boardsData" :boards="boardsData" />
+        <v-spacer></v-spacer>
+
+        <v-switch v-model="store.freeze" label="Freeze" color="primary" value="primary" hide-details></v-switch>
+      </v-app-bar>
+
+      <v-navigation-drawer temporary>
         <v-list-item title="My Application" subtitle="Vuetify"></v-list-item>
         <v-divider></v-divider>
         <v-list-item link title="List Item 1"></v-list-item>
         <v-list-item link title="List Item 2"></v-list-item>
         <v-list-item link title="List Item 3"></v-list-item>
       </v-navigation-drawer>
-      <AppBar />
 
       <v-main class="main">
         <RouterView />
