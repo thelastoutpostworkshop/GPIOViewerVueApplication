@@ -108,7 +108,6 @@ async function fetchGPIOViewerReleaseVersion() {
 <template>
   <v-layout>
     <div v-if="localNetworkAdressKnown">
-      <template v-if="$route.name === 'gpioview'">
         <v-app-bar color="primary" rounded elevated density="compact">
   
           <template v-slot:prepend>
@@ -118,7 +117,6 @@ async function fetchGPIOViewerReleaseVersion() {
           <v-spacer></v-spacer>
           <v-switch v-model="store.freeze" label="Freeze" color="secondary" hide-details></v-switch>
         </v-app-bar>
-      </template>
 
       <v-navigation-drawer color="primary" v-model="drawerOpen" temporary>
         <v-list-item title="GPIOViewer" :subtitle="'v' + GPIOViewerRelease"></v-list-item>
