@@ -71,6 +71,9 @@ watch(() => props.board, async (newBoard, oldBoard) => {
     if (newBoard && newBoard !== oldBoard) {
         let oldPinConf = pinsConf.value;
         pinsConf.value = await loadIndicators();
+        if (!pinsConf.value?.settings.showPinNumber) {
+            store.pintype = true;
+        }
         pinsConf.value?.pins.forEach(newPin => {
             // Find the corresponding pin in the old configuration
             const oldPin = oldPinConf?.pins.find(oldP => oldP.gpioid === newPin.gpioid);
@@ -80,8 +83,7 @@ watch(() => props.board, async (newBoard, oldBoard) => {
                 newPin.color = oldPin.color;
                 newPin.displayValue = oldPin.displayValue;
                 newPin.displayBarValue = oldPin.displayBarValue;
-            }
-            ;
+            };
         });
     }
 }, { immediate: true }); // immediate: true ensures the effect runs on mount
@@ -146,7 +148,7 @@ const getBarValue = (pinState: PinState): number => {
         <div v-if="pinsConf" v-for="pin in pinsConf.pins" :key="pin.gpioid" class="indicator"
             :style="{ top: pin.top + '%', left: pin.left + '%', width: pinsConf.settings.pinWidth + '%', height: pinsConf.settings.pinHeight + '%', backgroundColor: pin.color }"
             :id="`gpio${pin.gpioid}`">
-            <div v-if="pinsConf.settings.showPinNumber" :style="{ fontSize: pinsConf.settings.valueFontSize + 'dvb' }">{{
+            <div v-if="!store.pintype" :style="{ fontSize: pinsConf.settings.valueFontSize + 'dvb' }">{{
                 pin.gpioid }}</div>
         </div>
         <div v-if="pinsConf" v-for="pin in pinsConf.pins" :key="pin.gpioid"
