@@ -6,7 +6,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'home',
+      name: 'gpioview',
       component: GPIOView,
       props: route => ({ ...route.query }) // maps all query parameters as props
     },
