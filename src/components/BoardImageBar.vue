@@ -10,4 +10,5 @@ const menu = ref(false);
 
 <template>
     <BoardSelect v-if="store.boards" :boards="store.boards" />
+    <v-spacer></v-spacer>
 </template>
