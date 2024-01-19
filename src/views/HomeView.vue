@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import BoardImage from '../views/BoardImage.vue';
+import BoardImage from '@/components/BoardImage.vue';
 import { gpioStore } from '@/stores/gpiostore'
 
 const store = gpioStore();
