@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import GPIOView from '@/views/GPIOViewer.vue'
+import GPIOViewBar from '@/components/BoardImageBar.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,6 +9,7 @@ const router = createRouter({
       path: '/',
       components:{
         default: GPIOView,
+        "AppBar":GPIOViewBar
       }
     },
     {

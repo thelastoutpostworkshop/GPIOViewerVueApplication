@@ -5,7 +5,6 @@ import ParamsError from '@/components/ParamsError.vue';
 import type { Memory, PinStateMap, GPIOViewerRelease } from "../src/types/types";
 import type { BoardData } from "@/types/types";
 import { gpioStore } from '@/stores/gpiostore'
-import BoardSelect from '@/components/BoardSelect.vue';
 
 const store = gpioStore();
 const drawerOpen = ref(false);
@@ -74,13 +73,12 @@ function initEventSource(): void {
 
 const localNetworkAdressKnown = computed(() => window.gpio_settings.ip && window.gpio_settings.port);
 
-const boardsData = ref<BoardData[] | undefined>();
 onMounted(async () => {
-  boardsData.value = await loadBoardsData();
+  store.boards = await loadBoardsData();
   fetchGPIOViewerReleaseVersion();
 });
 
-async function loadBoardsData(): Promise<BoardData[] | undefined> {
+async function loadBoardsData(): Promise<BoardData[]> {
   try {
     const response = await fetch("boards.json");
     if (!response.ok) {
@@ -89,6 +87,7 @@ async function loadBoardsData(): Promise<BoardData[] | undefined> {
     return await response.json() as BoardData[];
   } catch (error) {
     console.error("Could not load boards data:", error);
+    return [] as BoardData[];
   }
 }
 async function fetchGPIOViewerReleaseVersion() {
@@ -108,15 +107,15 @@ async function fetchGPIOViewerReleaseVersion() {
 <template>
   <v-layout>
     <div v-if="localNetworkAdressKnown">
-        <v-app-bar color="primary" rounded elevated density="compact">
-  
-          <template v-slot:prepend>
-            <v-app-bar-nav-icon @click="drawerOpen = !drawerOpen"></v-app-bar-nav-icon>
-          </template>
-          <BoardSelect v-if="boardsData" :boards="boardsData" />
-          <v-spacer></v-spacer>
-          <v-switch v-model="store.freeze" label="Freeze" color="secondary" hide-details></v-switch>
-        </v-app-bar>
+      
+      <v-app-bar color="primary" rounded elevated density="compact">
+        
+        <template v-slot:prepend>
+          <v-app-bar-nav-icon @click="drawerOpen = !drawerOpen"></v-app-bar-nav-icon>
+        </template>
+        <RouterView name="AppBar" />
+
+      </v-app-bar>
 
       <v-navigation-drawer color="primary" v-model="drawerOpen" temporary>
         <v-list-item title="GPIOViewer" :subtitle="'v' + GPIOViewerRelease"></v-list-item>
