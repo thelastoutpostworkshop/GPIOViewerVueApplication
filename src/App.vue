@@ -9,6 +9,7 @@ import { gpioStore } from '@/stores/gpiostore'
 import BoardSelect from '@/components/BoardSelect.vue';
 
 const store = gpioStore();
+const drawerOpen = ref(false);
 
 declare var window: any;
 
@@ -96,13 +97,16 @@ async function loadBoardsData(): Promise<BoardData[] | undefined> {
   <v-layout>
     <div v-if="isDataAvailable">
       <v-app-bar color="secondary" rounded elevated density="compact">
+        <template v-slot:prepend>
+          <v-app-bar-nav-icon @click="drawerOpen = !drawerOpen"></v-app-bar-nav-icon>
+        </template>
         <BoardSelect v-if="boardsData" :boards="boardsData" />
         <v-spacer></v-spacer>
 
         <v-switch v-model="store.freeze" label="Freeze" color="primary" value="primary" hide-details></v-switch>
       </v-app-bar>
 
-      <v-navigation-drawer temporary>
+      <v-navigation-drawer v-model="drawerOpen" temporary>
         <v-list-item title="My Application" subtitle="Vuetify"></v-list-item>
         <v-divider></v-divider>
         <v-list-item link title="List Item 1"></v-list-item>
