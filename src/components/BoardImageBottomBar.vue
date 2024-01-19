@@ -8,9 +8,8 @@ const store = gpioStore();
 </script>
 
 <template>
-  <v-btn @click="store.freeze = !store.freeze" value="recent">
-    <v-icon>mdi-history</v-icon>
-
+  <v-btn @click="store.freeze = !store.freeze">
+    <v-icon :color="store.freeze ? 'blue' : ''">mdi-snowflake</v-icon>
     <span>Freeze</span>
   </v-btn>
 </template>
