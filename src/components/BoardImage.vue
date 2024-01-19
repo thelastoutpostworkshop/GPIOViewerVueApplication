@@ -95,6 +95,7 @@ function updatePinStates(newStates: PinStateMap, pinsConfiguration: PinsConfigur
             pin.color = getColorForPin(pinState);
             pin.displayValue = getValueForPin(pinState);
             pin.displayBarValue = getBarValue(pinState);
+            pin.displayType = getPinType(pinState);
         }
     });
 }
@@ -140,6 +141,24 @@ const getBarValue = (pinState: PinState): number => {
     return widthPercent;
 };
 
+const getPinType = (pin: PinState): string => {
+    let pintype = "";
+    switch (pin.t) {
+        case 0:
+            pintype = "D";
+            break;
+        case 1:
+            pintype = "P";
+            break;
+        case 2:
+            pintype = "A";
+            break;
+        default:
+            break;
+    }
+    return pintype;
+}
+
 </script>
   
 <template>
@@ -150,6 +169,9 @@ const getBarValue = (pinState: PinState): number => {
             :id="`gpio${pin.gpioid}`">
             <div v-if="!store.pintype" :style="{ fontSize: pinsConf.settings.valueFontSize + 'dvb' }">{{
                 pin.gpioid }}</div>
+            <div v-else :style="{ fontSize: pinsConf.settings.valueFontSize + 'dvb' }">
+                {{ pin.displayType }}
+            </div>
         </div>
         <div v-if="pinsConf" v-for="pin in pinsConf.pins" :key="pin.gpioid"
             :class="pin.valueJustify === -1 ? 'value value_right' : 'value'" :style="{

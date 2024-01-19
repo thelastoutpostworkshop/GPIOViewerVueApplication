@@ -26,7 +26,8 @@ export interface Pins {
   valueJustify: number;
   valueFontSize: number;
   displayValue: string;
-  displayBarValue: number
+  displayBarValue: number;
+  displayType:string;
 }
 export interface StatsConfiguration {
   top: number;
