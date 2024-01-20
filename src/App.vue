@@ -16,6 +16,7 @@ onMounted(() => {
   if (window.gpio_settings) {
     store.ipAddress = window.gpio_settings.ip;
     store.httpPort = window.gpio_settings.port;
+    store.freeSketch = window.gpio_settings.freeSketchRam;
     console.log(window.gpio_settings);
     initEventSource();
   }
