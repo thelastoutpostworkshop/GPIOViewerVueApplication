@@ -13,14 +13,15 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
- build: {
-  rollupOptions: {
-    output:{
-      entryFileNames:"GPIOViewerVue.js",
-      chunkFileNames:"chunk.js",
-      assetFileNames:"asset.css"
+  base: "/gpio_viewer_1_5",
+  build: {
+    rollupOptions: {
+      output: {
+        entryFileNames: "GPIOViewerVue.js",
+        chunkFileNames: "chunk.js",
+        assetFileNames: "asset.css"
+      }
     }
   }
- }
 })
 
