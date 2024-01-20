@@ -13,8 +13,8 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  base: "/microcontroller_devkit/gpio_viewer_1_5/",
   build: {
+    cssCodeSplit:false,
     rollupOptions: {
       output: {
         entryFileNames: "GPIOViewerVue.js",
