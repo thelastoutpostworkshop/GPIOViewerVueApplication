@@ -13,7 +13,7 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  base: "/gpio_viewer_1_5",
+  base: "/microcontroller_devkit/gpio_viewer_1_5/",
   build: {
     rollupOptions: {
       output: {
