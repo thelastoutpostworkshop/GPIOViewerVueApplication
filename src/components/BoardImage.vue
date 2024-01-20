@@ -2,7 +2,6 @@
 <script setup lang="ts">
 import type { BoardData, PinsConfiguration, PinState, Pins, PinStateMap } from '@/types/types';
 import { ref, watch, computed, onUnmounted } from 'vue';
-import type { ComputedRef } from 'vue';
 import { gpioStore } from '@/stores/gpiostore'
 
 const props = defineProps({

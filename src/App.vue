@@ -5,10 +5,12 @@ import ParamsError from '@/components/ParamsError.vue';
 import type { Memory, PinStateMap, GPIOViewerRelease } from "../src/types/types";
 import type { BoardData } from "@/types/types";
 import { gpioStore } from '@/stores/gpiostore'
+import About from '@/components/About.vue';
 
 const store = gpioStore();
 const drawerOpen = ref(false);
 const GPIOViewerRelease = ref("");
+const aboutDialogOpen = ref(false);
 
 const WebApplicationVersion = "2.0.0";
 
@@ -123,7 +125,7 @@ async function fetchGPIOViewerReleaseVersion() {
       <v-navigation-drawer color="primary" v-model="drawerOpen" temporary>
         <v-list-item title="GPIOViewer" :subtitle="'v' + GPIOViewerRelease"></v-list-item>
         <v-divider></v-divider>
-        <v-list-item link title="About"></v-list-item>
+        <v-list-item link title="About" @click="aboutDialogOpen = true"></v-list-item>
         <v-list-item link title="GPIOViewer"></v-list-item>
         <template v-slot:append>
           <v-divider></v-divider>
@@ -141,7 +143,16 @@ async function fetchGPIOViewerReleaseVersion() {
       </v-bottom-navigation>
     </div>
     <ParamsError v-else />
-
+    <v-dialog v-model="aboutDialogOpen" width="auto">
+      <v-card>
+        <v-card-text>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+          magna aliqua.
+        </v-card-text>
+        <v-card-actions>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-layout>
 </template>
 
