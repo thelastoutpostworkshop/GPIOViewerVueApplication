@@ -10,6 +10,8 @@ const store = gpioStore();
 const drawerOpen = ref(false);
 const GPIOViewerRelease = ref("");
 
+const WebApplicationVersion = "2.0.0";
+
 declare var window: any;
 
 onMounted(() => {
@@ -124,6 +126,12 @@ async function fetchGPIOViewerReleaseVersion() {
         <v-list-item link title="List Item 1"></v-list-item>
         <v-list-item link title="List Item 2"></v-list-item>
         <v-list-item link title="List Item 3"></v-list-item>
+        <template v-slot:append>
+          <v-divider></v-divider>
+          <div class="pa-2 text-caption text-grey-lighten-1">
+            Web application v{{ WebApplicationVersion }}
+          </div>
+        </template>
       </v-navigation-drawer>
 
       <v-main class="main">
