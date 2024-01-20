@@ -4,8 +4,10 @@ import GPIOViewBar from '@/components/BoardImageBar.vue'
 import GPIOViewBottomBar from '@/components/BoardImageBottomBar.vue'
 
 const router = createRouter({
+  
   history: createMemoryHistory(),
   routes: [
+    { path: '/microcontroller_devkit/gpio_viewer_1_5/', redirect: '/' },
      {
       path: '/',
       components: {
