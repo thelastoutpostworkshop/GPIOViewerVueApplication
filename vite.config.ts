@@ -14,12 +14,11 @@ export default defineConfig({
     }
   },
   build: {
-    cssCodeSplit:false,
     rollupOptions: {
       output: {
         entryFileNames: "GPIOViewerVue.js",
         chunkFileNames: "chunk.js",
-        assetFileNames: "asset.css"
+        assetFileNames:"asset.css"
       }
     }
   }
