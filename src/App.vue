@@ -5,7 +5,6 @@ import ParamsError from '@/components/ParamsError.vue';
 import type { Memory, PinStateMap, GPIOViewerRelease } from "../src/types/types";
 import type { BoardData } from "@/types/types";
 import { gpioStore } from '@/stores/gpiostore'
-import About from '@/components/About.vue';
 
 const store = gpioStore();
 const drawerOpen = ref(false);
