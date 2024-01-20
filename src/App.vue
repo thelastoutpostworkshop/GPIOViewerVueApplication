@@ -123,9 +123,8 @@ async function fetchGPIOViewerReleaseVersion() {
       <v-navigation-drawer color="primary" v-model="drawerOpen" temporary>
         <v-list-item title="GPIOViewer" :subtitle="'v' + GPIOViewerRelease"></v-list-item>
         <v-divider></v-divider>
-        <v-list-item link title="List Item 1"></v-list-item>
-        <v-list-item link title="List Item 2"></v-list-item>
-        <v-list-item link title="List Item 3"></v-list-item>
+        <v-list-item link title="About"></v-list-item>
+        <v-list-item link title="GPIOViewer"></v-list-item>
         <template v-slot:append>
           <v-divider></v-divider>
           <div class="pa-2 text-caption text-grey-lighten-1">
