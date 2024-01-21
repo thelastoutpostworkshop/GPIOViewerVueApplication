@@ -14,7 +14,15 @@ const router = createRouter({
         "AppBar": GPIOViewBar,
         "BottomBar": GPIOViewBottomBar
       }
-    }
+    },
+     {
+      path: '/espinfo',
+      components: {
+        default: GPIOView,
+        "AppBar": GPIOViewBar,
+        "BottomBar": GPIOViewBottomBar
+      }
+    },
   ]
 })
 
