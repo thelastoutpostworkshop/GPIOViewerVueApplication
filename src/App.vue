@@ -12,7 +12,7 @@ const drawerOpen = ref(false);
 const GPIOViewerRelease = ref("");
 const aboutDialogOpen = ref(false);
 
-const WebApplicationVersion = "2.0.0";
+const WebApplicationVersion = "2.0.1";
 
 declare var window: any;
 
