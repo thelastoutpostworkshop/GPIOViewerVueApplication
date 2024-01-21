@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory,createMemoryHistory } from 'vue-router'
 import GPIOView from '@/views/GPIOViewer.vue'
+import ESPInfo from '@/views/ESPInfo.vue'
 import GPIOViewBar from '@/components/BoardImageBar.vue'
 import GPIOViewBottomBar from '@/components/BoardImageBottomBar.vue'
 
@@ -9,6 +10,7 @@ const router = createRouter({
   routes: [
      {
       path: '/',
+      name:'gpioview',
       components: {
         default: GPIOView,
         "AppBar": GPIOViewBar,
@@ -17,8 +19,9 @@ const router = createRouter({
     },
      {
       path: '/espinfo',
+      name:"espinfo",
       components: {
-        default: GPIOView,
+        default: ESPInfo,
         "AppBar": GPIOViewBar,
         "BottomBar": GPIOViewBottomBar
       }

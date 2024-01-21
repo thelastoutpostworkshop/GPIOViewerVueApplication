@@ -148,8 +148,8 @@ async function fetchSamplingInterval() {
         <v-list-item title="GPIOViewer" :subtitle="'v' + GPIOViewerRelease"></v-list-item>
         <v-divider></v-divider>
         <v-list-item link title="About" @click="aboutDialogOpen = true"></v-list-item>
-        <v-list-item link title="GPIOViewer"></v-list-item>
-        <v-list-item link title="ESP Information"></v-list-item>
+        <v-list-item link title="GPIOViewer" @click="$router.push({name:'gpioview'})"></v-list-item>
+        <v-list-item link title="ESP Information" @click="$router.push({name:'espinfo'})"></v-list-item>
         <template v-slot:append>
           <v-divider></v-divider>
           <div class="pa-2 text-caption text-grey-lighten-1">
