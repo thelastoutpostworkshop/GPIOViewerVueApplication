@@ -3,6 +3,7 @@
 import type { BoardData, PinsConfiguration, PinState, Pins, PinStateMap } from '@/types/types';
 import { ref, watch, computed, onUnmounted } from 'vue';
 import { gpioStore } from '@/stores/gpiostore'
+import PinInfo from '@/components/PinInformation.vue';
 
 const props = defineProps({
     board: Object as () => BoardData | null
@@ -158,15 +159,16 @@ const getPinType = (pin: PinState): string => {
     }
     return pintype;
 }
+const showPinInfoCard = ref(false);
 
 </script>
   
 <template>
     <div v-if="board" class="board-container">
         <img v-if="board.image" :src="board.image" class="board-image" />
-        <div v-if="pinsConf" v-for="pin in pinsConf.pins" :key="pin.gpioid" class="indicator"
+        <div v-if="pinsConf" v-for="pin in pinsConf.pins" :key="pin.gpioid" class="indicator" 
             :style="{ top: pin.top + '%', left: pin.left + '%', width: pinsConf.settings.pinWidth + '%', height: pinsConf.settings.pinHeight + '%', backgroundColor: pin.color }"
-            :id="`gpio${pin.gpioid}`">
+            :id="`gpio${pin.gpioid}`" @click="showPinInfoCard = true">
             <div v-if="!store.pintype" :style="{ fontSize: pinsConf.settings.valueFontSize + 'dvb' }">{{
                 pin.gpioid }}</div>
             <div v-else :style="{ fontSize: pinsConf.settings.valueFontSize + 'dvb' }">
@@ -196,7 +198,7 @@ const getPinType = (pin: PinState): string => {
             Free PSRAM:{{ store.freePSRAM || 'No PSRAM' }}</div>
         <img v-if="pinsConf" src="../assets/images/wifiicon.png" :class="wifiClass"
             :style="{ top: pinsConf.wifiFeedback.top + '%', left: pinsConf.wifiFeedback.left + '%', width: pinsConf.wifiFeedback.width + '% ' }" />
-
+        <PinInfo :showPinInfo="showPinInfoCard" @update:modelValue="showPinInfoCard=false"></PinInfo>
     </div>
 </template>
 <style scoped>
