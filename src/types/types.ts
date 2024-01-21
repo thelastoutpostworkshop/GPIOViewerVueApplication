@@ -66,3 +66,15 @@ export type GPIOViewerRelease = {
 export type SamplingInterval = {
   sampling:number
 }
+export type ESPInfo = {
+  chip_model:string;
+  cores_count:number;
+  chip_revision:number;
+  cpu_frequency:number;
+  cycle_count:number;
+  mac:number;
+  flash_mode:number;
+  flash_chip_size:number;
+  flash_chip_speed:number;
+  heap_size:number;
+}
