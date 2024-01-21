@@ -39,7 +39,7 @@ function pinType(pin: Pins | null | undefined): string {
 
 <template>
     <v-dialog v-model="dialogOpen" width="300">
-        <v-card>
+        <v-card color="secondary">
             <template v-slot:title>
                 <div class="pin" :style="{ backgroundColor: pin?.color }">{{ pin?.gpioid }}</div>
             </template>
