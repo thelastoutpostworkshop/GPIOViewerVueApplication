@@ -108,8 +108,7 @@ async function loadBoardsData(): Promise<BoardData[]> {
 }
 async function fetchGPIOViewerReleaseVersion() {
   try {
-    const url = getAPIUrl("release");
-    const response = await fetch(url);
+    const response = await fetch(getAPIUrl("release"));
     const data: GPIOViewerRelease = await response.json();
     GPIOViewerRelease.value = data.release;
 
