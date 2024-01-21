@@ -63,3 +63,6 @@ export type Memory = {
 export type GPIOViewerRelease = {
   release:string
 }
+export type SamplingInterval = {
+  sampling:number
+}

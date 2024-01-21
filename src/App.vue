@@ -2,10 +2,11 @@
 import { RouterLink, RouterView, useRoute } from 'vue-router'
 import { ref, computed, onMounted } from 'vue';
 import ParamsError from '@/components/ParamsError.vue';
-import type { Memory, PinStateMap, GPIOViewerRelease } from "../src/types/types";
+import type { Memory, PinStateMap, GPIOViewerRelease,SamplingInterval } from "../src/types/types";
 import type { BoardData } from "@/types/types";
 import { gpioStore } from '@/stores/gpiostore'
 import logo from '@/assets/images/GPIOViewerLogo.png';
+import {getAPIUrl} from "@/functions";
 
 const store = gpioStore();
 const drawerOpen = ref(false);
@@ -107,7 +108,7 @@ async function loadBoardsData(): Promise<BoardData[]> {
 }
 async function fetchGPIOViewerReleaseVersion() {
   try {
-    const url = `http://${store.ipAddress}:${store.httpPort}/release`;
+    const url = getAPIUrl("release");
     const response = await fetch(url);
     const data: GPIOViewerRelease = await response.json();
     GPIOViewerRelease.value = data.release;
