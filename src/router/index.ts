@@ -1,6 +1,9 @@
 import { createRouter, createWebHistory, createMemoryHistory } from 'vue-router'
 import GPIOView from '@/views/GPIOViewer.vue'
 import ESPInfo from '@/views/ESPInfo.vue'
+import About from '@/views/About.vue'
+import AboutBar from '@/components/AboutBar.vue'
+import AboutBottomBar from '@/components/AboutBottomBar.vue'
 import GPIOViewBar from '@/components/BoardImageBar.vue'
 import GPIOViewBottomBar from '@/components/BoardImageBottomBar.vue'
 import ESPInfoBar from '@/components/ESPInfoBar.vue'
@@ -26,6 +29,15 @@ const router = createRouter({
         default: ESPInfo,
         "AppBar": ESPInfoBar,
         "BottomBar": ESPInfoBottomBar
+      }
+    },
+    {
+      path: '/about',
+      name: "about",
+      components: {
+        default: About,
+        "AppBar": AboutBar,
+        "BottomBar": AboutBottomBar
       }
     },
   ]
