@@ -11,6 +11,7 @@ import {getAPIUrl} from "@/functions";
 const store = gpioStore();
 const drawerOpen = ref(false);
 const GPIOViewerRelease = ref("");
+const samplingInterval = ref(0);
 const aboutDialogOpen = ref(false);
 
 const WebApplicationVersion = "2.0.1";
@@ -92,6 +93,7 @@ const localNetworkAdressKnown = computed(() => window.gpio_settings.ip && window
 onMounted(async () => {
   store.boards = await loadBoardsData();
   fetchGPIOViewerReleaseVersion();
+  fetchSamplingInterval();
 });
 
 async function loadBoardsData(): Promise<BoardData[]> {
@@ -113,8 +115,19 @@ async function fetchGPIOViewerReleaseVersion() {
     GPIOViewerRelease.value = data.release;
 
   } catch (error) {
-    GPIOViewerRelease.value = "1.0.4 or less";
+    GPIOViewerRelease.value = "-unknown";
     console.error("Error fetching release version:", error);
+  }
+}
+async function fetchSamplingInterval() {
+  try {
+    const response = await fetch(getAPIUrl("sampling"));
+    const data: SamplingInterval = await response.json();
+    samplingInterval.value = data.sampling;
+
+  } catch (error) {
+    samplingInterval.value =0;
+    console.error("Error fetching sampling interval:", error);
   }
 }
 </script>
