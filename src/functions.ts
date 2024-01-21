@@ -48,3 +48,19 @@ export function formatMacAddress(chipId: number | undefined): string {
     }
     return "unknown";
 }
+
+export function formatTime(ms: number | undefined): string {
+    if (ms) {
+        const seconds = Math.floor(ms / 1000);
+        const minutes = Math.floor(seconds / 60);
+        const hours = Math.floor(minutes / 60);
+        const days = Math.floor(hours / 24);
+    
+        const hoursFormatted = (hours % 24).toString().padStart(2, '0');
+        const minutesFormatted = (minutes % 60).toString().padStart(2, '0');
+        const secondsFormatted = (seconds % 60).toString().padStart(2, '0');
+    
+        return `${days}d ${hoursFormatted}:${minutesFormatted}:${secondsFormatted}`;
+    }
+    return "unknown";
+}

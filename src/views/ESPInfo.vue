@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { getAPIUrl, formatBytes ,formatHz,formatMacAddress} from "@/functions";
+import { getAPIUrl, formatBytes ,formatHz,formatMacAddress,formatTime} from "@/functions";
 import type { ESPInfo } from "@/types/types";
 
 const espInfo = ref<ESPInfo>();
@@ -21,7 +21,7 @@ onMounted(() => {
 </script>
 
 <template>
-      <v-table class="mt-10">
+      <v-table class="mt-10" density="compact">
             <tbody>
                   <tr>
                         <td>Chip Model</td>
@@ -40,6 +40,10 @@ onMounted(() => {
                         <td>{{ espInfo?.cpu_frequency }} Mhz</td>
                   </tr>
                   <tr>
+                        <td>Up Time</td>
+                        <td>{{ formatTime(espInfo?.up_time) }}</td>
+                  </tr>
+                  <tr>
                         <td>Current Cycle Count</td>
                         <td>{{ espInfo?.cycle_count }}</td>
                   </tr>
@@ -54,6 +58,26 @@ onMounted(() => {
                   <tr>
                         <td>Heap Size</td>
                         <td>{{ formatBytes(espInfo?.heap_size) }}</td>
+                  </tr>
+                  <tr>
+                        <td>Free Heap</td>
+                        <td>{{ formatBytes(espInfo?.free_heap) }}</td>
+                  </tr>
+                  <tr>
+                        <td>Heap Maximum Allocatable block</td>
+                        <td>{{ formatBytes(espInfo?.heap_max_alloc) }}</td>
+                  </tr>
+                  <tr>
+                        <td>PSRAM Size</td>
+                        <td>{{ formatBytes(espInfo?.psram_size) }}</td>
+                  </tr>
+                  <tr>
+                        <td>Free PSRAM</td>
+                        <td>{{ formatBytes(espInfo?.free_psram) }}</td>
+                  </tr>
+                  <tr>
+                        <td>PSRAM Maximum Allocatable block</td>
+                        <td>{{ formatBytes(espInfo?.psram_max_alloc) }}</td>
                   </tr>
                   <tr>
                         <td>Flash Chip Mode</td>

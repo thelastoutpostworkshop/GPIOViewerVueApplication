@@ -77,4 +77,10 @@ export type ESPInfo = {
   flash_chip_size:number;
   flash_chip_speed:number;
   heap_size:number;
+  heap_max_alloc:number;
+  psram_size:number;
+  free_psram:number;
+  psram_max_alloc:number;
+  free_heap:number;
+  up_time:number;
 }
