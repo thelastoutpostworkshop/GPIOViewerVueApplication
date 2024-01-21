@@ -22,8 +22,7 @@ const router = createRouter({
       name:"espinfo",
       components: {
         default: ESPInfo,
-        "AppBar": GPIOViewBar,
-        "BottomBar": GPIOViewBottomBar
+
       }
     },
   ]
