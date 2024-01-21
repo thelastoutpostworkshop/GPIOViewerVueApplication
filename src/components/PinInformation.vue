@@ -2,6 +2,8 @@
 import { ref, watch } from 'vue';
 import type { Pins } from '@/types/types';
 import logo from '@/assets/images/pinlogo.png';
+import pwm from '@/assets/images/pwmlogo.png';
+import digital from '@/assets/images/digitallogo.png';
 
 // Define a prop for controlling dialog visibility
 const props = defineProps({
@@ -34,6 +36,23 @@ function pinType(pin: Pins | null | undefined): string {
             break;
     }
 }
+function pinIcon(pin: Pins | null | undefined): string {
+    switch (pin?.displayType) {
+        case 'P':
+            return pwm;
+            break;
+        case 'A':
+            return "Analog"
+            break;
+        case 'D':
+            return digital
+            break;
+
+        default:
+            return "Not used"
+            break;
+    }
+}
 
 </script>
 
@@ -51,7 +70,12 @@ function pinType(pin: Pins | null | undefined): string {
                 </v-avatar>
             </template>
             <v-card-text>
-                <p>{{ pinType(pin) }}</p>
+                <v-avatar>
+                    <v-img :src="pinIcon(pin)">
+
+                    </v-img>
+                </v-avatar><span class="pl-2">{{ pinType(pin) }}</span>
+
                 <div class="value-bar" :style="{ width: pin?.displayBarValue + '%' }">{{ pin?.displayValue }}</div>
             </v-card-text>
             <v-card-actions>
