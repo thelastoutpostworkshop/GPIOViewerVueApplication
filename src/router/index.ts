@@ -4,6 +4,7 @@ import ESPInfo from '@/views/ESPInfo.vue'
 import GPIOViewBar from '@/components/BoardImageBar.vue'
 import GPIOViewBottomBar from '@/components/BoardImageBottomBar.vue'
 import ESPInfoBar from '@/components/ESPInfoBar.vue'
+import ESPInfoBottomBar from '@/components/ESP32InfoBottomBar.vue'
 
 const router = createRouter({
 
@@ -24,7 +25,7 @@ const router = createRouter({
       components: {
         default: ESPInfo,
         "AppBar": ESPInfoBar,
-
+        "BottomBar": ESPInfoBottomBar
       }
     },
   ]
