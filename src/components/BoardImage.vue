@@ -160,17 +160,23 @@ const getPinType = (pin: PinState): string => {
     return pintype;
 }
 const showPinInfoCard = ref(false);
+const selectedPin = ref<Pins | null>(null);
+const showPinInfo = (pin: Pins) => {
+    selectedPin.value = pin;
+    showPinInfoCard.value = true;
+};
 
 </script>
   
 <template>
     <div v-if="board" class="board-container">
         <img v-if="board.image" :src="board.image" class="board-image" />
-        <div v-if="pinsConf" v-for="pin in pinsConf.pins" :key="pin.gpioid" class="indicator" 
+        <div v-if="pinsConf" v-for="pin in pinsConf.pins" :key="pin.gpioid" class="indicator"
             :style="{ top: pin.top + '%', left: pin.left + '%', width: pinsConf.settings.pinWidth + '%', height: pinsConf.settings.pinHeight + '%', backgroundColor: pin.color }"
-            :id="`gpio${pin.gpioid}`" @click="showPinInfoCard = true">
-            <div v-if="!store.pintype" class="non-clickable" :style="{ fontSize: pinsConf.settings.valueFontSize + 'dvb' }">{{
-                pin.gpioid }}</div>
+            :id="`gpio${pin.gpioid}`" @click="showPinInfo(pin)">
+            <div v-if="!store.pintype" class="non-clickable" :style="{ fontSize: pinsConf.settings.valueFontSize + 'dvb' }">
+                {{
+                    pin.gpioid }}</div>
             <div v-else class="non-clickable" :style="{ fontSize: pinsConf.settings.valueFontSize + 'dvb' }">
                 {{ pin.displayType }}
             </div>
@@ -198,14 +204,16 @@ const showPinInfoCard = ref(false);
             Free PSRAM:{{ store.freePSRAM || 'No PSRAM' }}</div>
         <img v-if="pinsConf" src="../assets/images/wifiicon.png" :class="wifiClass"
             :style="{ top: pinsConf.wifiFeedback.top + '%', left: pinsConf.wifiFeedback.left + '%', width: pinsConf.wifiFeedback.width + '% ' }" />
-        <PinInfo :showPinInfo="showPinInfoCard" @update:modelValue="showPinInfoCard=false"></PinInfo>
+        <PinInfo :pin="selectedPin" :showPinInfo="showPinInfoCard" @update:modelValue="showPinInfoCard = false"></PinInfo>
     </div>
 </template>
 <style scoped>
 .non-clickable {
-  pointer-events: none;
-  cursor: default; /* Change the cursor to indicate non-interactive */
+    pointer-events: none;
+    cursor: default;
+    /* Change the cursor to indicate non-interactive */
 }
+
 .wifi-icon-dark {
     position: absolute;
     filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));

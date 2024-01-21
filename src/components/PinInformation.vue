@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
+import type { Pins } from '@/types/types';
 
 // Define a prop for controlling dialog visibility
 const props = defineProps({
-    showPinInfo: Boolean
+    showPinInfo: Boolean,
+    pin: Object as () => Pins | null
 });
 
 // Create a reactive variable for internal dialog state
@@ -17,13 +19,14 @@ watch(() => props.showPinInfo, (newVal) => {
 </script>
 
 <template>
-    <v-dialog v-model="dialogOpen">
+    <v-dialog v-model="dialogOpen" class="w-50">
         <v-card>
             <v-card-title>
-                Dialog Title
+                Pin Information
             </v-card-title>
             <v-card-text>
-                This is an example dialog.
+                {{pin?.gpioid}}
+                {{pin?.displayType}}
             </v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
