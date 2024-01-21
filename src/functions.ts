@@ -20,3 +20,31 @@ export function formatBytes(bytes: number | undefined): string {
     }
     return "undefined";
 }
+export function formatHz(bytes: number | undefined): string {
+    if (bytes) {
+        if (bytes < 1000) {
+            return `${bytes} Hz`;
+        } else if (bytes < 1000 * 1024) {
+            return `${(bytes / 1000).toFixed(2)} KHz`;
+        } else {
+            return `${(bytes / 1000 / 1000).toFixed(2)} MHz`;
+        }
+    }
+    return "undefined";
+}
+
+export function formatMacAddress(chipId: number | undefined): string {
+    if (chipId) {
+        let macBytes = [
+            (chipId >> 40) & 0xFF,
+            (chipId >> 32) & 0xFF,
+            (chipId >> 24) & 0xFF,
+            (chipId >> 16) & 0xFF,
+            (chipId >> 8) & 0xFF,
+            chipId & 0xFF
+        ];
+        let macAddress = macBytes.map(byte => byte.toString(16).padStart(2, '0').toUpperCase()).join(':');
+        return macAddress;
+    }
+    return "unknown";
+}

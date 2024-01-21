@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { getAPIUrl, formatBytes } from "@/functions";
+import { getAPIUrl, formatBytes ,formatHz,formatMacAddress} from "@/functions";
 import type { ESPInfo } from "@/types/types";
 
 const espInfo = ref<ESPInfo>();
@@ -37,7 +37,7 @@ onMounted(() => {
                   </tr>
                   <tr>
                         <td>CPU Frequency</td>
-                        <td>{{ espInfo?.cpu_frequency }}Mhz</td>
+                        <td>{{ espInfo?.cpu_frequency }} Mhz</td>
                   </tr>
                   <tr>
                         <td>Current Cycle Count</td>
@@ -46,6 +46,22 @@ onMounted(() => {
                   <tr>
                         <td>Flash Chip Size</td>
                         <td>{{ formatBytes(espInfo?.flash_chip_size) }}</td>
+                  </tr>
+                  <tr>
+                        <td>Flash Chip Speed</td>
+                        <td>{{ formatHz(espInfo?.flash_chip_speed) }}</td>
+                  </tr>
+                  <tr>
+                        <td>Heap Size</td>
+                        <td>{{ formatBytes(espInfo?.heap_size) }}</td>
+                  </tr>
+                  <tr>
+                        <td>Flash Chip Mode</td>
+                        <td>{{ espInfo?.flash_mode }}</td>
+                  </tr>
+                  <tr>
+                        <td>eFuse Mac Address</td>
+                        <td>{{ formatMacAddress(espInfo?.mac) }}</td>
                   </tr>
             </tbody>
       </v-table>
