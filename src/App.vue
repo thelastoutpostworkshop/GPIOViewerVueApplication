@@ -11,7 +11,6 @@ import {getAPIUrl} from "@/functions";
 const store = gpioStore();
 const drawerOpen = ref(false);
 const GPIOViewerRelease = ref("");
-const samplingInterval = ref(0);
 const aboutDialogOpen = ref(false);
 
 const WebApplicationVersion = "2.0.1";
@@ -123,10 +122,10 @@ async function fetchSamplingInterval() {
   try {
     const response = await fetch(getAPIUrl("sampling"));
     const data: SamplingInterval = await response.json();
-    samplingInterval.value = data.sampling;
+    store.SamplingInterval = data.sampling;
 
   } catch (error) {
-    samplingInterval.value =0;
+    store.SamplingInterval =0;
     console.error("Error fetching sampling interval:", error);
   }
 }

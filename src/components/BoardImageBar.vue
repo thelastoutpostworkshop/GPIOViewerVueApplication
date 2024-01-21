@@ -11,4 +11,5 @@ const menu = ref(false);
 <template>
     <BoardSelect v-if="store.boards" :boards="store.boards" />
     <v-spacer></v-spacer>
+    <div class="pa-5">@{{ store.SamplingInterval }}ms</div>
 </template>
