@@ -139,7 +139,7 @@ async function fetchSamplingInterval() {
         <v-divider></v-divider>
         <v-list-item link title="About" @click="$router.push({name:'about'})"></v-list-item>
         <v-list-item link title="GPIOViewer" @click="$router.push({name:'gpioview'})"></v-list-item>
-        <v-list-item link title="ESP Information" @click="$router.push({name:'espinfo'})"></v-list-item>
+        <v-list-item link title="ESP32 Information" @click="$router.push({name:'espinfo'})"></v-list-item>
         <template v-slot:append>
           <v-divider></v-divider>
           <div class="pa-2 text-caption text-grey-lighten-1">
