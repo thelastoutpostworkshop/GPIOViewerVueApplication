@@ -169,9 +169,9 @@ const showPinInfoCard = ref(false);
         <div v-if="pinsConf" v-for="pin in pinsConf.pins" :key="pin.gpioid" class="indicator" 
             :style="{ top: pin.top + '%', left: pin.left + '%', width: pinsConf.settings.pinWidth + '%', height: pinsConf.settings.pinHeight + '%', backgroundColor: pin.color }"
             :id="`gpio${pin.gpioid}`" @click="showPinInfoCard = true">
-            <div v-if="!store.pintype" :style="{ fontSize: pinsConf.settings.valueFontSize + 'dvb' }">{{
+            <div v-if="!store.pintype" class="non-clickable" :style="{ fontSize: pinsConf.settings.valueFontSize + 'dvb' }">{{
                 pin.gpioid }}</div>
-            <div v-else :style="{ fontSize: pinsConf.settings.valueFontSize + 'dvb' }">
+            <div v-else class="non-clickable" :style="{ fontSize: pinsConf.settings.valueFontSize + 'dvb' }">
                 {{ pin.displayType }}
             </div>
         </div>
@@ -202,6 +202,10 @@ const showPinInfoCard = ref(false);
     </div>
 </template>
 <style scoped>
+.non-clickable {
+  pointer-events: none;
+  cursor: default; /* Change the cursor to indicate non-interactive */
+}
 .wifi-icon-dark {
     position: absolute;
     filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
