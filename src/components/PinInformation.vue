@@ -4,6 +4,7 @@ import type { Pins } from '@/types/types';
 import logo from '@/assets/images/pinlogo.png';
 import pwm from '@/assets/images/pwmlogo.png';
 import digital from '@/assets/images/digitallogo.png';
+import analog from '@/assets/images/analoglogo.png';
 
 // Define a prop for controlling dialog visibility
 const props = defineProps({
@@ -42,7 +43,7 @@ function pinIcon(pin: Pins | null | undefined): string {
             return pwm;
             break;
         case 'A':
-            return "Analog"
+            return analog;
             break;
         case 'D':
             return digital
