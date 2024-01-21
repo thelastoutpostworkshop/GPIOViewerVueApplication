@@ -32,6 +32,9 @@ function goToGithubDiscussion() {
 function goToGithubIssues() {
   window.open('https://github.com/thelastoutpostworkshop/gpio_viewer/issues', '_blank');
 }
+function goToBuyMeACoffee() {
+  window.open('https://www.buymeacoffee.com/thelastoutpostworkshop', '_blank');
+}
 
 function initEventSource(): void {
   console.log("Waiting to connect to ESP32: with EventSource: ");
@@ -151,8 +154,7 @@ async function fetchGPIOViewerReleaseVersion() {
     </div>
     <ParamsError v-else />
     <v-dialog v-model="aboutDialogOpen" width="auto">
-      <v-card class="" subtitle="'Transforms the way you troubleshoot your microcontroller projects"
-        elevation="16">
+      <v-card class="" subtitle="'Transforms the way you troubleshoot your microcontroller projects" elevation="16">
         <template v-slot:title>
           GPIOViewer
         </template>
@@ -177,15 +179,16 @@ async function fetchGPIOViewerReleaseVersion() {
           </p>
           <p class="text-body-2 pt-4 d-none d-sm-flex">
             <v-icon color="red-darken-4">mdi-alert-circle-outline</v-icon>
-            Report, Track Issues & Request new board <v-icon @click="goToGithubIssues">mdi-open-in-new</v-icon>
+            Report, Track Issues & Request new board<v-icon @click="goToGithubIssues">mdi-open-in-new</v-icon>
           </p>
           <p class="text-body-2 pt-4 d-flex d-sm-none">
             <v-icon color="red-darken-4">mdi-alert-circle-outline</v-icon>
             Report Issues <v-icon @click="goToGithubIssues">mdi-open-in-new</v-icon>
           </p>
+          <p class="pt-6">Please support this project : <v-btn color="yellow" @click="goToBuyMeACoffee">
+              ☕ Buymeacoffee
+            </v-btn></p>
         </v-card-text>
-        <v-card-actions>
-        </v-card-actions>
       </v-card>
     </v-dialog>
   </v-layout>
