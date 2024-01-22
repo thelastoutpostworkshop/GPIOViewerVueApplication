@@ -16,7 +16,7 @@ async function fetchESPInformation() {
       }
 }
 
-// const totalMemory = computed(() => {
+// const heap = computed(() => {
 //       return (espInfo.value?.heap_size ?? 0) + (espInfo.value?.psram_size ?? 0);
 // });
 
@@ -28,33 +28,41 @@ onMounted(() => {
 </script>
 
 <template>
-      <div class="memory-map">
-            <div class="memory-section" style="height: 30%;">
-                  <div class="used-memory" style="height: 50%;">15% Used</div>
-                  <div class="description">Section 1 Description</div>
+      <div class="memory-maps-container">
+
+            <div class="memory-map">
+                  <div class="memory-section" :style="{ height: (espInfo?.sketch_size / espInfo?.flash_chip_size) * 100 + '%' }">
+                        <div class="used-memory" style="height: 50%;">15% Used</div>
+                        <div class="description">Heap</div>
+                  </div>
+                  <!-- Add more sections as needed -->
             </div>
-            <div class="memory-section" style="height: 20%;">
-                  <div class="used-memory" style="height: 75%;">15% Used</div>
-                  <div class="description">Section 2 Description</div>
+            <div class="memory-map">
+                  <div class="memory-section" :style="{ height: (espInfo?.sketch_size / espInfo?.flash_chip_size) * 100 + '%' }">
+                        <div class="used-memory" style="height: 50%;">15% Used</div>
+                        <div class="description">Heap</div>
+                  </div>
+                  <!-- Add more sections as needed -->
             </div>
-            <div class="memory-section" style="height: 50%;">
-                  <div class="used-memory" style="height: 60%;">30% Used</div>
-                  <div class="description">Section 3 Description</div>
-            </div>
-            <!-- Add more sections as needed -->
       </div>
 </template>
 
 <style scoped>
-.memory-map {
-      width: 50%;
-      height: 75dvh;
-      border: 1px solid #000;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      /* Align sections at the bottom */
+.memory-maps-container {
+    width: 100%; /* Adjust as needed */
+    height: auto; /* Adjust based on content */
 }
+
+.memory-map {
+    width: 100%;
+    height: 200px; /* Adjust each map's height as needed */
+    border: 1px solid #000;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    margin-bottom: 20px; /* Spacing between each memory map */
+}
+
 
 .memory-section {
       width: 70%;
