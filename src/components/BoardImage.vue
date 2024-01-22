@@ -74,18 +74,23 @@ watch(() => props.board, async (newBoard, oldBoard) => {
         if (!pinsConf.value?.settings.showPinNumber) {
             store.pintype = true;
         }
-        pinsConf.value?.pins.forEach(newPin => {
-            // Find the corresponding pin in the old configuration
-            const oldPin = oldPinConf?.pins.find(oldP => oldP.gpioid === newPin.gpioid);
+        if (oldPinConf) {
+            pinsConf.value?.pins.forEach(newPin => {
+                // Find the corresponding pin in the old configuration
+                const oldPin = oldPinConf?.pins.find(oldP => oldP.gpioid === newPin.gpioid);
 
-            // Update the color of the current pin with the color from the old configuration
-            if (oldPin) {
-                newPin.color = oldPin.color;
-                newPin.displayValue = oldPin.displayValue;
-                newPin.displayBarValue = oldPin.displayBarValue;
-                newPin.displayType = oldPin.displayType;
-            };
-        });
+                // Update the color of the current pin with the color from the old configuration
+                if (oldPin) {
+                    newPin.color = oldPin.color;
+                    newPin.displayValue = oldPin.displayValue;
+                    newPin.displayBarValue = oldPin.displayBarValue;
+                    newPin.displayType = oldPin.displayType;
+                };
+            });
+        } else {
+            // Coming from another route
+            console.log("coming from another route");
+        }
     }
 }, { immediate: true }); // immediate: true ensures the effect runs on mount
 
