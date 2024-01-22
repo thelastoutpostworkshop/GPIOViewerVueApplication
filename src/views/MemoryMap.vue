@@ -16,9 +16,9 @@ async function fetchESPInformation() {
       }
 }
 
-const totalMemory = computed(() => {
-      return (espInfo.value?.heap_size ?? 0) + (espInfo.value?.psram_size ?? 0);
-});
+// const totalMemory = computed(() => {
+//       return (espInfo.value?.heap_size ?? 0) + (espInfo.value?.psram_size ?? 0);
+// });
 
 
 onMounted(() => {
@@ -47,8 +47,8 @@ onMounted(() => {
 
 <style scoped>
 .memory-map {
-      width: 300px;
-      height: 500px;
+      width: 50%;
+      height: 75dvh;
       border: 1px solid #000;
       display: flex;
       flex-direction: column;
