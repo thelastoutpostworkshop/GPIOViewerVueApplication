@@ -65,7 +65,6 @@ onMounted(() => {
       width: 100%;
       height: 50%;
       /* Adjust each map's height as needed */
-      border: 1px solid #000;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
