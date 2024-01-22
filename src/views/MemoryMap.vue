@@ -20,7 +20,7 @@ const sketchSizePourc = computed(() => {
       return Math.round(((espInfo?.value?.sketch_size ?? 0) / (espInfo?.value?.flash_chip_size ?? 0)) * 100);
 });
 const heapSizePourc = computed(() => {
-      return Math.round(((espInfo?.value?.free_heap ?? 0) / (espInfo?.value?.heap_size ?? 0)) * 100);
+      return Math.round((((espInfo?.value?.heap_size ?? 0) - (espInfo?.value?.free_heap ?? 0)) / (espInfo?.value?.heap_size ?? 0)) * 100);
 });
 
 
@@ -45,7 +45,7 @@ onMounted(() => {
             <div class="memory-map">
                   <div class="memory-section">
                         <div class="used-memory" :style="{ height: heapSizePourc.toString() + '%' }">{{
-                              sketchSizePourc.toString() }} % Used</div>
+                              heapSizePourc.toString() }} % Used</div>
                         <div class="description">Heap {{ formatBytes(espInfo?.heap_size) }}</div>
                   </div>
                   <!-- Add more sections as needed -->
