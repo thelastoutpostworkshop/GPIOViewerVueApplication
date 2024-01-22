@@ -16,8 +16,11 @@ async function fetchESPInformation() {
       }
 }
 
-const heap = computed(() => {
-      return (espInfo.value?.heap_size ?? 0) + (espInfo.value?.psram_size ?? 0);
+const sketchSizePourc = computed(() => {
+      return Math.round(((espInfo?.value?.sketch_size ?? 0) / (espInfo?.value?.flash_chip_size ?? 0)) * 100);
+});
+const heapSizePourc = computed(() => {
+      return Math.round(((espInfo?.value?.free_heap ?? 0) / (espInfo?.value?.heap_size ?? 0)) * 100);
 });
 
 
@@ -31,20 +34,19 @@ onMounted(() => {
       <div class="memory-maps-container">
 
             <div class="memory-map">
-                  <div class="memory-section" style="height: 100%">
-                        <div class="used-memory"
-                              :style="{ height: (espInfo?.sketch_size / espInfo?.flash_chip_size) * 100 + '%' }">{{
-                                    Math.round(((espInfo?.sketch_size ?? 0) / (espInfo?.flash_chip_size ?? 0)) * 100) }}% (Sketch)
+                  <div class="memory-section">
+                        <div class="used-memory" :style="{ height: sketchSizePourc.toString() + '%' }">
+                              {{ sketchSizePourc.toString() }}% (Sketch)
                         </div>
                         <div class="description">Flash Memory {{ formatBytes(espInfo?.flash_chip_size) }}</div>
                   </div>
                   <!-- Add more sections as needed -->
             </div>
             <div class="memory-map">
-                  <div class="memory-section"
-                        :style="{ height: (espInfo?.sketch_size / espInfo?.flash_chip_size) * 100 + '%' }">
-                        <div class="used-memory" style="height: 50%;">15% Used</div>
-                        <div class="description">Heap</div>
+                  <div class="memory-section">
+                        <div class="used-memory" :style="{ height: heapSizePourc.toString() + '%' }">{{
+                              sketchSizePourc.toString() }} % Used</div>
+                        <div class="description">Heap {{ formatBytes(espInfo?.heap_size) }}</div>
                   </div>
                   <!-- Add more sections as needed -->
             </div>
@@ -90,7 +92,9 @@ onMounted(() => {
 
 .used-memory {
       width: 100%;
-      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       bottom: 0;
       /* Position at the bottom of the memory-section */
       background-color: darkblue;
