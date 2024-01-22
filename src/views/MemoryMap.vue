@@ -16,9 +16,9 @@ async function fetchESPInformation() {
       }
 }
 
-// const heap = computed(() => {
-//       return (espInfo.value?.heap_size ?? 0) + (espInfo.value?.psram_size ?? 0);
-// });
+const heap = computed(() => {
+      return (espInfo.value?.heap_size ?? 0) + (espInfo.value?.psram_size ?? 0);
+});
 
 
 onMounted(() => {
@@ -31,14 +31,18 @@ onMounted(() => {
       <div class="memory-maps-container">
 
             <div class="memory-map">
-                  <div class="memory-section" :style="{ height: (espInfo?.sketch_size / espInfo?.flash_chip_size) * 100 + '%' }">
-                        <div class="used-memory" style="height: 50%;">15% Used</div>
-                        <div class="description">Heap</div>
+                  <div class="memory-section" style="height: 100%">
+                        <div class="used-memory"
+                              :style="{ height: (espInfo?.sketch_size / espInfo?.flash_chip_size) * 100 + '%' }">{{
+                                    Math.round(((espInfo?.sketch_size ?? 0) / (espInfo?.flash_chip_size ?? 0)) * 100) }}% (Sketch)
+                        </div>
+                        <div class="description">Flash Memory {{ formatBytes(espInfo?.flash_chip_size) }}</div>
                   </div>
                   <!-- Add more sections as needed -->
             </div>
             <div class="memory-map">
-                  <div class="memory-section" :style="{ height: (espInfo?.sketch_size / espInfo?.flash_chip_size) * 100 + '%' }">
+                  <div class="memory-section"
+                        :style="{ height: (espInfo?.sketch_size / espInfo?.flash_chip_size) * 100 + '%' }">
                         <div class="used-memory" style="height: 50%;">15% Used</div>
                         <div class="description">Heap</div>
                   </div>
@@ -49,24 +53,28 @@ onMounted(() => {
 
 <style scoped>
 .memory-maps-container {
-    width: 100%; /* Adjust as needed */
-    height: auto; /* Adjust based on content */
+      width: 50%;
+      /* Adjust as needed */
+      height: 75dvh;
+      /* Adjust based on content */
 }
 
 .memory-map {
-    width: 100%;
-    height: 200px; /* Adjust each map's height as needed */
-    border: 1px solid #000;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    margin-bottom: 20px; /* Spacing between each memory map */
+      width: 100%;
+      height: 50%;
+      /* Adjust each map's height as needed */
+      border: 1px solid #000;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      margin-bottom: 20px;
+      /* Spacing between each memory map */
 }
 
 
 .memory-section {
       width: 70%;
-      height: auto;
+      height: 100%;
       /* Adjust height based on content */
       position: relative;
       border: 1px solid #000;
