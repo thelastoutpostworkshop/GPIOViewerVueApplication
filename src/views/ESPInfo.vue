@@ -54,12 +54,20 @@ onMounted(() => {
                               <td>{{ espInfo?.cycle_count }}</td>
                         </tr>
                         <tr>
+                              <td>Flash Chip Speed</td>
+                              <td>{{ formatHz(espInfo?.flash_chip_speed) }}</td>
+                        </tr>
+                        <tr>
                               <td>Flash Chip Size</td>
                               <td>{{ formatBytes(espInfo?.flash_chip_size) }}</td>
                         </tr>
                         <tr>
-                              <td>Flash Chip Speed</td>
-                              <td>{{ formatHz(espInfo?.flash_chip_speed) }}</td>
+                              <td>Sketch Size</td>
+                              <td>{{ formatBytes(espInfo?.sketch_size) }}</td>
+                        </tr>
+                        <tr>
+                              <td>Free Sketch remaining</td>
+                              <td>{{ formatBytes(espInfo?.free_sketch) }}</td>
                         </tr>
                         <tr>
                               <td>Heap Size</td>

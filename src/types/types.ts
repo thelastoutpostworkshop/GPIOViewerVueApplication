@@ -83,4 +83,6 @@ export type ESPInfo = {
   psram_max_alloc:number;
   free_heap:number;
   up_time:number;
+  sketch_size:number;
+  free_sketch:number;
 }
