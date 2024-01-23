@@ -23,10 +23,6 @@ const wifiClass = computed(() => {
     }
 });
 
-function savePinStates() {
-    // Logic to execute when the component is unmounted
-    console.log('Component is being unmounted');
-}
 
 
 const colors: string[] = ["#00ff00",
@@ -75,24 +71,33 @@ watch(() => props.board, async (newBoard, oldBoard) => {
             store.pintype = true;
         }
         if (oldPinConf) {
-            pinsConf.value?.pins.forEach(newPin => {
-                // Find the corresponding pin in the old configuration
-                const oldPin = oldPinConf?.pins.find(oldP => oldP.gpioid === newPin.gpioid);
-
-                // Update the color of the current pin with the color from the old configuration
-                if (oldPin) {
-                    newPin.color = oldPin.color;
-                    newPin.displayValue = oldPin.displayValue;
-                    newPin.displayBarValue = oldPin.displayBarValue;
-                    newPin.displayType = oldPin.displayType;
-                };
-            });
+            restorePinsState(oldPinConf);
         } else {
             // Coming from another route
-            console.log("coming from another route");
+            if (store.pinsPreserved) {
+                restorePinsState(store.pinsPreserved);
+            }
         }
     }
 }, { immediate: true }); // immediate: true ensures the effect runs on mount
+
+function restorePinsState(newPinsConf: PinsConfiguration) {
+    pinsConf.value?.pins.forEach(newPin => {
+        // Find the corresponding pin in the old configuration
+        const oldPin = newPinsConf?.pins.find(oldP => oldP.gpioid === newPin.gpioid);
+
+        // Update the color of the current pin with the color from the old configuration
+        if (oldPin) {
+            newPin.color = oldPin.color;
+            newPin.displayValue = oldPin.displayValue;
+            newPin.displayBarValue = oldPin.displayBarValue;
+            newPin.displayType = oldPin.displayType;
+        };
+    });
+}
+onUnmounted(() => {
+    store.pinsPreserved = pinsConf?.value ?? null;
+});
 
 function updatePinStates(newStates: PinStateMap, pinsConfiguration: PinsConfiguration) {
     Object.entries(newStates).forEach(([gpioId, pinState]) => {
