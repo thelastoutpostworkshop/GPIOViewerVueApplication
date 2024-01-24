@@ -2,10 +2,10 @@
 import { RouterLink, RouterView, useRoute } from 'vue-router'
 import { ref, computed, onMounted } from 'vue';
 import ParamsError from '@/components/ParamsError.vue';
-import type { Memory, PinStateMap, GPIOViewerRelease,SamplingInterval } from "../src/types/types";
+import type { Memory, PinStateMap, GPIOViewerRelease, SamplingInterval } from "../src/types/types";
 import type { BoardData } from "@/types/types";
 import { gpioStore } from '@/stores/gpiostore'
-import {getAPIUrl} from "@/functions";
+import { getAPIUrl } from "@/functions";
 
 const store = gpioStore();
 const drawerOpen = ref(false);
@@ -25,8 +25,6 @@ onMounted(() => {
   }
 });
 
-
-
 function initEventSource(): void {
   console.log("Waiting to connect to ESP32: with EventSource: ");
   const source = new EventSource("http://" + store.ipAddress + ":" + store.httpPort + "/events");
@@ -41,6 +39,7 @@ function initEventSource(): void {
     },
     false
   );
+
 
   source.addEventListener(
     "free_heap",
@@ -63,6 +62,12 @@ function initEventSource(): void {
     },
     false
   );
+
+  source.addEventListener('open', (event) => {
+    console.log('Connection to server established.');
+    store.connectedToESP32 = true;
+    // Additional logic for when the connection is open
+  }, false);
 
   source.addEventListener(
     "error",
@@ -115,7 +120,7 @@ async function fetchSamplingInterval() {
     store.SamplingInterval = data.sampling;
 
   } catch (error) {
-    store.SamplingInterval =0;
+    store.SamplingInterval = 0;
     console.error("Error fetching sampling interval:", error);
   }
 }
@@ -137,10 +142,10 @@ async function fetchSamplingInterval() {
       <v-navigation-drawer color="primary" v-model="drawerOpen" temporary>
         <v-list-item title="GPIOViewer" :subtitle="'v' + GPIOViewerRelease"></v-list-item>
         <v-divider></v-divider>
-        <v-list-item link title="About" @click="$router.push({name:'about'})"></v-list-item>
-        <v-list-item link title="GPIOViewer" @click="$router.push({name:'gpioview'})"></v-list-item>
-        <v-list-item link title="ESP32 Information" @click="$router.push({name:'espinfo'})"></v-list-item>
-        <v-list-item link title="Memory Map" @click="$router.push({name:'memorymap'})"></v-list-item>
+        <v-list-item link title="About" @click="$router.push({ name: 'about' })"></v-list-item>
+        <v-list-item link title="GPIOViewer" @click="$router.push({ name: 'gpioview' })"></v-list-item>
+        <v-list-item link title="ESP32 Information" @click="$router.push({ name: 'espinfo' })"></v-list-item>
+        <v-list-item link title="Memory Map" @click="$router.push({ name: 'memorymap' })"></v-list-item>
         <template v-slot:append>
           <v-divider></v-divider>
           <div class="pa-2 text-caption text-grey-lighten-1">
