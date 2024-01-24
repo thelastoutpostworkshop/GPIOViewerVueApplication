@@ -76,6 +76,7 @@ function initEventSource(): void {
       const target = e.target as EventSource;
       if (target.readyState !== EventSource.OPEN) {
         console.log("Events Disconnected");
+        store.connectedToESP32 = false;
       }
     },
     false
