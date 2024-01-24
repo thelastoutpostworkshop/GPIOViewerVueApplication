@@ -27,6 +27,15 @@ async function fetchESPPartition() {
       }
 }
 
+function totalMemory() {
+      const partitionSize = espPartition.value?.reduce((sum, partition) => sum + partition.size, 0);
+
+      return (partitionSize ?? 0) + (espInfo?.value?.flash_chip_size ?? 0) + (espInfo?.value?.heap_size ?? 0);
+};
+
+function calculatePartitionPourc(size: number): number {
+      return Math.round(size / totalMemory() * 100);
+}
 const sketchSizePourc = computed(() => {
       return Math.round(((espInfo?.value?.sketch_size ?? 0) / (espInfo?.value?.flash_chip_size ?? 0)) * 100);
 });
@@ -45,13 +54,13 @@ onMounted(() => {
 <template>
       <div v-if="espInfo && espPartition" class="memory-maps-container">
             <div v-for="partition in espPartition" :key="partition.address">
-                  <div class="memory-map">
+                  <div class="memory-map" :style="{ height: calculatePartitionPourc(partition.size) + '%' }">
                         <div class="memory-section">
                               <div class="description">{{ partition.label }} {{ formatBytes(partition.size) }}</div>
                         </div>
                   </div>
             </div>
-            <div class="memory-map">
+            <div class="memory-map" :style="{ height: calculatePartitionPourc(espInfo.sketch_size+espInfo.free_sketch) + '%' }">
                   <div class="memory-section">
                         <div class="used-memory" :style="{ height: sketchSizePourc.toString() + '%' }">
                               {{ sketchSizePourc.toString() }}% (Sketch)
