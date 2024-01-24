@@ -92,4 +92,5 @@ export type ESPPartition = {
   subtype:number;
   address:string;
   size:number;
+  calcPour:number;
 }

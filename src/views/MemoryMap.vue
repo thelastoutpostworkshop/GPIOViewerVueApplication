@@ -6,36 +6,40 @@ import { getAPIUrl, formatBytes } from "@/functions";
 const espInfo = ref<ESPInfo>();
 const espPartition = ref<ESPPartition[]>();
 
-async function fetchESPInformation() {
+async function fetchESPInformation(): Promise<ESPInfo | null> {
       try {
             const response = await fetch(getAPIUrl("espinfo"));
             const data: ESPInfo = await response.json();
-            espInfo.value = data;
+            return data;
 
       } catch (error) {
             console.error("Error fetching esp information", error);
+            return null;
       }
 }
-async function fetchESPPartition() {
+async function fetchESPPartition(): Promise<ESPPartition[] | null> {
       try {
             const response = await fetch(getAPIUrl("partition"));
             const data: ESPPartition[] = await response.json();
-            espPartition.value = data;
+            return data;
 
       } catch (error) {
             console.error("Error fetching esp partition", error);
+            return null
       }
 }
+function calculatePourc(info: ESPInfo, partitions: ESPPartition[]) {
+      const partitionSize:number = partitions.reduce((sum, partition) => sum + Number(partition.size), 0);
+      const totalMemory:number = Number(partitionSize) +Number(info.flash_chip_size) + Number(info.heap_size);
+      console.log(totalMemory);
+      console.log(partitionSize);
+      for (let i = 0; i < partitions.length; i++) {
+            partitions[i].calcPour = Math.round((partitions[i].size / totalMemory) * 100);
+            console.log(partitions[i].calcPour)
+      }
 
-function totalMemory() {
-      const partitionSize = espPartition.value?.reduce((sum, partition) => sum + partition.size, 0);
-
-      return (partitionSize ?? 0) + (espInfo?.value?.flash_chip_size ?? 0) + (espInfo?.value?.heap_size ?? 0);
-};
-
-function calculatePartitionPourc(size: number): number {
-      return Math.round(size / totalMemory() * 100);
 }
+
 const sketchSizePourc = computed(() => {
       return Math.round(((espInfo?.value?.sketch_size ?? 0) / (espInfo?.value?.flash_chip_size ?? 0)) * 100);
 });
@@ -44,9 +48,18 @@ const heapSizePourc = computed(() => {
 });
 
 
-onMounted(() => {
-      fetchESPInformation();
-      fetchESPPartition();
+onMounted(async () => {
+      try {
+            const [espInfoData, espPartitionData] = await Promise.all([fetchESPInformation(), fetchESPPartition()]);
+
+            if (espInfoData && espPartitionData) {
+                  calculatePourc(espInfoData, espPartitionData)
+                  espInfo.value = espInfoData;
+                  espPartition.value = espPartitionData;
+            }
+      } catch (error) {
+            console.error("Error getting partition and ESP Information data", error);
+      }
 });
 
 </script>
@@ -54,13 +67,14 @@ onMounted(() => {
 <template>
       <div v-if="espInfo && espPartition" class="memory-maps-container">
             <div v-for="partition in espPartition" :key="partition.address">
-                  <div class="memory-map" :style="{ height: calculatePartitionPourc(partition.size) + '%' }">
+                  <div class="memory-map" :style="{ height: partition.calcPour + '%' }">
                         <div class="memory-section">
                               <div class="description">{{ partition.label }} {{ formatBytes(partition.size) }}</div>
                         </div>
                   </div>
             </div>
-            <div class="memory-map" :style="{ height: calculatePartitionPourc(espInfo.sketch_size+espInfo.free_sketch) + '%' }">
+            <!-- <div class="memory-map"
+                  :style="{ height: calculatePartitionPourc(espInfo.sketch_size + espInfo.free_sketch) + '%' }">
                   <div class="memory-section">
                         <div class="used-memory" :style="{ height: sketchSizePourc.toString() + '%' }">
                               {{ sketchSizePourc.toString() }}% (Sketch)
@@ -74,7 +88,7 @@ onMounted(() => {
                               heapSizePourc.toString() }} % Used</div>
                         <div class="description">Heap {{ formatBytes(espInfo?.heap_size) }}</div>
                   </div>
-            </div>
+            </div> -->
       </div>
       <div v-else>
             <v-container>
