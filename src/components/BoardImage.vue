@@ -212,8 +212,13 @@ const showPinInfo = (pin: Pins) => {
         <div v-if="pinsConf && pinsConf.stats" class="stats"
             :style="{ top: pinsConf.stats.top + pinsConf.stats.gap * 2 + '%', left: pinsConf.stats.left + '%', fontSize: pinsConf.stats.fontSize + 'dvb' }">
             Free PSRAM:{{ store.freePSRAM || 'No PSRAM' }}</div>
-        <img v-if="pinsConf" src="../assets/images/wifiicon.png" :class="wifiClass"
-            :style="{ top: pinsConf.wifiFeedback.top + '%', left: pinsConf.wifiFeedback.left + '%', width: pinsConf.wifiFeedback.width + '% ' }" />
+        <div v-if="pinsConf">
+            <img v-if="store.connectedToESP32" src="@/assets/images/wifiicon.webp" :class="wifiClass"
+                :style="{ top: pinsConf.wifiFeedback.top + '%', left: pinsConf.wifiFeedback.left + '%', width: pinsConf.wifiFeedback.width + '% ' }" />
+            <img v-else src="@/assets/images/noconnection.webp" :class="wifiClass"
+                :style="{ top: pinsConf.wifiFeedback.top + '%', left: pinsConf.wifiFeedback.left + '%', width: pinsConf.wifiFeedback.width + '% ' }" />
+        </div>
+
         <PinInfo :pin="selectedPin" :showPinInfo="showPinInfoCard" @update:modelValue="showPinInfoCard = false"></PinInfo>
     </div>
 </template>
