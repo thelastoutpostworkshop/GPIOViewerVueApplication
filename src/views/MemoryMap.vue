@@ -29,8 +29,8 @@ async function fetchESPPartition(): Promise<ESPPartition[] | null> {
       }
 }
 function calculatePourc(info: ESPInfo, partitions: ESPPartition[]) {
-      const partitionSize:number = partitions.reduce((sum, partition) => sum + Number(partition.size), 0);
-      const totalMemory:number = Number(partitionSize) +Number(info.flash_chip_size) + Number(info.heap_size);
+      const partitionSize: number = partitions.reduce((sum, partition) => sum + Number(partition.size), 0);
+      const totalMemory: number = Number(partitionSize) + Number(info.flash_chip_size) + Number(info.heap_size);
       console.log(totalMemory);
       console.log(partitionSize);
       for (let i = 0; i < partitions.length; i++) {
@@ -66,29 +66,28 @@ onMounted(async () => {
 
 <template>
       <div v-if="espInfo && espPartition" class="memory-maps-container">
-            <div v-for="partition in espPartition" :key="partition.address">
-                  <div class="memory-map" :style="{ height: partition.calcPour + '%' }">
-                        <div class="memory-section">
-                              <div class="description">{{ partition.label }} {{ formatBytes(partition.size) }}</div>
-                        </div>
+            <div v-for="partition in espPartition" :key="partition.address" class="memory-map"
+                  :style="{ height: partition.calcPour === 0 ? '1%' : partition.calcPour + '%' }">
+                  <div class="memory-section">
+                        <div class="description">{{ partition.label }} {{ formatBytes(partition.size) }}</div>
                   </div>
             </div>
             <!-- <div class="memory-map"
-                  :style="{ height: calculatePartitionPourc(espInfo.sketch_size + espInfo.free_sketch) + '%' }">
-                  <div class="memory-section">
-                        <div class="used-memory" :style="{ height: sketchSizePourc.toString() + '%' }">
-                              {{ sketchSizePourc.toString() }}% (Sketch)
+                        :style="{ height: calculatePartitionPourc(espInfo.sketch_size + espInfo.free_sketch) + '%' }">
+                        <div class="memory-section">
+                              <div class="used-memory" :style="{ height: sketchSizePourc.toString() + '%' }">
+                                    {{ sketchSizePourc.toString() }}% (Sketch)
+                              </div>
+                              <div class="description">Flash Memory {{ formatBytes(espInfo?.flash_chip_size) }}</div>
                         </div>
-                        <div class="description">Flash Memory {{ formatBytes(espInfo?.flash_chip_size) }}</div>
                   </div>
-            </div>
-            <div class="memory-map">
-                  <div class="memory-section">
-                        <div class="used-memory" :style="{ height: heapSizePourc.toString() + '%' }">{{
-                              heapSizePourc.toString() }} % Used</div>
-                        <div class="description">Heap {{ formatBytes(espInfo?.heap_size) }}</div>
-                  </div>
-            </div> -->
+                  <div class="memory-map">
+                        <div class="memory-section">
+                              <div class="used-memory" :style="{ height: heapSizePourc.toString() + '%' }">{{
+                                    heapSizePourc.toString() }} % Used</div>
+                              <div class="description">Heap {{ formatBytes(espInfo?.heap_size) }}</div>
+                        </div>
+                  </div> -->
       </div>
       <div v-else>
             <v-container>
@@ -99,7 +98,8 @@ onMounted(async () => {
 
 <style scoped>
 .memory-maps-container {
-      width: 50%;
+      margin-top: 2%;
+      width: 70%;
       /* Adjust as needed */
       height: 75dvh;
       /* Adjust based on content */
@@ -111,7 +111,7 @@ onMounted(async () => {
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
-      margin-bottom: 5px;
+      margin-bottom: 2%;
       /* Spacing between each memory map */
 }
 
@@ -146,7 +146,7 @@ onMounted(async () => {
 }
 
 .description {
-      width: 30%;
+      width: 100%;
       /* Width of the description */
       padding-left: 10px;
       /* Spacing */
@@ -154,7 +154,7 @@ onMounted(async () => {
       text-align: left;
       position: absolute;
       /* Positioned absolutely */
-      right: -35%;
+      right: -100%;
       /* Adjust as necessary to position outside the memory section */
       top: 0;
       /* Align to the top of the parent */
