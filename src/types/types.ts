@@ -86,3 +86,10 @@ export type ESPInfo = {
   sketch_size:number;
   free_sketch:number;
 }
+
+export type ESPPartition = {
+  label:string;
+  subtype:number;
+  address:string;
+  size:number;
+}
