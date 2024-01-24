@@ -44,15 +44,16 @@ onMounted(() => {
 
 <template>
       <div v-if="espInfo && espPartition" class="memory-maps-container">
+            <div v-for="partition in espPartition" :key="partition.address">
 
-            <div class="memory-map">
+            </div>
+            <!-- <div class="memory-map">
                   <div class="memory-section">
                         <div class="used-memory" :style="{ height: sketchSizePourc.toString() + '%' }">
                               {{ sketchSizePourc.toString() }}% (Sketch)
                         </div>
                         <div class="description">Flash Memory {{ formatBytes(espInfo?.flash_chip_size) }}</div>
                   </div>
-                  <!-- Add more sections as needed -->
             </div>
             <div class="memory-map">
                   <div class="memory-section">
@@ -60,8 +61,7 @@ onMounted(() => {
                               heapSizePourc.toString() }} % Used</div>
                         <div class="description">Heap {{ formatBytes(espInfo?.heap_size) }}</div>
                   </div>
-                  <!-- Add more sections as needed -->
-            </div>
+            </div> -->
       </div>
       <div v-else>
             <v-container>
