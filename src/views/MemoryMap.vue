@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
-import type { ESPInfo } from "@/types/types";
+import type { ESPInfo, ESPPartition } from "@/types/types";
 import { getAPIUrl, formatBytes } from "@/functions";
 
 const espInfo = ref<ESPInfo>();
+const espPartition = ref<ESPPartition[]>();
 
 async function fetchESPInformation() {
       try {
@@ -13,6 +14,16 @@ async function fetchESPInformation() {
 
       } catch (error) {
             console.error("Error fetching esp information", error);
+      }
+}
+async function fetchESPPartition() {
+      try {
+            const response = await fetch(getAPIUrl("partition"));
+            const data: ESPPartition[] = await response.json();
+            espPartition.value = data;
+
+      } catch (error) {
+            console.error("Error fetching esp partition", error);
       }
 }
 
@@ -26,12 +37,13 @@ const heapSizePourc = computed(() => {
 
 onMounted(() => {
       fetchESPInformation();
+      fetchESPPartition();
 });
 
 </script>
 
 <template>
-      <div class="memory-maps-container">
+      <div v-if="espInfo && espPartition" class="memory-maps-container">
 
             <div class="memory-map">
                   <div class="memory-section">
@@ -50,6 +62,11 @@ onMounted(() => {
                   </div>
                   <!-- Add more sections as needed -->
             </div>
+      </div>
+      <div v-else>
+            <v-container>
+                  <v-progress-circular :size="100" :width="10" color="green" indeterminate></v-progress-circular>
+            </v-container>
       </div>
 </template>
 
