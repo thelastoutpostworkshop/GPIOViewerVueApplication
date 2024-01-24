@@ -5,6 +5,9 @@ import { getAPIUrl, formatBytes } from "@/functions";
 
 const espInfo = ref<ESPInfo>();
 const espPartition = ref<ESPPartition[]>();
+const heapSizePourc = ref(0);
+const sketchUsedPourc = ref(0);
+const flashPourc = ref(0);
 
 async function fetchESPInformation(): Promise<ESPInfo | null> {
       try {
@@ -31,22 +34,14 @@ async function fetchESPPartition(): Promise<ESPPartition[] | null> {
 function calculatePourc(info: ESPInfo, partitions: ESPPartition[]) {
       const partitionSize: number = partitions.reduce((sum, partition) => sum + Number(partition.size), 0);
       const totalMemory: number = Number(partitionSize) + Number(info.flash_chip_size) + Number(info.heap_size);
-      console.log(totalMemory);
-      console.log(partitionSize);
       for (let i = 0; i < partitions.length; i++) {
             partitions[i].calcPour = Math.round((partitions[i].size / totalMemory) * 100);
             console.log(partitions[i].calcPour)
       }
-
+      heapSizePourc.value = Math.round((info.heap_size / totalMemory) * 100);
+      sketchUsedPourc.value = Math.round((info.sketch_size / info.flash_chip_size) * 100);
+      flashPourc.value = Math.round((info.flash_chip_size / totalMemory) * 100);
 }
-
-const sketchSizePourc = computed(() => {
-      return Math.round(((espInfo?.value?.sketch_size ?? 0) / (espInfo?.value?.flash_chip_size ?? 0)) * 100);
-});
-const heapSizePourc = computed(() => {
-      return Math.round((((espInfo?.value?.heap_size ?? 0) - (espInfo?.value?.free_heap ?? 0)) / (espInfo?.value?.heap_size ?? 0)) * 100);
-});
-
 
 onMounted(async () => {
       try {
@@ -72,22 +67,21 @@ onMounted(async () => {
                         <div class="description">{{ partition.label }} {{ formatBytes(partition.size) }}</div>
                   </div>
             </div>
-            <!-- <div class="memory-map"
-                        :style="{ height: calculatePartitionPourc(espInfo.sketch_size + espInfo.free_sketch) + '%' }">
-                        <div class="memory-section">
-                              <div class="used-memory" :style="{ height: sketchSizePourc.toString() + '%' }">
-                                    {{ sketchSizePourc.toString() }}% (Sketch)
-                              </div>
-                              <div class="description">Flash Memory {{ formatBytes(espInfo?.flash_chip_size) }}</div>
+            <div class="memory-map" :style="{ height: flashPourc + '%' }">
+                  <div class="memory-section">
+                        <div class="used-memory" :style="{ height: sketchUsedPourc.toString() + '%' }">
+                              {{ sketchUsedPourc.toString() }}% (Sketch)
                         </div>
+                        <div class="description">Flash Memory {{ formatBytes(espInfo?.flash_chip_size) }}</div>
                   </div>
-                  <div class="memory-map">
-                        <div class="memory-section">
-                              <div class="used-memory" :style="{ height: heapSizePourc.toString() + '%' }">{{
-                                    heapSizePourc.toString() }} % Used</div>
-                              <div class="description">Heap {{ formatBytes(espInfo?.heap_size) }}</div>
-                        </div>
-                  </div> -->
+            </div>
+            <div class="memory-map">
+                  <div class="memory-section">
+                        <div class="used-memory" :style="{ height: heapSizePourc.toString() + '%' }">{{
+                              heapSizePourc.toString() }} % Used</div>
+                        <div class="description">Heap {{ formatBytes(espInfo?.heap_size) }}</div>
+                  </div>
+            </div>
       </div>
       <div v-else>
             <v-container>
@@ -111,8 +105,7 @@ onMounted(async () => {
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
-      margin-bottom: 2%;
-      /* Spacing between each memory map */
+      margin-bottom: 1%;
 }
 
 
