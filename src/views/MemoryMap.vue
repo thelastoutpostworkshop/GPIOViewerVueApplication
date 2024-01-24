@@ -6,6 +6,7 @@ import { getAPIUrl, formatBytes } from "@/functions";
 const espInfo = ref<ESPInfo>();
 const espPartition = ref<ESPPartition[]>();
 const heapSizePourc = ref(0);
+const heapUsedPourc = ref(0);
 const sketchUsedPourc = ref(0);
 const flashPourc = ref(0);
 
@@ -39,6 +40,7 @@ function calculatePourc(info: ESPInfo, partitions: ESPPartition[]) {
             console.log(partitions[i].calcPour)
       }
       heapSizePourc.value = Math.round((info.heap_size / totalMemory) * 100);
+      heapUsedPourc.value = Math.round(((info.heap_size - info.free_heap) / info.heap_size) * 100);
       sketchUsedPourc.value = Math.round((info.sketch_size / info.flash_chip_size) * 100);
       flashPourc.value = Math.round((info.flash_chip_size / totalMemory) * 100);
 }
@@ -76,9 +78,9 @@ onMounted(async () => {
                   </div>
             </div>
             <div class="memory-map">
-                  <div class="memory-section">
-                        <div class="used-memory" :style="{ height: heapSizePourc.toString() + '%' }">{{
-                              heapSizePourc.toString() }} % Used</div>
+                  <div class="memory-section" :style="{ height: heapSizePourc.toString() + '%' }">
+                        <div class="used-memory" :style="{ height: heapUsedPourc.toString() + '%' }">{{
+                              heapUsedPourc.toString() }} % Used</div>
                         <div class="description">Heap {{ formatBytes(espInfo?.heap_size) }}</div>
                   </div>
             </div>
