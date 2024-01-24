@@ -21,10 +21,11 @@ onMounted(() => {
 </script>
 
 <template>
-      <v-container>
+      <v-container v-if="espInfo">
             <v-card elevation="6" color="primary">
                   <v-card-title>
-                        <div class="text-body-1 text-wrap">This is the information from the ESP32 where GPIOViewer is running</div>
+                        <div class="text-body-1 text-wrap">This is the information from the ESP32 where GPIOViewer is running
+                        </div>
                   </v-card-title>
             </v-card>
             <v-table class="mt-5" density="compact">
@@ -104,4 +105,9 @@ onMounted(() => {
                   </tbody>
             </v-table>
       </v-container>
+      <div v-else>
+            <v-container>
+                  <v-progress-circular :size="100" :width="10" color="green" indeterminate></v-progress-circular>
+            </v-container>
+      </div>
 </template>
