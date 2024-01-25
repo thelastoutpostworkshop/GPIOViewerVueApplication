@@ -4,6 +4,7 @@ import type { ESPInfo, ESPPartition } from "@/types/types";
 import { getAPIUrl, formatBytes } from "@/functions";
 
 const spiffs = "spiffs";
+const ffat = "ffat";
 const espInfo = ref<ESPInfo>();
 const espPartition = ref<ESPPartition[]>();
 const heapSizePourc = ref(0);
@@ -12,8 +13,9 @@ const heapUsedPourcDisplay = ref(0);
 const sketchUsedPourc = ref(0);
 const sketchUsedPourcDisplay = ref(0);
 const flashPourc = ref(0);
-const spiffsPourc = ref(0);
-const spiffsSize = ref(0);
+const fsPourc = ref(0);
+const fsSize = ref(0);
+const fsName = ref("");
 const psramPourc = ref(0);
 const psramUsedPourc = ref(0);
 
@@ -45,12 +47,18 @@ function calculatePourc(info: ESPInfo, partitions: ESPPartition[]) {
       let totalMemory: number = Number(partitionSize) + Number(info.flash_chip_size) + Number(info.heap_size);
       for (let i = 0; i < partitions.length; i++) {
             if (partitions[i].label === spiffs) {
-                  spiffsSize.value = partitions[i].size;
+                  fsSize.value = partitions[i].size;
+                  fsName.value = spiffs;
             } else {
-                  partitions[i].calcPour = Math.round((partitions[i].size / totalMemory) * 100);
+                  if (partitions[i].label === ffat) {
+                        fsSize.value = partitions[i].size;
+                        fsName.value = ffat;
+                  } else {
+                        partitions[i].calcPour = Math.round((partitions[i].size / totalMemory) * 100);
+                  }
             }
       }
-      totalMemory -= spiffsSize.value;
+      totalMemory -= fsSize.value;
       totalMemory += Number(info.psram_size);
       heapSizePourc.value = Math.round((info.heap_size / totalMemory) * 100);
       heapUsedPourc.value = Math.round(((info.heap_size - info.free_heap) / info.heap_size) * 100);
@@ -58,7 +66,7 @@ function calculatePourc(info: ESPInfo, partitions: ESPPartition[]) {
       sketchUsedPourc.value = Math.round((info.sketch_size / info.flash_chip_size) * 100);
       flashPourc.value = Math.round((info.flash_chip_size / totalMemory) * 100);
       sketchUsedPourcDisplay.value = Math.round(sketchUsedPourc.value * (flashPourc.value / 100));
-      spiffsPourc.value = Math.round((spiffsSize.value / info.flash_chip_size) * flashPourc.value);
+      fsPourc.value = Math.round((fsSize.value / info.flash_chip_size) * flashPourc.value);
       psramPourc.value = Math.round((info.psram_size / totalMemory) * 100);
       psramUsedPourc.value = Math.round(((info.psram_size - info.free_psram) / totalMemory) * 100);
 }
@@ -70,7 +78,7 @@ onMounted(async () => {
             if (espInfoData && espPartitionData) {
                   calculatePourc(espInfoData, espPartitionData)
                   espInfo.value = espInfoData;
-                  espPartition.value = espPartitionData.filter(partition => partition.label !== spiffs);;
+                  espPartition.value = espPartitionData.filter(partition => partition.label !== spiffs &&  partition.label !== ffat);;
             }
       } catch (error) {
             console.error("Error getting partition and ESP Information data", error);
@@ -93,8 +101,8 @@ onMounted(async () => {
                         <div class="used-memory" :style="{ height: sketchUsedPourcDisplay.toString() + '%' }">
                               {{ sketchUsedPourc.toString() }}% Sketch {{ formatBytes(espInfo.sketch_size) }}
                         </div>
-                        <div v-if="spiffsSize !== 0" class="spiffs" :style="{ height: spiffsPourc.toString() + '%' }">
-                              {{ spiffsPourc.toString() }}% Spiffs {{ formatBytes(spiffsSize) }}
+                        <div v-if="fsSize !== 0" class="fs" :style="{ height: fsPourc.toString() + '%' }">
+                              {{ fsPourc.toString() }}% {{ fsName }} {{ formatBytes(fsSize) }}
                         </div>
                         <div class="description">Flash {{ formatBytes(espInfo?.flash_chip_size) }}</div>
                   </div>
@@ -102,7 +110,7 @@ onMounted(async () => {
             <div v-if="psramPourc > 0" class="memory-map"
                   :style="{ height: psramPourc <= 1 ? '2%' : psramPourc.toString() + '%' }">
                   <div class="memory-section">
-                        <div class="used-memory" :style="{ height:psramUsedPourc.toString() + '%' }">{{
+                        <div class="used-memory" :style="{ height: psramUsedPourc.toString() + '%' }">{{
                               psramUsedPourc.toString() }} % Used {{ formatBytes(espInfo?.psram_size - espInfo?.free_psram) }}
                         </div>
                         <div class="description">PSRAM {{ formatBytes(espInfo?.psram_size) }}</div>
@@ -164,7 +172,7 @@ onMounted(async () => {
       box-sizing: border-box;
 }
 
-.spiffs {
+.fs {
       width: 100%;
       display: flex;
       align-items: center;
