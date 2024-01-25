@@ -15,6 +15,7 @@ const flashPourc = ref(0);
 const spiffsPourc = ref(0);
 const spiffsSize = ref(0);
 const psramPourc = ref(0);
+const psramUsedPourc = ref(0);
 
 async function fetchESPInformation(): Promise<ESPInfo | null> {
       try {
@@ -58,7 +59,8 @@ function calculatePourc(info: ESPInfo, partitions: ESPPartition[]) {
       flashPourc.value = Math.round((info.flash_chip_size / totalMemory) * 100);
       sketchUsedPourcDisplay.value = Math.round(sketchUsedPourc.value * (flashPourc.value / 100));
       spiffsPourc.value = Math.round((spiffsSize.value / info.flash_chip_size) * flashPourc.value);
-      psramPourc.value =  Math.round((info.psram_size / totalMemory) * 100);
+      psramPourc.value = Math.round((info.psram_size / totalMemory) * 100);
+      psramUsedPourc.value = Math.round(((info.psram_size - info.free_psram) / totalMemory) * 100);
 }
 
 onMounted(async () => {
@@ -97,17 +99,20 @@ onMounted(async () => {
                         <div class="description">Flash {{ formatBytes(espInfo?.flash_chip_size) }}</div>
                   </div>
             </div>
-            <div class="memory-map" :style="{ height: psramPourc.toString() + '%' }">
+            <div v-if="psramPourc > 0" class="memory-map"
+                  :style="{ height: psramPourc <= 1 ? '2%' : psramPourc.toString() + '%' }">
                   <div class="memory-section">
-                        <div class="used-memory" :style="{ height: heapUsedPourcDisplay.toString() + '%' }">{{
-                              heapUsedPourc.toString() }} % Used {{ formatBytes(espInfo?.heap_size-espInfo?.free_heap) }}</div>
-                        <div class="description">PSRAM {{ formatBytes(espInfo?.heap_size) }}</div>
+                        <div class="used-memory" :style="{ height: psramUsedPourc.toString() + '%' }">{{
+                              psramUsedPourc.toString() }} % Used {{ formatBytes(espInfo?.psram_size - espInfo?.free_psram) }}
+                        </div>
+                        <div class="description">PSRAM {{ formatBytes(espInfo?.psram_size) }}</div>
                   </div>
             </div>
-            <div class="memory-map" :style="{ height: heapSizePourc.toString() + '%' }">
+            <div class="memory-map" :style="{ height: heapSizePourc <= 1 ? '2%' : heapSizePourc.toString() + '%' }">
                   <div class="memory-section">
                         <div class="used-memory" :style="{ height: heapUsedPourcDisplay.toString() + '%' }">{{
-                              heapUsedPourc.toString() }} % Used {{ formatBytes(espInfo?.heap_size-espInfo?.free_heap) }}</div>
+                              heapUsedPourc.toString() }} % Used {{ formatBytes(espInfo?.heap_size - espInfo?.free_heap) }}
+                        </div>
                         <div class="description">Heap {{ formatBytes(espInfo?.heap_size) }}</div>
                   </div>
             </div>
@@ -185,4 +190,5 @@ onMounted(async () => {
       bottom: 0;
       display: flex;
       align-items: center;
-}</style>
+}
+</style>
