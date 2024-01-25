@@ -87,6 +87,9 @@ onMounted(async () => {
                         <div class="used-memory" :style="{ height: sketchUsedPourcDisplay.toString() + '%' }">
                               {{ sketchUsedPourc.toString() }}% (Sketch)
                         </div>
+                        <div class="used-memory" :style="{ height: sketchUsedPourcDisplay.toString() + '%' }">
+                              {{ sketchUsedPourc.toString() }}% (Sketch)
+                        </div>
                         <div class="description">Flash {{ formatBytes(espInfo?.flash_chip_size) }}</div>
                   </div>
             </div>
