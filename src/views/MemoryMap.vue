@@ -10,6 +10,8 @@ const heapUsedPourc = ref(0);
 const heapUsedPourcDisplay = ref(0);
 const sketchUsedPourc = ref(0);
 const flashPourc = ref(0);
+const spiffsPourc = ref(0);
+const spiffsSize = ref(0);
 
 async function fetchESPInformation(): Promise<ESPInfo | null> {
       try {
@@ -38,7 +40,11 @@ function calculatePourc(info: ESPInfo, partitions: ESPPartition[]) {
       const partitionSize: number = partitions.reduce((sum, partition) => sum + Number(partition.size), 0);
       const totalMemory: number = Number(partitionSize) + Number(info.flash_chip_size) + Number(info.heap_size);
       for (let i = 0; i < partitions.length; i++) {
-            partitions[i].calcPour = Math.round((partitions[i].size / totalMemory) * 100);
+            if (partitions[i].label === "spiffs") {
+                  spiffsSize.value = partitions[i].size;
+            } else {
+                  partitions[i].calcPour = Math.round((partitions[i].size / totalMemory) * 100);
+            }
       }
       heapSizePourc.value = Math.round((info.heap_size / totalMemory) * 100);
       heapUsedPourc.value = Math.round(((info.heap_size - info.free_heap) / info.heap_size) * 100);
@@ -54,7 +60,7 @@ onMounted(async () => {
             if (espInfoData && espPartitionData) {
                   calculatePourc(espInfoData, espPartitionData)
                   espInfo.value = espInfoData;
-                  espPartition.value = espPartitionData;
+                  espPartition.value = espPartitionData.filter(partition => partition.label !== 'spiffs');;
             }
       } catch (error) {
             console.error("Error getting partition and ESP Information data", error);
@@ -65,12 +71,13 @@ onMounted(async () => {
 
 <template>
       <div v-if="espInfo && espPartition" class="memory-maps-container">
-            <div v-for="partition in espPartition" :key="partition.address" class="memory-map"
-                  :style="{ height: partition.calcPour <= 1 ? '2%' : partition.calcPour + '%' }">
+            <div v-for="partition in espPartition" :key="partition.address"
+                  class="memory-map" :style="{ height: partition.calcPour <= 1 ? '2%' : partition.calcPour + '%' }">
                   <div class="memory-section">
                         <div class="description">{{ partition.label }} {{ formatBytes(partition.size) }}</div>
                   </div>
             </div>
+
             <div class="memory-map" :style="{ height: flashPourc + '%' }">
                   <div class="memory-section">
                         <div class="used-memory" :style="{ height: sketchUsedPourc.toString() + '%' }">
