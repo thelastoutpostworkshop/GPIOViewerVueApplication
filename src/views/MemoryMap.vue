@@ -136,7 +136,6 @@ onMounted(async () => {
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
-      margin-top: 2px;
 }
 
 
