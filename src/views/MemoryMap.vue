@@ -112,9 +112,9 @@ onMounted(async () => {
                         <div class="description">PSRAM {{ formatBytes(espInfo?.psram_size) }}</div>
                   </div>
             </div>
-            <div class="memory-map" :style="{ height: heapSizePourc.toString() + '% ' } ">
+            <div class="memory-map" :style="{ height: heapSizePourc<=3? '3%': heapSizePourc.toString() + '% ' } ">
                   <div class="memory-section">
-                        <div class="used-memory" :style="{ height: heapSizePourc.toString() + '%' }">{{
+                        <div class="used-memory" :style="{ height: heapUsedPourc.toString() + '%' }">{{
                               heapUsedPourc.toString() }} % Used {{ formatBytes(espInfo?.heap_size - espInfo?.free_heap) }}
                         </div>
                         <div class="description">Heap {{ formatBytes(espInfo?.heap_size) }}</div>
