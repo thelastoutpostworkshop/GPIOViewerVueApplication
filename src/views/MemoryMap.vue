@@ -10,6 +10,7 @@ const heapSizePourc = ref(0);
 const heapUsedPourc = ref(0);
 const heapUsedPourcDisplay = ref(0);
 const sketchUsedPourc = ref(0);
+const sketchUsedPourcDisplay = ref(0);
 const flashPourc = ref(0);
 const spiffsPourc = ref(0);
 const spiffsSize = ref(0);
@@ -39,7 +40,7 @@ async function fetchESPPartition(): Promise<ESPPartition[] | null> {
 }
 function calculatePourc(info: ESPInfo, partitions: ESPPartition[]) {
       const partitionSize: number = partitions.reduce((sum, partition) => sum + Number(partition.size), 0);
-      const totalMemory: number = Number(partitionSize) + Number(info.flash_chip_size) + Number(info.heap_size);
+      let totalMemory: number = Number(partitionSize) + Number(info.flash_chip_size) + Number(info.heap_size);
       for (let i = 0; i < partitions.length; i++) {
             if (partitions[i].label === spiffs) {
                   spiffsSize.value = partitions[i].size;
@@ -47,11 +48,13 @@ function calculatePourc(info: ESPInfo, partitions: ESPPartition[]) {
                   partitions[i].calcPour = Math.round((partitions[i].size / totalMemory) * 100);
             }
       }
+      totalMemory -= spiffsSize.value;
       heapSizePourc.value = Math.round((info.heap_size / totalMemory) * 100);
       heapUsedPourc.value = Math.round(((info.heap_size - info.free_heap) / info.heap_size) * 100);
       heapUsedPourcDisplay.value = Math.round(heapSizePourc.value * (heapUsedPourc.value / 100));
       sketchUsedPourc.value = Math.round((info.sketch_size / info.flash_chip_size) * 100);
       flashPourc.value = Math.round((info.flash_chip_size / totalMemory) * 100);
+      sketchUsedPourcDisplay.value = Math.round(sketchUsedPourc.value * (flashPourc.value / 100));
 }
 
 onMounted(async () => {
@@ -72,8 +75,8 @@ onMounted(async () => {
 
 <template>
       <div v-if="espInfo && espPartition" class="memory-maps-container">
-            <div v-for="partition in espPartition" :key="partition.address"
-                  class="memory-map" :style="{ height: partition.calcPour <= 1 ? '2%' : partition.calcPour + '%' }">
+            <div v-for="partition in espPartition" :key="partition.address" class="memory-map"
+                  :style="{ height: partition.calcPour <= 1 ? '2%' : partition.calcPour + '%' }">
                   <div class="memory-section">
                         <div class="description">{{ partition.label }} {{ formatBytes(partition.size) }}</div>
                   </div>
@@ -81,7 +84,7 @@ onMounted(async () => {
 
             <div class="memory-map" :style="{ height: flashPourc + '%' }">
                   <div class="memory-section">
-                        <div class="used-memory" :style="{ height: sketchUsedPourc.toString() + '%' }">
+                        <div class="used-memory" :style="{ height: sketchUsedPourcDisplay.toString() + '%' }">
                               {{ sketchUsedPourc.toString() }}% (Sketch)
                         </div>
                         <div class="description">Flash {{ formatBytes(espInfo?.flash_chip_size) }}</div>
