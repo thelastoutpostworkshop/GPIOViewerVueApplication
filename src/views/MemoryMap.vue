@@ -26,6 +26,7 @@ async function fetchESPPartition(): Promise<ESPPartition[] | null> {
       try {
             const response = await fetch(getAPIUrl("partition"));
             const data: ESPPartition[] = await response.json();
+            data.sort((a, b) => parseInt(a.address, 16) - parseInt(b.address, 16));
             return data;
 
       } catch (error) {
@@ -41,7 +42,7 @@ function calculatePourc(info: ESPInfo, partitions: ESPPartition[]) {
       }
       heapSizePourc.value = Math.round((info.heap_size / totalMemory) * 100);
       heapUsedPourc.value = Math.round(((info.heap_size - info.free_heap) / info.heap_size) * 100);
-      heapUsedPourcDisplay.value = Math.round(heapSizePourc.value * (heapUsedPourc.value/100));
+      heapUsedPourcDisplay.value = Math.round(heapSizePourc.value * (heapUsedPourc.value / 100));
       sketchUsedPourc.value = Math.round((info.sketch_size / info.flash_chip_size) * 100);
       flashPourc.value = Math.round((info.flash_chip_size / totalMemory) * 100);
 }
@@ -65,7 +66,7 @@ onMounted(async () => {
 <template>
       <div v-if="espInfo && espPartition" class="memory-maps-container">
             <div v-for="partition in espPartition" :key="partition.address" class="memory-map"
-                  :style="{ height: partition.calcPour === 0 ? '1%' : partition.calcPour + '%' }">
+                  :style="{ height: partition.calcPour <= 1 ? '2%' : partition.calcPour + '%' }">
                   <div class="memory-section">
                         <div class="description">{{ partition.label }} {{ formatBytes(partition.size) }}</div>
                   </div>
@@ -75,11 +76,11 @@ onMounted(async () => {
                         <div class="used-memory" :style="{ height: sketchUsedPourc.toString() + '%' }">
                               {{ sketchUsedPourc.toString() }}% (Sketch)
                         </div>
-                        <div class="description">Flash Memory {{ formatBytes(espInfo?.flash_chip_size) }}</div>
+                        <div class="description">Flash {{ formatBytes(espInfo?.flash_chip_size) }}</div>
                   </div>
             </div>
             <div class="memory-map" :style="{ height: heapSizePourc.toString() + '%' }">
-                  <div class="memory-section" >
+                  <div class="memory-section">
                         <div class="used-memory" :style="{ height: heapUsedPourcDisplay.toString() + '%' }">{{
                               heapUsedPourc.toString() }} % Used</div>
                         <div class="description">Heap {{ formatBytes(espInfo?.heap_size) }}</div>
@@ -97,35 +98,27 @@ onMounted(async () => {
 .memory-maps-container {
       margin-top: 2%;
       width: 70%;
-      /* Adjust as needed */
       height: 80dvh;
-      /* Adjust based on content */
 }
 
 .memory-map {
       width: 100%;
-      /* Adjust each map's height as needed */
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
-      margin-bottom: 1px;
 }
 
 
 .memory-section {
       width: 70%;
       height: 100%;
-      /* Adjust height based on content */
       position: relative;
       border: 1px solid #000;
       background-color: lightblue;
       box-sizing: border-box;
       display: flex;
-      /* Flex container */
       align-items: flex-end;
-      /* Align used-memory to the bottom */
       margin-bottom: 5px;
-      /* Optional spacing between sections */
 }
 
 .used-memory {
@@ -134,7 +127,6 @@ onMounted(async () => {
       align-items: center;
       justify-content: center;
       bottom: 0;
-      /* Position at the bottom of the memory-section */
       background-color: rgb(157, 157, 196);
       color: black;
       text-align: center;
@@ -143,21 +135,14 @@ onMounted(async () => {
 
 .description {
       width: 100%;
-      /* Width of the description */
       padding-left: 10px;
-      /* Spacing */
       box-sizing: border-box;
       text-align: left;
       position: absolute;
-      /* Positioned absolutely */
       right: -100%;
-      /* Adjust as necessary to position outside the memory section */
       top: 0;
-      /* Align to the top of the parent */
       bottom: 0;
-      /* Align to the bottom of the parent */
       display: flex;
       align-items: center;
-      /* Center text vertically */
 }
 </style>
