@@ -14,6 +14,7 @@ const sketchUsedPourcDisplay = ref(0);
 const flashPourc = ref(0);
 const spiffsPourc = ref(0);
 const spiffsSize = ref(0);
+const psramPourc = ref(0);
 
 async function fetchESPInformation(): Promise<ESPInfo | null> {
       try {
@@ -49,6 +50,7 @@ function calculatePourc(info: ESPInfo, partitions: ESPPartition[]) {
             }
       }
       totalMemory -= spiffsSize.value;
+      totalMemory += Number(info.psram_size);
       heapSizePourc.value = Math.round((info.heap_size / totalMemory) * 100);
       heapUsedPourc.value = Math.round(((info.heap_size - info.free_heap) / info.heap_size) * 100);
       heapUsedPourcDisplay.value = Math.round(heapSizePourc.value * (heapUsedPourc.value / 100));
@@ -56,6 +58,7 @@ function calculatePourc(info: ESPInfo, partitions: ESPPartition[]) {
       flashPourc.value = Math.round((info.flash_chip_size / totalMemory) * 100);
       sketchUsedPourcDisplay.value = Math.round(sketchUsedPourc.value * (flashPourc.value / 100));
       spiffsPourc.value = Math.round((spiffsSize.value / info.flash_chip_size) * flashPourc.value);
+      psramPourc.value =  Math.round((info.psram_size / totalMemory) * 100);
 }
 
 onMounted(async () => {
@@ -92,6 +95,13 @@ onMounted(async () => {
                               {{ spiffsPourc.toString() }}% Spiffs {{ formatBytes(spiffsSize) }}
                         </div>
                         <div class="description">Flash {{ formatBytes(espInfo?.flash_chip_size) }}</div>
+                  </div>
+            </div>
+            <div class="memory-map" :style="{ height: psramPourc.toString() + '%' }">
+                  <div class="memory-section">
+                        <div class="used-memory" :style="{ height: heapUsedPourcDisplay.toString() + '%' }">{{
+                              heapUsedPourc.toString() }} % Used {{ formatBytes(espInfo?.heap_size-espInfo?.free_heap) }}</div>
+                        <div class="description">PSRAM {{ formatBytes(espInfo?.heap_size) }}</div>
                   </div>
             </div>
             <div class="memory-map" :style="{ height: heapSizePourc.toString() + '%' }">
