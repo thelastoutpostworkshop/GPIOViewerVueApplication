@@ -98,7 +98,7 @@ onMounted(async () => {
       margin-top: 2%;
       width: 70%;
       /* Adjust as needed */
-      height: 75dvh;
+      height: 80dvh;
       /* Adjust based on content */
 }
 
@@ -108,7 +108,7 @@ onMounted(async () => {
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
-      margin-bottom: 1%;
+      margin-bottom: 1px;
 }
 
 
@@ -135,8 +135,8 @@ onMounted(async () => {
       justify-content: center;
       bottom: 0;
       /* Position at the bottom of the memory-section */
-      background-color: darkblue;
-      color: white;
+      background-color: rgb(157, 157, 196);
+      color: black;
       text-align: center;
       box-sizing: border-box;
 }
