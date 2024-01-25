@@ -55,6 +55,7 @@ function calculatePourc(info: ESPInfo, partitions: ESPPartition[]) {
       sketchUsedPourc.value = Math.round((info.sketch_size / info.flash_chip_size) * 100);
       flashPourc.value = Math.round((info.flash_chip_size / totalMemory) * 100);
       sketchUsedPourcDisplay.value = Math.round(sketchUsedPourc.value * (flashPourc.value / 100));
+      spiffsPourc.value =  Math.round((spiffsSize.value  / info.flash_chip_size) * (flashPourc.value / 100));
 }
 
 onMounted(async () => {
@@ -87,8 +88,8 @@ onMounted(async () => {
                         <div class="used-memory" :style="{ height: sketchUsedPourcDisplay.toString() + '%' }">
                               {{ sketchUsedPourc.toString() }}% (Sketch)
                         </div>
-                        <div class="used-memory" :style="{ height: sketchUsedPourcDisplay.toString() + '%' }">
-                              {{ sketchUsedPourc.toString() }}% (Sketch)
+                        <div v-if="spiffsSize !== 0" class="spiffs" :style="{ height: spiffsPourc.toString() + '%' }">
+                              {{ spiffsPourc.toString() }}% (Spiffs allocated)
                         </div>
                         <div class="description">Flash {{ formatBytes(espInfo?.flash_chip_size) }}</div>
                   </div>
@@ -141,6 +142,17 @@ onMounted(async () => {
       align-items: center;
       justify-content: center;
       bottom: 0;
+      background-color: rgb(157, 157, 196);
+      color: black;
+      text-align: center;
+      box-sizing: border-box;
+}
+.spiffs {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      top: 0;
       background-color: rgb(157, 157, 196);
       color: black;
       text-align: center;
