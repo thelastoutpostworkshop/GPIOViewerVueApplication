@@ -86,10 +86,10 @@ onMounted(async () => {
             <div class="memory-map" :style="{ height: flashPourc + '%' }">
                   <div class="memory-section">
                         <div class="used-memory" :style="{ height: sketchUsedPourcDisplay.toString() + '%' }">
-                              {{ sketchUsedPourc.toString() }}% (Sketch)
+                              {{ sketchUsedPourc.toString() }}% Sketch {{ formatBytes(espInfo.sketch_size) }}
                         </div>
                         <div v-if="spiffsSize !== 0" class="spiffs" :style="{ height: spiffsPourc.toString() + '%' }">
-                              {{ spiffsPourc.toString() }}% (Spiffs allocated)
+                              {{ spiffsPourc.toString() }}% Spiffs {{ formatBytes(spiffsSize) }}
                         </div>
                         <div class="description">Flash {{ formatBytes(espInfo?.flash_chip_size) }}</div>
                   </div>
@@ -112,7 +112,7 @@ onMounted(async () => {
 <style scoped>
 .memory-maps-container {
       margin-top: 2%;
-      width: 70%;
+      width: 80%;
       height: 80dvh;
 }
 
