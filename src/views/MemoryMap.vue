@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue';
 import type { ESPInfo, ESPPartition } from "@/types/types";
 import { getAPIUrl, formatBytes } from "@/functions";
 
+const spiffs = "spiffs";
 const espInfo = ref<ESPInfo>();
 const espPartition = ref<ESPPartition[]>();
 const heapSizePourc = ref(0);
@@ -40,7 +41,7 @@ function calculatePourc(info: ESPInfo, partitions: ESPPartition[]) {
       const partitionSize: number = partitions.reduce((sum, partition) => sum + Number(partition.size), 0);
       const totalMemory: number = Number(partitionSize) + Number(info.flash_chip_size) + Number(info.heap_size);
       for (let i = 0; i < partitions.length; i++) {
-            if (partitions[i].label === "spiffs") {
+            if (partitions[i].label === spiffs) {
                   spiffsSize.value = partitions[i].size;
             } else {
                   partitions[i].calcPour = Math.round((partitions[i].size / totalMemory) * 100);
@@ -60,7 +61,7 @@ onMounted(async () => {
             if (espInfoData && espPartitionData) {
                   calculatePourc(espInfoData, espPartitionData)
                   espInfo.value = espInfoData;
-                  espPartition.value = espPartitionData.filter(partition => partition.label !== 'spiffs');;
+                  espPartition.value = espPartitionData.filter(partition => partition.label !== spiffs);;
             }
       } catch (error) {
             console.error("Error getting partition and ESP Information data", error);
