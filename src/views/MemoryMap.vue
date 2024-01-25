@@ -42,7 +42,6 @@ function calculatePourc(info: ESPInfo, partitions: ESPPartition[]) {
       heapSizePourc.value = Math.round((info.heap_size / totalMemory) * 100);
       heapUsedPourc.value = Math.round(((info.heap_size - info.free_heap) / info.heap_size) * 100);
       heapUsedPourcDisplay.value = Math.round(heapSizePourc.value * (heapUsedPourc.value/100));
-      console.log(heapUsedPourcDisplay.value);
       sketchUsedPourc.value = Math.round((info.sketch_size / info.flash_chip_size) * 100);
       flashPourc.value = Math.round((info.flash_chip_size / totalMemory) * 100);
 }
