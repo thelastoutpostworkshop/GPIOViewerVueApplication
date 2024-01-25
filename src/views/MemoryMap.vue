@@ -55,7 +55,7 @@ function calculatePourc(info: ESPInfo, partitions: ESPPartition[]) {
       sketchUsedPourc.value = Math.round((info.sketch_size / info.flash_chip_size) * 100);
       flashPourc.value = Math.round((info.flash_chip_size / totalMemory) * 100);
       sketchUsedPourcDisplay.value = Math.round(sketchUsedPourc.value * (flashPourc.value / 100));
-      spiffsPourc.value =  Math.round((spiffsSize.value  / info.flash_chip_size) * (flashPourc.value / 100));
+      spiffsPourc.value = Math.round((spiffsSize.value / info.flash_chip_size) * (flashPourc.value / 100));
 }
 
 onMounted(async () => {
@@ -147,17 +147,22 @@ onMounted(async () => {
       text-align: center;
       box-sizing: border-box;
 }
+
 .spiffs {
       width: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
+      position: absolute;
+      /* Added absolute positioning */
       top: 0;
+      /* Position at the top of the memory-section */
       background-color: rgb(157, 157, 196);
       color: black;
       text-align: center;
       box-sizing: border-box;
 }
+
 
 .description {
       width: 100%;
@@ -170,5 +175,4 @@ onMounted(async () => {
       bottom: 0;
       display: flex;
       align-items: center;
-}
-</style>
+}</style>
