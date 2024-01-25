@@ -82,7 +82,7 @@ onMounted(async () => {
 <template>
       <div v-if="espInfo && espPartition" class="memory-maps-container">
             <div v-for="partition in espPartition" :key="partition.address" class="memory-map"
-                  :style="{ height: partition.calcPour + '%' }">
+                  :style="{ height: partition.calcPour <= 1 ? '2%' : partition.calcPour + '%' }">
                   <div class="memory-section">
                         <div class="description">{{ partition.label }} {{ formatBytes(partition.size) }}</div>
                   </div>
@@ -102,13 +102,13 @@ onMounted(async () => {
             <div v-if="psramPourc > 0" class="memory-map"
                   :style="{ height: psramPourc <= 1 ? '2%' : psramPourc.toString() + '%' }">
                   <div class="memory-section">
-                        <div class="used-memory" :style="{ height:psramUsedPourc.toString() + '%' }">{{
+                        <div class="used-memory" :style="{ height:psramUsedPourc<=1 ? '2%': psramUsedPourc.toString() + '%' }">{{
                               psramUsedPourc.toString() }} % Used {{ formatBytes(espInfo?.psram_size - espInfo?.free_psram) }}
                         </div>
                         <div class="description">PSRAM {{ formatBytes(espInfo?.psram_size) }}</div>
                   </div>
             </div>
-            <div class="memory-map" :style="{ height: heapSizePourc.toString() + '%' }">
+            <div class="memory-map" :style="{ height: heapSizePourc <= 1 ? '2%' : heapSizePourc.toString() + '%' }">
                   <div class="memory-section">
                         <div class="used-memory" :style="{ height: heapUsedPourcDisplay.toString() + '%' }">{{
                               heapUsedPourc.toString() }} % Used {{ formatBytes(espInfo?.heap_size - espInfo?.free_heap) }}
@@ -128,13 +128,12 @@ onMounted(async () => {
 .memory-maps-container {
       margin-top: 2%;
       width: 80%;
-      height: 70dvh;
+      height: 75dvh;
 }
 
 .memory-map {
       width: 100%;
       display: flex;
-      min-height: 2%;
       flex-direction: column;
       justify-content: flex-end;
 }
