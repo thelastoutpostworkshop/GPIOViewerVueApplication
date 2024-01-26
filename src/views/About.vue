@@ -11,13 +11,11 @@ function goToBuyMeACoffee() {
 }
 </script>
 <template>
-    <v-card class="w-75 mt-5" subtitle="A Tool for your ESP32" elevation="16">
+    <v-card class="w-75 mt-5" subtitle="Transforms the way you troubleshoot your microcontroller projects" elevation="16">
         <template v-slot:title>
-            <div class="text-wrap">Transforms the way you troubleshoot your microcontroller projects</div>
+            <div class="text-wrap">An open source Arduino Library to see live GPIO Pins on ESP32 boards</div>
         </template>
         <v-card-text>
-            <p class="text-body-1">
-                An open source Arduino Library to see live GPIO Pins on ESP32 boards </p>
             <v-divider></v-divider>
             <p class="text-body-2 pt-4 d-none d-sm-flex">
                 <v-icon color="blue-darken-4 ">mdi-forum-outline</v-icon>
