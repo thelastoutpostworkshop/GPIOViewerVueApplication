@@ -18,7 +18,7 @@ npm install
 
 ### Modify index.html
 
-You need to modify index.html to configure your ESP32 ip Address and port:
+You need to modify `index.html` to configure your ESP32 ip Address and port:
 
 ```javascript
 window.gpio_settings = {
