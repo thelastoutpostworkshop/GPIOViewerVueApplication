@@ -15,6 +15,25 @@ async function fetchESPInformation() {
             console.error("Error fetching esp information", error);
       }
 }
+
+function flashMode(mode: number): string {
+      switch (mode) {
+            case 0x00:
+                  return "QIO"
+            case 0x01:
+                  return "QOUT"
+            case 0x02:
+                  return "DIO"
+            case 0x03:
+                  return "DOUT"
+            case 0x04:
+                  return "FAST_READ"
+            case 0x05:
+                  return "SLOW_READ"
+            default:
+                  return "unknown"
+      }
+}
 onMounted(() => {
       fetchESPInformation();
 });
@@ -96,7 +115,7 @@ onMounted(() => {
                         </tr>
                         <tr>
                               <td>Flash Chip Mode</td>
-                              <td>{{ espInfo?.flash_mode }}</td>
+                              <td>{{ flashMode(espInfo?.flash_mode) }}</td>
                         </tr>
                         <tr>
                               <td>eFuse Mac Address</td>
