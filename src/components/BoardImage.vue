@@ -78,6 +78,7 @@ watch(() => props.board, async (newBoard, oldBoard) => {
                 restorePinsState(store.pinsPreserved);
             }
         }
+        store.magnifyImage=80;
     }
 }, { immediate: true }); // immediate: true ensures the effect runs on mount
 
@@ -97,9 +98,6 @@ function restorePinsState(newPinsConf: PinsConfiguration) {
 }
 onUnmounted(() => {
     store.pinsPreserved = pinsConf?.value ?? null;
-});
-onBeforeMount(() => {
-    store.magnifyImage = 80
 });
 
 function updatePinStates(newStates: PinStateMap, pinsConfiguration: PinsConfiguration) {
