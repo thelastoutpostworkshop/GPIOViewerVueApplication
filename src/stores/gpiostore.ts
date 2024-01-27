@@ -16,6 +16,7 @@ export const gpioStore = defineStore('gpioviewer', () => {
   const pintype = ref(false);
   const SamplingInterval = ref(0);
   const connectedToESP32 = ref(false);
+  const magnifyImage = ref(0);
   // const count = ref(0)
   // const name = ref('Eduardo')
   // const doubleCount = computed(() => count.value * 2)
@@ -25,6 +26,6 @@ export const gpioStore = defineStore('gpioviewer', () => {
 
   return {
     currentBoard, ipAddress, httpPort, currentStates, freeHeap, freePSRAM,
-    freeSketch, freeze, boards, pintype, SamplingInterval, pinsPreserved, connectedToESP32
+    freeSketch, freeze, boards, pintype, SamplingInterval, pinsPreserved, connectedToESP32,magnifyImage
   }
 })

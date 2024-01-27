@@ -1,7 +1,7 @@
   
 <script setup lang="ts">
 import type { BoardData, PinsConfiguration, PinState, Pins, PinStateMap } from '@/types/types';
-import { ref, watch, computed, onUnmounted } from 'vue';
+import { ref, watch, computed, onUnmounted, onBeforeMount } from 'vue';
 import { gpioStore } from '@/stores/gpiostore'
 import PinInfo from '@/components/PinInformation.vue';
 
@@ -98,6 +98,9 @@ function restorePinsState(newPinsConf: PinsConfiguration) {
 onUnmounted(() => {
     store.pinsPreserved = pinsConf?.value ?? null;
 });
+onBeforeMount(() => {
+    store.magnifyImage = 80
+});
 
 function updatePinStates(newStates: PinStateMap, pinsConfiguration: PinsConfiguration) {
     Object.entries(newStates).forEach(([gpioId, pinState]) => {
@@ -176,11 +179,14 @@ const showPinInfo = (pin: Pins) => {
     showPinInfoCard.value = true;
 };
 
+
+
 </script>
   
 <template>
     <div v-if="board" class="board-container">
-        <img v-if="board.image" :src="board.image" class="board-image" />
+        <img v-if="board.image" :src="board.image" class="board-image"
+            :style="{ 'max-width': store.magnifyImage + 'vw', 'max-height': store.magnifyImage + 'vh' }" />
         <div v-if="pinsConf" v-for="pin in pinsConf.pins" :key="pin.gpioid" class="indicator"
             :style="{ top: pin.top + '%', left: pin.left + '%', width: pinsConf.settings.pinWidth + '%', height: pinsConf.settings.pinHeight + '%', backgroundColor: pin.color }"
             :id="`gpio${pin.gpioid}`" @click="showPinInfo(pin)">
