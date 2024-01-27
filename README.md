@@ -14,6 +14,15 @@ Contributors are welcomed!  If you want to submit pull requests, [here is how yo
 ```sh
 npm install
 ```
+### Modify index.html
+You need to modify index.html to configure your ESP32 ip Address and port:
+```javascript
+      window.gpio_settings = {
+        ip: '192.168.1.5',
+        port: 8080,
+        freeSketchRam:'179 KB'
+      };
+```
 
 ### Compile and Hot-Reload for Development
 
