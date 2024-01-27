@@ -19,17 +19,17 @@ async function fetchESPInformation() {
 function flashMode(mode: number): string {
       switch (mode) {
             case 0x00:
-                  return "QIO"
+                  return "Quad I/O"
             case 0x01:
-                  return "QOUT"
+                  return "Quad Output"
             case 0x02:
-                  return "DIO"
+                  return "Dual I/O"
             case 0x03:
-                  return "DOUT"
+                  return "Dual Output"
             case 0x04:
-                  return "FAST_READ"
+                  return "Fast Read"
             case 0x05:
-                  return "SLOW_READ"
+                  return "Slow Read"
             default:
                   return "unknown"
       }
