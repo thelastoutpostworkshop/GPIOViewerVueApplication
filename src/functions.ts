@@ -9,7 +9,7 @@ export function getAPIUrl(api: string): string {
 }
 
 export function formatBytes(bytes: number | undefined): string {
-    if (bytes) {
+    if (bytes !== undefined) {
         if (bytes < 1024) {
             return `${bytes} B`;
         } else if (bytes < 1024 * 1024) {
@@ -18,7 +18,6 @@ export function formatBytes(bytes: number | undefined): string {
             return `${(bytes / 1024 / 1024).toFixed()} MB`;
         }
     }
-    return "undefined";
 }
 export function formatHz(bytes: number | undefined): string {
     if (bytes) {
