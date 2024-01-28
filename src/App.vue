@@ -81,6 +81,14 @@ function initEventSource(): void {
     },
     false
   );
+  source.addEventListener(
+    "close",
+    (e: MessageEvent) => {
+      console.log("Closing connection");
+      self.close();
+    },
+    false
+  );
 }
 
 const localNetworkAdressKnown = computed(() => window.gpio_settings.ip && window.gpio_settings.port);
