@@ -36,12 +36,12 @@ export function formatHz(bytes: number | undefined): string {
 export function formatMacAddress(chipId: number | undefined): string {
     if (chipId) {
         let macBytes = [
-            (chipId >> 40) & 0xFF,
-            (chipId >> 32) & 0xFF,
-            (chipId >> 24) & 0xFF,
-            (chipId >> 16) & 0xFF,
-            (chipId >> 8) & 0xFF,
-            chipId & 0xFF
+            chipId & 0xFF,
+            (chipId / 0x100) & 0xFF,
+            (chipId / 0x10000) & 0xFF,
+            (chipId / 0x1000000) & 0xFF,
+            (chipId / 0x100000000) & 0xFF,
+            (chipId / 0x10000000000) & 0xFF
         ];
         let macAddress = macBytes.map(byte => byte.toString(16).padStart(2, '0').toUpperCase()).join(':');
         return macAddress;
