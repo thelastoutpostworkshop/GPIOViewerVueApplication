@@ -40,7 +40,7 @@ onMounted(() => {
 </script>
 
 <template>
-      <v-container v-if="espInfo">
+      <v-container v-if="espInfo" style="max-width:700px">
             <v-card elevation="6" color="primary">
                   <v-card-title>
                         <div class="text-body-1 text-wrap">This is the information from the ESP32 where GPIOViewer is running
