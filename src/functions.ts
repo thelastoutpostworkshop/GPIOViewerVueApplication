@@ -18,6 +18,7 @@ export function formatBytes(bytes: number | undefined): string {
             return `${(bytes / 1024 / 1024).toFixed()} MB`;
         }
     }
+    return "undefined";
 }
 export function formatHz(bytes: number | undefined): string {
     if (bytes) {
