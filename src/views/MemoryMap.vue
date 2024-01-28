@@ -89,7 +89,7 @@ onMounted(async () => {
 </script>
 
 <template>
-      <div v-if="espInfo && espPartition" class="memory-maps-container">
+      <div v-if="espInfo && espPartition" class="memory-maps-container" style="max-width:700px">
             <div v-for="partition in espPartition" :key="partition.address" class="memory-map"
                   :style="{ height: partition.calcPour + '%' }">
                   <div class="memory-section">
