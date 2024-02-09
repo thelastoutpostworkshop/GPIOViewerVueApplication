@@ -10,7 +10,7 @@ const props = defineProps({
 });
 const store = gpioStore();
 const wifiActivity = ref(false);
-watch([() => store.currentStates, () => store.freeHeap, () => store.freePSRAM, () => store.freeSketch], () => {
+watch([() => store.currentStates, () => store.freeHeap, () => store.wifiActivity, () => store.freePSRAM, () => store.freeSketch], () => {
     wifiActivity.value = !wifiActivity.value;
 }, { immediate: true });
 

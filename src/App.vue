@@ -47,6 +47,7 @@ function initEventSource(): void {
       if (!store.freeze) {
         const freeHeap = e.data as Memory;
         store.freeHeap = freeHeap;
+        store.wifiActivity++;
       }
     },
     false
