@@ -5,10 +5,10 @@ const store = gpioStore();
 
 
 function increaseSize() {
-   store.magnifyImage+=2;
+    store.magnifyImage += 2;
 }
 function decreaseSize() {
-    store.magnifyImage-=2;
+    store.magnifyImage -= 2;
 
 }
 </script>
@@ -20,7 +20,8 @@ function decreaseSize() {
     </v-btn>
     <v-btn @click="store.pintype = !store.pintype">
         <v-icon :color="store.pintype ? 'blue' : ''">mdi-pin</v-icon>
-        <span>Pins</span>
+        <span v-if="store.pintype">Pin Types</span>
+        <span v-else="store.pintype">Pin Numbers</span>
     </v-btn>
     <v-btn @click="decreaseSize">
         <v-icon>mdi-magnify-minus</v-icon>
@@ -28,5 +29,4 @@ function decreaseSize() {
     <v-btn @click="increaseSize">
         <v-icon>mdi-magnify-plus</v-icon>
     </v-btn>
-
 </template>
