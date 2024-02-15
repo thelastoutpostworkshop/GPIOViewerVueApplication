@@ -11,7 +11,7 @@ const store = gpioStore();
 const drawerOpen = ref(false);
 const GPIOViewerRelease = ref("");
 
-const WebApplicationVersion = "2.0.8";
+const WebApplicationVersion = "2.0.9";
 
 declare var window: any;
 
