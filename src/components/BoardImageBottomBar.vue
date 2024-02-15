@@ -19,7 +19,7 @@ function decreaseSize() {
         <span>Freeze</span>
     </v-btn>
     <v-btn @click="store.pintype = !store.pintype">
-        <v-icon :color="store.pintype ? 'blue' : ''">mdi-pin</v-icon>
+        <v-icon>mdi-pin</v-icon>
         <span v-if="store.pintype">Pin Types</span>
         <span v-else="store.pintype">Pin Numbers</span>
     </v-btn>
