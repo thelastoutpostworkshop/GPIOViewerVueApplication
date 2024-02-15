@@ -9,9 +9,8 @@ import { getAPIUrl } from "@/functions";
 
 const store = gpioStore();
 const drawerOpen = ref(false);
-const GPIOViewerRelease = ref("");
 
-const WebApplicationVersion = "2.0.9";
+store.WebApplicationRelease = "2.0.9";
 
 declare var window: any;
 
@@ -116,10 +115,10 @@ async function fetchGPIOViewerReleaseVersion() {
   try {
     const response = await fetch(getAPIUrl("release"));
     const data: GPIOViewerRelease = await response.json();
-    GPIOViewerRelease.value = data.release;
+    store.GPIOViewerRelease = data.release;
 
   } catch (error) {
-    GPIOViewerRelease.value = "-unknown";
+    store.GPIOViewerRelease = "-unknown";
     console.error("Error fetching release version:", error);
   }
 }
@@ -150,7 +149,7 @@ async function fetchSamplingInterval() {
       </v-app-bar>
 
       <v-navigation-drawer color="primary" v-model="drawerOpen" temporary>
-        <v-list-item title="GPIOViewer" :subtitle="'v' + GPIOViewerRelease"></v-list-item>
+        <v-list-item title="GPIOViewer" :subtitle="'v' + store.GPIOViewerRelease"></v-list-item>
         <v-divider></v-divider>
         <v-list-item link title="About" @click="$router.push({ name: 'about' })"></v-list-item>
         <v-list-item link title="GPIOViewer" @click="$router.push({ name: 'gpioview' })"></v-list-item>
@@ -159,7 +158,7 @@ async function fetchSamplingInterval() {
         <template v-slot:append>
           <v-divider></v-divider>
           <div class="pa-2 text-caption text-grey-lighten-1">
-            Web application v{{ WebApplicationVersion }}
+            Web application v{{ store.WebApplicationRelease }}
           </div>
         </template>
       </v-navigation-drawer>

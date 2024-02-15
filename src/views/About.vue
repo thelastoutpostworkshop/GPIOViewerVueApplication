@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { gpioStore } from '@/stores/gpiostore'
+const store = gpioStore();
 
 function goToGithubDiscussion() {
     window.open('https://github.com/thelastoutpostworkshop/gpio_viewer/discussions', '_blank');
@@ -41,5 +43,11 @@ function goToBuyMeACoffee() {
                     ☕ Buymeacoffee
                 </v-btn></p>
         </v-card-text>
+        <div class="pr-10">
+            GPIOViewer v{{ store.GPIOViewerRelease }}
+        </div>
+        <div>
+            Web Application v{{ store.WebApplicationRelease }}
+        </div>
     </v-card>
 </template>
