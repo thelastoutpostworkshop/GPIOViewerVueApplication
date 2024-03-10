@@ -71,11 +71,12 @@ function pinIcon(pin: Pins | null | undefined): string {
                 </v-avatar>
             </template>
             <v-card-text>
-                <v-avatar>
-                    <v-img :src="pinIcon(pin)">
-
-                    </v-img>
-                </v-avatar><span class="pl-2">{{ pinType(pin) }}</span>
+                <v-container>
+                    <v-row >
+                        <v-col><v-img :width="100" :src="pinIcon(pin)"></v-img></v-col>
+                        <v-col align-self="center">{{ pinType(pin) }}</v-col>
+                    </v-row>
+                </v-container>
 
                 <div class="value-bar" :style="{ width: pin?.displayBarValue + '%' }">{{ pin?.displayValue }}</div>
             </v-card-text>
