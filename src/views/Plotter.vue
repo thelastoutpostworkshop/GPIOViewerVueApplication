@@ -91,7 +91,7 @@ function dataToPlot(gpiopin: number, states: PinStateMap | null): number | undef
                         addOrUpdateGpioValue(gpioIdNum, pinState.v)
                         return pinState.v;
                   } else {
-                        addOrUpdateGpioValue(gpioIdNum, pinState.v)   
+                        addOrUpdateGpioValue(gpioIdNum, pinState.v)
                   }
             }
       }
@@ -121,11 +121,18 @@ watch(
 
 <template>
       <v-container>
-            <div>
-                  <span v-for="pin in gpioCheckboxes" :key="pin.pin">
-                        <v-switch :label="pin.pin.toString()" v-model="checkedPins[pin.pin]" color="primary"></v-switch>
-                  </span>
-            </div>
+            <v-card elevation="16" >
+                  <v-card-title>
+                        Select any active GPIO pins
+                  </v-card-title>
+                  <div class="d-flex flex-wrap ml-2" >
+                        <div class="mr-6" v-for="pin in gpioCheckboxes" :key="pin.pin">
+                              <v-switch :label="pin.pin.toString()" v-model="checkedPins[pin.pin]"
+                                    color="primary" density="compact"></v-switch>
+                        </div>
+
+                  </div>
+            </v-card>
             <Line v-if="dataAvailable" :data="pinsData" :options="options" :key="cle" />
       </v-container>
 </template>
