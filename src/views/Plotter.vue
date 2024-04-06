@@ -56,9 +56,9 @@ watch(
       () => store.currentStates,
       (newStates) => {
 
-            const result = dataToPlot(18, newStates); // Example for GPIO pin 7
+            const result = dataToPlot(7, newStates); // Example for GPIO pin 7
 
-            if (result) {
+            if (result !== undefined) {
                   console.log(result);
                   updateDataToPlot(result);
             }
