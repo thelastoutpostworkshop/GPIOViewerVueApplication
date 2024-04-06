@@ -23,7 +23,7 @@ const pinsData: ChartData = {
       labels: [],
       datasets: [
             {
-                  label: "test",
+                  label: "",
                   backgroundColor: '#f87979',
                   data: [],
             }
@@ -46,7 +46,7 @@ function dataToPlot(gpiopin: number, states: PinStateMap | null): number | undef
 
 function updateDataToPlot(v: number) {
       pinsData.datasets[0].data.push(v);
-      pinsData.labels?.push(v.toString());
+      pinsData.labels?.push(store.SamplingInterval);
       displayData.value = JSON.parse(JSON.stringify(pinsData));
       dataAvailable.value = true;
 
@@ -67,7 +67,8 @@ watch(
 </script>
 
 <template>
-      <Line v-if="dataAvailable" :data="displayData"
-            :chart-options="{ responsive: true, maintainAspectRatio: false }" />
-      <!-- <div>{{ chartData.datasets[0].data }}</div> -->
+      <v-container>
+            <Line v-if="dataAvailable" :data="displayData"
+                  :chart-options="{ responsive: true, maintainAspectRatio: false }" />
+      </v-container>
 </template>
