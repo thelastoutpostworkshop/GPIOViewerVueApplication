@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { PinStateMap } from '@/types/types';
-import { ref, watch} from 'vue';
+import { ref, watch } from 'vue';
 import { Line } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, PointElement, LineElement, CategoryScale, LinearScale } from 'chart.js'
-import type { ChartData } from 'chart.js';
+import type { ChartData, ChartOptions } from 'chart.js';
 import { gpioStore } from '@/stores/gpiostore'
 
 ChartJS.register(
@@ -31,6 +31,14 @@ const pinsData: ChartData = {
       ],
 };
 
+const options: ChartOptions = {
+      responsive: true,
+      interaction: {
+            intersect: false,
+            axis: 'x'
+      },
+}
+
 function dataToPlot(gpiopin: number, states: PinStateMap | null): number | undefined {
       if (states) {
             for (const [gpioId, pinState] of Object.entries(states)) {
@@ -46,8 +54,7 @@ function dataToPlot(gpiopin: number, states: PinStateMap | null): number | undef
 function updateDataToPlot(v: number) {
       pinsData.datasets[0].data.push(v);
       pinsData.labels?.push(store.SamplingInterval);
-      cle.value+=1;
-      // displayData.value = pinsData;
+      cle.value += 1;
       dataAvailable.value = true;
 }
 
@@ -67,7 +74,6 @@ watch(
 
 <template>
       <v-container>
-            <Line v-if="dataAvailable" :data="pinsData" :key="cle"
-                  :chart-options="{ responsive: true, maintainAspectRatio: false }" />
+            <Line v-if="dataAvailable" :data="pinsData" :key="cle" :chart-options="options" />
       </v-container>
 </template>
