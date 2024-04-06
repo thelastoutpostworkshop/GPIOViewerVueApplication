@@ -16,10 +16,35 @@ ChartJS.register(
       Legend
 )
 
+interface ActivePins {
+      gpio: number[];
+      lastValue: number[];
+}
+
+
 const store = gpioStore();
 
 const dataAvailable = ref<boolean>(false);
 const cle = ref<number>(0);
+
+const activePins = ref<ActivePins>({
+      gpio: [],
+      lastValue: []
+});
+
+function addOrUpdateGpioValue(gpioNumber: number, value: number) {
+      // Check if the GPIO number is already in the array
+      const index = activePins.value.gpio.indexOf(gpioNumber);
+
+      if (index !== -1) {
+            // If the GPIO number exists, update its last value
+            activePins.value.lastValue[index] = value;
+      } else {
+            // If the GPIO number does not exist, add it and its value
+            activePins.value.gpio.push(gpioNumber);
+            activePins.value.lastValue.push(value);
+      }
+}
 const pinsData: ChartData = {
       labels: [],
       datasets: [
@@ -37,8 +62,8 @@ const options: ChartOptions = {
       animation: false,
       scales: {
             x: {
-                  title:{
-                        display:true,
+                  title: {
+                        display: true,
                         text: "ms"
                   }
             }
@@ -50,6 +75,7 @@ function dataToPlot(gpiopin: number, states: PinStateMap | null): number | undef
             for (const [gpioId, pinState] of Object.entries(states)) {
                   const gpioIdNum = parseInt(gpioId);
                   if (gpioIdNum === gpiopin) {
+                        addOrUpdateGpioValue(gpiopin,pinState.v)
                         return pinState.v;
                   }
             }
