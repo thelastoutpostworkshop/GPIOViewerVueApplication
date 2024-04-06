@@ -27,16 +27,15 @@ const pinsData: ChartData = {
                   label: "",
                   backgroundColor: '#f87979',
                   data: [],
+                  stepped:true
             }
       ],
 };
 
 const options: ChartOptions = {
       responsive: true,
-      interaction: {
-            intersect: false,
-            axis: 'x'
-      },
+      animation:false
+
 }
 
 function dataToPlot(gpiopin: number, states: PinStateMap | null): number | undefined {
@@ -74,6 +73,6 @@ watch(
 
 <template>
       <v-container>
-            <Line v-if="dataAvailable" :data="pinsData" :key="cle" :chart-options="options" />
+            <Line v-if="dataAvailable" :data="pinsData" :options="options" :key="cle"  />
       </v-container>
 </template>
