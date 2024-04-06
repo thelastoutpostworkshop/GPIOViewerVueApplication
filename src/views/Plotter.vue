@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { BoardData, PinsConfiguration, PinState, Pins, PinStateMap } from '@/types/types';
-import { ref, watch, computed } from 'vue';
+import type { PinStateMap } from '@/types/types';
+import { ref, watch } from 'vue';
 import { Line } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, PointElement, LineElement, CategoryScale, LinearScale } from 'chart.js'
 import type { ChartData } from 'chart.js';
