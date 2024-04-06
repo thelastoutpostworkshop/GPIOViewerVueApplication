@@ -88,8 +88,10 @@ function dataToPlot(gpiopin: number, states: PinStateMap | null): number | undef
             for (const [gpioId, pinState] of Object.entries(states)) {
                   const gpioIdNum = parseInt(gpioId);
                   if (gpioIdNum === gpiopin) {
-                        addOrUpdateGpioValue(gpiopin, pinState.v)
+                        addOrUpdateGpioValue(gpioIdNum, pinState.v)
                         return pinState.v;
+                  } else {
+                        addOrUpdateGpioValue(gpioIdNum, pinState.v)   
                   }
             }
       }
@@ -120,10 +122,9 @@ watch(
 <template>
       <v-container>
             <div>
-                  <div v-for="pin in gpioCheckboxes" :key="pin.pin">
-                        <input type="checkbox" :id="`pin-${pin.pin}`" v-model="checkedPins[pin.pin]">
-                        <label :for="`pin-${pin.pin}`">GPIO Pin {{ pin.pin }}</label>
-                  </div>
+                  <span v-for="pin in gpioCheckboxes" :key="pin.pin">
+                        <v-switch :label="pin.pin.toString()" v-model="checkedPins[pin.pin]" color="primary"></v-switch>
+                  </span>
             </div>
             <Line v-if="dataAvailable" :data="pinsData" :options="options" :key="cle" />
       </v-container>
