@@ -2,24 +2,25 @@
 import type { BoardData, PinsConfiguration, PinState, Pins, PinStateMap } from '@/types/types';
 import { ref, watch } from 'vue';
 import { Line } from 'vue-chartjs';
-import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
+import { Chart as ChartJS, Title, Tooltip, Legend, PointElement, LineElement, CategoryScale, LinearScale } from 'chart.js'
+import type { ChartData } from 'chart.js';
 import { gpioStore } from '@/stores/gpiostore'
 
-ChartJS.register(Title);
+ChartJS.register(
+      CategoryScale,
+      LinearScale,
+      PointElement,
+      LineElement,
+      Title,
+      Tooltip,
+      Legend
+)
+
 const store = gpioStore();
-interface ChartData {
-      datasets: [{
-            label:string
-            backgroundColor:string
-            data: number[];
-            // Include any other dataset properties as needed
-      }];
-      labels: string[]; // Adding labels here
-}
 
 const chartData = ref<ChartData>({
       datasets: [{
-            label:"test",
+            label: "test",
             backgroundColor: '#f87979',
             data: [],
       }],
@@ -40,14 +41,15 @@ function dataToPlot(gpiopin: number): number | undefined {
 
 
 watch(() => store.currentStates, (newStates) => {
-      const result = dataToPlot(7); // Example for GPIO pin 7
+      const result = dataToPlot(18); // Example for GPIO pin 7
       if (result !== undefined) {
             chartData.value.datasets[0].data.push(result);
-            chartData.value.labels.push(result.toString());
+            chartData.value.labels?.push(result.toString());
       }
 }, { immediate: true, deep: true });
 </script>
 
 <template>
-      <Line v-if="store.currentStates" :data="chartData" :chart-options="{ responsive: true, maintainAspectRatio: false }" />
+      <Line :data="chartData" :chart-options="{ responsive: true, maintainAspectRatio: false }" />
+      <!-- <div>{{ chartData.datasets[0].data }}</div> -->
 </template>
