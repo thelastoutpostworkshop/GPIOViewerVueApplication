@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { PinStateMap } from '@/types/types';
-import { ref, watch } from 'vue';
+import { ref, watch} from 'vue';
 import { Line } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, PointElement, LineElement, CategoryScale, LinearScale } from 'chart.js'
 import type { ChartData } from 'chart.js';
@@ -19,6 +19,7 @@ ChartJS.register(
 const store = gpioStore();
 
 const dataAvailable = ref<boolean>(false);
+const cle = ref<number>(0);
 const pinsData: ChartData = {
       labels: [],
       datasets: [
@@ -29,8 +30,6 @@ const pinsData: ChartData = {
             }
       ],
 };
-
-const displayData = ref<ChartData>();
 
 function dataToPlot(gpiopin: number, states: PinStateMap | null): number | undefined {
       if (states) {
@@ -47,9 +46,9 @@ function dataToPlot(gpiopin: number, states: PinStateMap | null): number | undef
 function updateDataToPlot(v: number) {
       pinsData.datasets[0].data.push(v);
       pinsData.labels?.push(store.SamplingInterval);
-      displayData.value = JSON.parse(JSON.stringify(pinsData));
+      cle.value+=1;
+      // displayData.value = pinsData;
       dataAvailable.value = true;
-
 }
 
 watch(
@@ -68,7 +67,7 @@ watch(
 
 <template>
       <v-container>
-            <Line v-if="dataAvailable" :data="displayData"
+            <Line v-if="dataAvailable" :data="pinsData" :key="cle"
                   :chart-options="{ responsive: true, maintainAspectRatio: false }" />
       </v-container>
 </template>
