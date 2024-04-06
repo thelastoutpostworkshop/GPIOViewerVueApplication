@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { PinStateMap } from '@/types/types';
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { Line } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, PointElement, LineElement, CategoryScale, LinearScale } from 'chart.js'
 import type { ChartData, ChartOptions } from 'chart.js';
@@ -31,6 +31,19 @@ const activePins = ref<ActivePins>({
       gpio: [],
       lastValue: []
 });
+
+const checkedPins = ref<{ [key: number]: boolean }>({});
+
+activePins.value.gpio.forEach(pin => {
+      checkedPins.value[pin] = false;
+});
+
+const gpioCheckboxes = computed(() =>
+      activePins.value.gpio.map(pin => ({
+            pin,
+            checked: checkedPins.value[pin]
+      }))
+);
 
 function addOrUpdateGpioValue(gpioNumber: number, value: number) {
       // Check if the GPIO number is already in the array
@@ -75,7 +88,7 @@ function dataToPlot(gpiopin: number, states: PinStateMap | null): number | undef
             for (const [gpioId, pinState] of Object.entries(states)) {
                   const gpioIdNum = parseInt(gpioId);
                   if (gpioIdNum === gpiopin) {
-                        addOrUpdateGpioValue(gpiopin,pinState.v)
+                        addOrUpdateGpioValue(gpiopin, pinState.v)
                         return pinState.v;
                   }
             }
@@ -106,6 +119,12 @@ watch(
 
 <template>
       <v-container>
+            <div>
+                  <div v-for="pin in gpioCheckboxes" :key="pin.pin">
+                        <input type="checkbox" :id="`pin-${pin.pin}`" v-model="checkedPins[pin.pin]">
+                        <label :for="`pin-${pin.pin}`">GPIO Pin {{ pin.pin }}</label>
+                  </div>
+            </div>
             <Line v-if="dataAvailable" :data="pinsData" :options="options" :key="cle" />
       </v-container>
 </template>
