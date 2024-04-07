@@ -127,29 +127,29 @@ function updatePinStates(states: PinStateMap | null) {
             for (const [gpioId, pinState] of Object.entries(states)) {
                   const gpioIdNum = parseInt(gpioId);
                   addOrUpdateGpioValue(gpioIdNum, pinState.v)
-                  addDataToDatasetByLabel(pinsData, gpioIdNum.toString(), pinState.v);
+                  addDataToDatasetByLabel(pinsData, gpioIdNum);
             }
       }
 }
 
-function addDataToDatasetByLabel(chart: ChartData, label: string, dataPoint: number) {
-      const datasetIndex = chart.datasets.findIndex(dataset => dataset.label === label);
+function addDataToDatasetByLabel(chart: ChartData, gpio: number) {
+      const datasetIndex = chart.datasets.findIndex(dataset => dataset.label === gpio.toString());
 
       if (datasetIndex !== -1) {
-            chart.datasets[datasetIndex].data.push(dataPoint);
+            let pinEntry = store.lastPinValues.find(p => p.gpio === gpio);
+            if (pinEntry) {
+                  if (pinEntry.values) {
+                        console.log(pinEntry.values);
+                        chart.datasets[datasetIndex].data = pinEntry.values;
+                        chart.labels = new Array(pinEntry.values.length).fill(store.SamplingInterval.toString());
 
-            if (chart.datasets[datasetIndex].data.length > maxDataStored) {
-                  chart.datasets[datasetIndex].data = chart.datasets[datasetIndex].data.slice(-maxDataStored);
-            }
-
-            if (chart.labels) {
-                  chart.labels.push(store.SamplingInterval); 
-                  if (chart.labels.length > maxDataStored) {
-                        chart.labels = chart.labels.slice(-maxDataStored);
+                  } else {
+                        chart.datasets[datasetIndex].data = [];
+                        chart.labels = [];
                   }
+                  cle.value += 1;
+                  dataAvailable.value = true;
             }
-            cle.value += 1;
-            dataAvailable.value = true;
       }
 }
 
