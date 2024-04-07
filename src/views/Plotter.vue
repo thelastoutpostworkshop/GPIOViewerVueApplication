@@ -96,12 +96,10 @@ function addDataset(chart: ChartData, newDataset: any) {
             chart.datasets = [];
       }
 
-      // Check if dataset with the same label exists
       const exists = chart.datasets.some(dataset => dataset.label === newDataset.label);
 
       if (!exists) {
             chart.datasets.push(newDataset);
-            //     chart.update();
       }
 }
 
