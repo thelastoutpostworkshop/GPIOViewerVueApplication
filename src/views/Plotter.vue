@@ -63,6 +63,7 @@ watch(checkedPins, (newVal, oldVal) => {
                   })
             } else {
                   removeDatasetByLabel(pinsData, pin.toString());
+                  cle.value += 1;
             }
       }
 });
