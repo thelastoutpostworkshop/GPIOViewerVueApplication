@@ -10,7 +10,7 @@ import { getAPIUrl } from "@/functions";
 const store = gpioStore();
 const drawerOpen = ref(false);
 
-store.WebApplicationRelease = "2.0.11";
+store.WebApplicationRelease = "2.1.0";
 
 declare var window: any;
 
