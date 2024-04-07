@@ -42,7 +42,6 @@ const options: ChartOptions = {
       }
 }
 
-const maxDataStored = 25;
 const store = gpioStore();
 
 const dataAvailable = ref<boolean>(false);
