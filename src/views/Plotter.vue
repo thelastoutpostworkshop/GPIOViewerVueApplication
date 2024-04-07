@@ -131,7 +131,7 @@ function updatePinStates(states: PinStateMap | null) {
             //             addOrUpdateGpioValue(pin, pinState.v); // Assuming pin needs to be a number
             //             addDataToDatasetByLabel(pinsData, pin.toString(), pinState.v);
             //       } else {
-                        
+
             //       }
             // });
             for (const [gpioId, pinState] of Object.entries(states)) {
@@ -147,14 +147,25 @@ function addDataToDatasetByLabel(chart: ChartData, label: string, dataPoint: num
 
       // Check if the dataset was found
       if (datasetIndex !== -1) {
-            // Add the data point to the dataset
             chart.datasets[datasetIndex].data.push(dataPoint);
 
-            chart.labels?.push(store.SamplingInterval);
+            // Trim the dataset's data array to the last 100 values if necessary
+            if (chart.datasets[datasetIndex].data.length > 100) {
+                  chart.datasets[datasetIndex].data = chart.datasets[datasetIndex].data.slice(-100);
+            }
+
+            // Assuming you're managing chart labels in sync with data points
+            if (chart.labels) {
+                  chart.labels.push(store.SamplingInterval); // Example label update, adjust as necessary
+                  // Trim labels to match the dataset's data length, up to 100
+                  if (chart.labels.length > 100) {
+                        chart.labels = chart.labels.slice(-100);
+                  }
+            }
+
+            // Example increment and flag update, adjust as necessary
             cle.value += 1;
             dataAvailable.value = true;
-            // Update the chart to reflect the change
-            //     chart.update();
       }
 }
 
