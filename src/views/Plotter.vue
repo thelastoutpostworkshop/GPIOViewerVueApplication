@@ -148,28 +148,10 @@ function addDataToDatasetByLabel(chart: ChartData, label: string, dataPoint: num
       }
 }
 
-function updateDataToPlot(gpio: number, v: number) {
-      pinsData.datasets[gpio].data.push(v);
-      pinsData.labels?.push(store.SamplingInterval);
-      cle.value += 1;
-      dataAvailable.value = true;
-}
-
-function updateCharts(states: PinStateMap | null) {
-      updatePinStates(states);
-}
-
 watch(
       () => store.currentStates,
       (newStates) => {
-
-            updateCharts(newStates);
-            // const result = dataToPlot(7, newStates); // Example for GPIO pin 7
-
-            // if (result !== undefined) {
-            //       console.log(result);
-            //       updateDataToPlot(7,result);
-            // }
+            updatePinStates(newStates);
       }
 );
 </script>
