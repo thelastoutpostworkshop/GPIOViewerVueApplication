@@ -50,13 +50,7 @@ watch(checkedPins, (newVal, oldVal) => {
                         stepped: true
                   })
             } else {
-
-            }
-            console.log(pin);
-            console.log(newVal[pin]);
-            if (newVal[pin] !== oldVal[pin]) {
-                  console.log(`GPIO Pin ${pin} toggled to ${newVal[pin]}`);
-                  // Execute any additional logic here for when a specific pin's state changes
+                  removeDatasetByLabel(pinsData,pin.toString());
             }
       }
 });
