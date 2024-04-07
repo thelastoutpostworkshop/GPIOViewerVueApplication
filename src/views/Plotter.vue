@@ -2,7 +2,7 @@
 import type { PinStateMap } from '@/types/types';
 import { ref, watch, computed, reactive,onMounted } from 'vue';
 import { Line } from 'vue-chartjs';
-import { Chart as ChartJS, Title, Tooltip, Legend, PointElement, LineElement, CategoryScale, LinearScale } from 'chart.js'
+import { Chart as ChartJS, Title, Tooltip, Legend, PointElement, LineElement, CategoryScale, LinearScale,Filler } from 'chart.js'
 import type { ChartData, ChartOptions } from 'chart.js';
 import { gpioStore } from '@/stores/gpiostore'
 
@@ -11,6 +11,7 @@ ChartJS.register(
       LinearScale,
       PointElement,
       LineElement,
+      Filler,
       Title,
       Tooltip,
       Legend
@@ -59,7 +60,7 @@ watch(checkedPins, (newVal, oldVal) => {
                         label: pin,
                         backgroundColor: '#f87979',
                         data: [],
-                        stepped: true
+                        stepped: true,
                   },pin)
             } else {
                   removeDatasetByLabel(pinsData, pin.toString());
