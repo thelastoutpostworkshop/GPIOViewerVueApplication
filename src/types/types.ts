@@ -57,6 +57,10 @@ export interface PinState {
 export type PinStateMap = {
   [gpio: number]: PinState;
 }
+export type LastPinValues = {
+  gpio:number;
+  states: PinState[];
+}
 export type Memory = {
   size: string
 }
