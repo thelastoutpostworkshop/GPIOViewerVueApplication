@@ -59,7 +59,7 @@ export type PinStateMap = {
 }
 export type LastPinValues = {
   gpio:number;
-  states: PinState[];
+  values: number[];
 }
 export type Memory = {
   size: string

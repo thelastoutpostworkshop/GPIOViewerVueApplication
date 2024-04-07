@@ -40,14 +40,14 @@ function initEventSource(): void {
           // Find the corresponding pin in lastPinValues or create a new entry if it doesn't exist
           let pinEntry = store.lastPinValues.find(p => p.gpio === gpioNum);
           if (!pinEntry) {
-            pinEntry = { gpio: gpioNum, states: [] };
+            pinEntry = { gpio: gpioNum, values: [] };
             store.lastPinValues.push(pinEntry);
           }
 
           // Add the new state and ensure only the last 100 states are kept
-          pinEntry.states.push(pinState);
-          if (pinEntry.states.length > maxLastPinValuesStored) {
-            pinEntry.states = pinEntry.states.slice(-maxLastPinValuesStored);
+          pinEntry.values.push(pinState.v);
+          if (pinEntry.values.length > maxLastPinValuesStored) {
+            pinEntry.values = pinEntry.values.slice(-maxLastPinValuesStored);
           }
         });
 
