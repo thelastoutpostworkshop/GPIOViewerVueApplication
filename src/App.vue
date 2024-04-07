@@ -9,6 +9,7 @@ import { getAPIUrl } from "@/functions";
 
 const store = gpioStore();
 const drawerOpen = ref(false);
+const maxLastPinValuesStored = 25;
 
 store.WebApplicationRelease = "2.1.0";
 
@@ -33,6 +34,23 @@ function initEventSource(): void {
     (e: MessageEvent) => {
       if (!store.freeze) {
         const states = JSON.parse(e.data) as PinStateMap;
+        Object.entries(states).forEach(([gpio, pinState]) => {
+          const gpioNum = parseInt(gpio);
+
+          // Find the corresponding pin in lastPinValues or create a new entry if it doesn't exist
+          let pinEntry = store.lastPinValues.find(p => p.gpio === gpioNum);
+          if (!pinEntry) {
+            pinEntry = { gpio: gpioNum, states: [] };
+            store.lastPinValues.push(pinEntry);
+          }
+
+          // Add the new state and ensure only the last 100 states are kept
+          pinEntry.states.push(pinState);
+          if (pinEntry.states.length > maxLastPinValuesStored) {
+            pinEntry.states = pinEntry.states.slice(-maxLastPinValuesStored);
+          }
+        });
+
         store.currentStates = states;
       }
     },
