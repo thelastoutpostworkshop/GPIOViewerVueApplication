@@ -99,22 +99,27 @@ function dataToPlot(gpiopin: number, states: PinStateMap | null): number | undef
       return undefined;
 }
 
-function updateDataToPlot(v: number) {
-      pinsData.datasets[0].data.push(v);
+function updateDataToPlot(gpio:number,v: number) {
+      pinsData.datasets[gpio].data.push(v);
       pinsData.labels?.push(store.SamplingInterval);
       cle.value += 1;
       dataAvailable.value = true;
 }
 
+function updateCharts() {
+
+}
+
 watch(
       () => store.currentStates,
       (newStates) => {
-
+            
+            updateCharts();
             const result = dataToPlot(7, newStates); // Example for GPIO pin 7
 
             if (result !== undefined) {
                   console.log(result);
-                  updateDataToPlot(result);
+                  updateDataToPlot(7,result);
             }
       }
 );
