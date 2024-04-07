@@ -26,23 +26,39 @@ onMounted(() => {
 });
 
 function addLastPinValues(states: PinStateMap) {
+  // First, update or add new states from the states object
   Object.entries(states).forEach(([gpio, pinState]) => {
     const gpioNum = parseInt(gpio);
-
-    // Find the corresponding pin in lastPinValues or create a new entry if it doesn't exist
     let pinEntry = store.lastPinValues.find(p => p.gpio === gpioNum);
+
     if (!pinEntry) {
       pinEntry = { gpio: gpioNum, values: [] };
       store.lastPinValues.push(pinEntry);
     }
 
-    // Add the new state and ensure only the last 100 states are kept
+    // Directly add the new state
     pinEntry.values.push(pinState.v);
+
+    // Ensure only the last 100 states are kept
     if (pinEntry.values.length > maxLastPinValuesStored) {
       pinEntry.values = pinEntry.values.slice(-maxLastPinValuesStored);
     }
   });
 
+  // Then, for each pin in lastPinValues, if it wasn't updated, duplicate the last value
+  store.lastPinValues.forEach(pinEntry => {
+    if (!states[pinEntry.gpio]) { // If the pin wasn't in the updated states
+      const lastValue = pinEntry.values[pinEntry.values.length - 1];
+      if (lastValue !== undefined) { // Check to ensure there's a last value to duplicate
+        pinEntry.values.push(lastValue);
+
+        // Ensure only the last 100 states are kept
+        if (pinEntry.values.length > maxLastPinValuesStored) {
+          pinEntry.values = pinEntry.values.slice(-maxLastPinValuesStored);
+        }
+      }
+    }
+  });
 }
 
 function initEventSource(): void {
