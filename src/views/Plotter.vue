@@ -21,7 +21,7 @@ interface ActivePins {
       lastValue: number[];
 }
 
-
+const maxDataStored = 25;
 const store = gpioStore();
 
 const dataAvailable = ref<boolean>(false);
@@ -150,16 +150,16 @@ function addDataToDatasetByLabel(chart: ChartData, label: string, dataPoint: num
             chart.datasets[datasetIndex].data.push(dataPoint);
 
             // Trim the dataset's data array to the last 100 values if necessary
-            if (chart.datasets[datasetIndex].data.length > 100) {
-                  chart.datasets[datasetIndex].data = chart.datasets[datasetIndex].data.slice(-100);
+            if (chart.datasets[datasetIndex].data.length > maxDataStored) {
+                  chart.datasets[datasetIndex].data = chart.datasets[datasetIndex].data.slice(-maxDataStored);
             }
 
             // Assuming you're managing chart labels in sync with data points
             if (chart.labels) {
                   chart.labels.push(store.SamplingInterval); // Example label update, adjust as necessary
                   // Trim labels to match the dataset's data length, up to 100
-                  if (chart.labels.length > 100) {
-                        chart.labels = chart.labels.slice(-100);
+                  if (chart.labels.length > maxDataStored) {
+                        chart.labels = chart.labels.slice(-maxDataStored);
                   }
             }
 
