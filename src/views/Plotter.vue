@@ -122,22 +122,8 @@ function addDataset(chart: ChartData, newDataset: any) {
       }
 }
 
-
-
-
 function updatePinStates(states: PinStateMap | null) {
       if (states) {
-            // activePins.gpio.forEach((pin, index) => {
-            //       console.log(pin);
-            //       console.log(index);
-            //       const pinState = states[pin];
-            //       if (pinState) {
-            //             addOrUpdateGpioValue(pin, pinState.v); // Assuming pin needs to be a number
-            //             addDataToDatasetByLabel(pinsData, pin.toString(), pinState.v);
-            //       } else {
-
-            //       }
-            // });
             for (const [gpioId, pinState] of Object.entries(states)) {
                   const gpioIdNum = parseInt(gpioId);
                   addOrUpdateGpioValue(gpioIdNum, pinState.v)
