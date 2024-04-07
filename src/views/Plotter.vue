@@ -3,7 +3,7 @@ import type { PinStateMap } from '@/types/types';
 import { ref, watch, computed, reactive } from 'vue';
 import { Line } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, PointElement, LineElement, CategoryScale, LinearScale } from 'chart.js'
-import type { ChartData, ChartOptions } from 'chart.js';
+import type { ChartData, ChartOptions, ChartDatasetProperties } from 'chart.js';
 import { gpioStore } from '@/stores/gpiostore'
 
 ChartJS.register(
@@ -81,6 +81,31 @@ const pinsData: ChartData = {
             }
       ],
 };
+
+function removeDatasetByLabel(chart: ChartData, label: string) {
+  if (!chart.datasets) return;
+
+  const index = chart.datasets.findIndex(dataset => dataset.label === label);
+
+  if (index > -1) {
+    chart.datasets.splice(index, 1);
+  }
+}
+
+function addDataset(chart: ChartData, newDataset: any) {
+  if (!chart.datasets) {
+    chart.datasets = [];
+  }
+
+  // Check if dataset with the same label exists
+  const exists = chart.datasets.some(dataset => dataset.label === newDataset.label);
+  
+  if (!exists) {
+    chart.datasets.push(newDataset);
+//     chart.update();
+  }
+}
+
 
 const options: ChartOptions = {
       responsive: true,
