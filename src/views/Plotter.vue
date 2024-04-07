@@ -40,7 +40,6 @@ activePins.gpio.forEach(pin => {
 const checkedPins = reactive<{ [key: number]: boolean }>({});
 
 watch(checkedPins, (newVal, oldVal) => {
-      console.log(newVal);
       for (const pin in newVal) {
             if (newVal[pin]) {
                   addDataset(pinsData, {
@@ -64,14 +63,11 @@ const gpioCheckboxes = computed(() =>
 );
 
 function addOrUpdateGpioValue(gpioNumber: number, value: number) {
-      // Check if the GPIO number is already in the array
       const index = activePins.gpio.indexOf(gpioNumber);
 
       if (index !== -1) {
-            // If the GPIO number exists, update its last value
             activePins.lastValue[index] = value;
       } else {
-            // If the GPIO number does not exist, add it and its value
             activePins.gpio.push(gpioNumber);
             activePins.lastValue.push(value);
       }
@@ -145,25 +141,19 @@ function updatePinStates(states: PinStateMap | null) {
 function addDataToDatasetByLabel(chart: ChartData, label: string, dataPoint: number) {
       const datasetIndex = chart.datasets.findIndex(dataset => dataset.label === label);
 
-      // Check if the dataset was found
       if (datasetIndex !== -1) {
             chart.datasets[datasetIndex].data.push(dataPoint);
 
-            // Trim the dataset's data array to the last 100 values if necessary
             if (chart.datasets[datasetIndex].data.length > maxDataStored) {
                   chart.datasets[datasetIndex].data = chart.datasets[datasetIndex].data.slice(-maxDataStored);
             }
 
-            // Assuming you're managing chart labels in sync with data points
             if (chart.labels) {
-                  chart.labels.push(store.SamplingInterval); // Example label update, adjust as necessary
-                  // Trim labels to match the dataset's data length, up to 100
+                  chart.labels.push(store.SamplingInterval); 
                   if (chart.labels.length > maxDataStored) {
                         chart.labels = chart.labels.slice(-maxDataStored);
                   }
             }
-
-            // Example increment and flag update, adjust as necessary
             cle.value += 1;
             dataAvailable.value = true;
       }
