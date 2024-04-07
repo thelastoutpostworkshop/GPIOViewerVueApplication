@@ -56,7 +56,7 @@ watch(checkedPins, (newVal, oldVal) => {
       for (const pin in newVal) {
             if (newVal[pin]) {
                   addDataset(pinsData, {
-                        label: pin.toString(),
+                        label: pin,
                         backgroundColor: '#f87979',
                         data: [],
                         stepped: true
