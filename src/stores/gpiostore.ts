@@ -1,12 +1,13 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue';
-import type { BoardData, PinStateMap, Memory, PinsConfiguration } from '@/types/types';
+import { type BoardData, type PinStateMap, type Memory, type PinsConfiguration, type LastPinValues } from '@/types/types';
 
 export const gpioStore = defineStore('gpioviewer', () => {
   const boards = ref<BoardData[] | null>(null);
   const currentBoard = ref<BoardData | null>(null);
   const currentStates = ref<PinStateMap | null>(null);
   const pinsPreserved = ref<PinsConfiguration | null>(null);
+  const lastPinValues = ref<LastPinValues>;
   const freeHeap = ref<Memory | null>(null);
   const freePSRAM = ref<Memory | null>(null);
   const freeSketch = ref<Memory | null>(null);
@@ -30,6 +31,6 @@ export const gpioStore = defineStore('gpioviewer', () => {
   return {
     currentBoard, ipAddress, httpPort, currentStates, freeHeap, freePSRAM,
     freeSketch, freeze, boards, pintype, SamplingInterval, pinsPreserved, connectedToESP32, magnifyImage,
-    wifiActivity,GPIOViewerRelease,WebApplicationRelease
+    wifiActivity,GPIOViewerRelease,WebApplicationRelease,lastPinValues
   }
 })
