@@ -116,6 +116,9 @@ const options: ChartOptions = {
                         display: true,
                         text: "ms"
                   }
+            },
+            y:{
+                  stacked:true
             }
       }
 }
