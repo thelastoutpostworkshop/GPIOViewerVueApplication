@@ -117,14 +117,17 @@ const options: ChartOptions = {
                         text: "ms"
                   }
             },
-            y:{
-                  stacked:true
+            y: {
+                  stacked: true
             }
       }
 }
 
 function updatePinStates(states: PinStateMap | null) {
       if (states) {
+            activePins.gpio.forEach(pin => {
+                  console.log(pin);
+            });
             for (const [gpioId, pinState] of Object.entries(states)) {
                   const gpioIdNum = parseInt(gpioId);
                   addOrUpdateGpioValue(gpioIdNum, pinState.v)
@@ -146,9 +149,7 @@ function addDataToDatasetByLabel(chart: ChartData, label: string, dataPoint: num
             dataAvailable.value = true;
             // Update the chart to reflect the change
             //     chart.update();
-      } else {
-            console.warn(`Dataset with label '${label}' not found.`);
-      }
+      } 
 }
 
 watch(
