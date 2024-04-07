@@ -32,11 +32,22 @@ const activePins = ref<ActivePins>({
       lastValue: []
 });
 
-const checkedPins = ref<{ [key: number]: boolean }>({});
 
 activePins.value.gpio.forEach(pin => {
       checkedPins.value[pin] = false;
 });
+
+const checkedPins = ref<{ [key: number]: boolean }>({});
+
+watch(checkedPins, (newVal, oldVal) => {
+  for (const pin in newVal) {
+    if (newVal[pin] !== oldVal[pin]) {
+      console.log(`GPIO Pin ${pin} toggled to ${newVal[pin]}`);
+      // Execute any additional logic here for when a specific pin's state changes
+    }
+  }
+}, { deep: true }); // Use the deep option to watch nested values
+
 
 const gpioCheckboxes = computed(() =>
       activePins.value.gpio.map(pin => ({
@@ -84,19 +95,13 @@ const options: ChartOptions = {
       }
 }
 
-function dataToPlot(gpiopin: number, states: PinStateMap | null): number | undefined {
+function updatePinStates(states: PinStateMap | null) {
       if (states) {
             for (const [gpioId, pinState] of Object.entries(states)) {
                   const gpioIdNum = parseInt(gpioId);
-                  if (gpioIdNum === gpiopin) {
                         addOrUpdateGpioValue(gpioIdNum, pinState.v)
-                        return pinState.v;
-                  } else {
-                        addOrUpdateGpioValue(gpioIdNum, pinState.v)
-                  }
             }
       }
-      return undefined;
 }
 
 function updateDataToPlot(gpio:number,v: number) {
@@ -106,21 +111,21 @@ function updateDataToPlot(gpio:number,v: number) {
       dataAvailable.value = true;
 }
 
-function updateCharts() {
-
+function updateCharts(states: PinStateMap | null) {
+      updatePinStates(states);
 }
 
 watch(
       () => store.currentStates,
       (newStates) => {
             
-            updateCharts();
-            const result = dataToPlot(7, newStates); // Example for GPIO pin 7
+            updateCharts(newStates);
+            // const result = dataToPlot(7, newStates); // Example for GPIO pin 7
 
-            if (result !== undefined) {
-                  console.log(result);
-                  updateDataToPlot(7,result);
-            }
+            // if (result !== undefined) {
+            //       console.log(result);
+            //       updateDataToPlot(7,result);
+            // }
       }
 );
 </script>
