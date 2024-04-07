@@ -6,9 +6,6 @@ import { Chart as ChartJS, Title, Tooltip, Legend, PointElement, LineElement, Ca
 import type { ChartData, ChartOptions, ChartDatasetProperties } from 'chart.js';
 import { gpioStore } from '@/stores/gpiostore'
 
-interface ActivePins {
-      gpio: number[];
-}
 ChartJS.register(
       CategoryScale,
       LinearScale,
@@ -45,10 +42,6 @@ const store = gpioStore();
 
 const dataAvailable = ref<boolean>(false);
 const cle = ref<number>(0);
-
-const activePins = reactive<ActivePins>({
-      gpio: [],
-});
 
 const checkedPins = reactive<{ [key: number]: boolean }>({});
 
