@@ -3,7 +3,7 @@ import type { PinStateMap } from '@/types/types';
 import { ref, watch, computed, reactive,onMounted } from 'vue';
 import { Line } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, PointElement, LineElement, CategoryScale, LinearScale } from 'chart.js'
-import type { ChartData, ChartOptions, ChartDatasetProperties } from 'chart.js';
+import type { ChartData, ChartOptions } from 'chart.js';
 import { gpioStore } from '@/stores/gpiostore'
 
 ChartJS.register(
