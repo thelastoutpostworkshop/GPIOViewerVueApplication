@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { PinStateMap } from '@/types/types';
-import { ref, watch, computed, reactive } from 'vue';
+import { ref, watch, computed, reactive,onMounted } from 'vue';
 import { Line } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, PointElement, LineElement, CategoryScale, LinearScale } from 'chart.js'
 import type { ChartData, ChartOptions, ChartDatasetProperties } from 'chart.js';
@@ -8,7 +8,6 @@ import { gpioStore } from '@/stores/gpiostore'
 
 interface ActivePins {
       gpio: number[];
-      lastValue: number[];
 }
 ChartJS.register(
       CategoryScale,
@@ -49,21 +48,16 @@ const cle = ref<number>(0);
 
 const activePins = reactive<ActivePins>({
       gpio: [],
-      lastValue: []
 });
 
-
-activePins.gpio.forEach(pin => {
-      checkedPins[pin] = false;
-});
+const checkedPins = reactive<{ [key: number]: boolean }>({});
 
 const gpioCheckboxes = computed(() =>
-      activePins.gpio.map(pin => ({
+      store.lastPinValues.map(pin => ({
             pin,
-            checked: checkedPins[pin]
+            checked: checkedPins[pin.gpio]
       }))
 );
-const checkedPins = reactive<{ [key: number]: boolean }>({});
 
 watch(checkedPins, (newVal, oldVal) => {
       for (const pin in newVal) {
@@ -87,17 +81,11 @@ watch(
       }
 );
 
-function addOrUpdateGpioValue(gpioNumber: number, value: number) {
-      const index = activePins.gpio.indexOf(gpioNumber);
-
-      if (index !== -1) {
-            activePins.lastValue[index] = value;
-      } else {
-            activePins.gpio.push(gpioNumber);
-            activePins.lastValue.push(value);
-      }
-}
-
+onMounted(() => {
+      store.lastPinValues.forEach(pin => {
+      checkedPins[pin.gpio] = false;
+})
+});
 
 function removeDatasetByLabel(chart: ChartData, label: string) {
       if (!chart.datasets) return;
@@ -125,7 +113,6 @@ function updatePinStates(states: PinStateMap | null) {
       if (states) {
             for (const [gpioId, pinState] of Object.entries(states)) {
                   const gpioIdNum = parseInt(gpioId);
-                  addOrUpdateGpioValue(gpioIdNum, pinState.v)
                   addDataToDatasetByLabel(pinsData, gpioIdNum);
             }
       }
@@ -160,8 +147,8 @@ function addDataToDatasetByLabel(chart: ChartData, gpio: number) {
                         Select any active GPIO pins
                   </v-card-title>
                   <div class="d-flex flex-wrap ml-2">
-                        <div class="mr-6" v-for="pin in gpioCheckboxes" :key="pin.pin">
-                              <v-switch :label="pin.pin.toString()" v-model="checkedPins[pin.pin]" color="primary"
+                        <div class="mr-6" v-for="pin in gpioCheckboxes" :key="pin.pin.gpio">
+                              <v-switch :label="pin.pin.gpio.toString()" v-model="checkedPins[pin.pin.gpio]" color="primary"
                                     density="compact"></v-switch>
                         </div>
 
