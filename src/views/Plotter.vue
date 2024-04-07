@@ -108,7 +108,7 @@ const options: ChartOptions = {
             x: {
                   title: {
                         display: true,
-                        text: "ms"
+                        text: "ms (approximative)"
                   }
             },
             y: {
