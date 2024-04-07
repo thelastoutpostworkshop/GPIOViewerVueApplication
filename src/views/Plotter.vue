@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { PinStateMap } from '@/types/types';
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, reactive } from 'vue';
 import { Line } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, PointElement, LineElement, CategoryScale, LinearScale } from 'chart.js'
 import type { ChartData, ChartOptions } from 'chart.js';
@@ -27,17 +27,17 @@ const store = gpioStore();
 const dataAvailable = ref<boolean>(false);
 const cle = ref<number>(0);
 
-const activePins = ref<ActivePins>({
+const activePins = reactive<ActivePins>({
       gpio: [],
       lastValue: []
 });
 
 
-activePins.value.gpio.forEach(pin => {
-      checkedPins.value[pin] = false;
+activePins.gpio.forEach(pin => {
+      checkedPins[pin] = false;
 });
 
-const checkedPins = ref<{ [key: number]: boolean }>({});
+const checkedPins = reactive<{ [key: number]: boolean }>({});
 
 watch(checkedPins, (newVal, oldVal) => {
   for (const pin in newVal) {
@@ -50,23 +50,23 @@ watch(checkedPins, (newVal, oldVal) => {
 
 
 const gpioCheckboxes = computed(() =>
-      activePins.value.gpio.map(pin => ({
+      activePins.gpio.map(pin => ({
             pin,
-            checked: checkedPins.value[pin]
+            checked: checkedPins[pin]
       }))
 );
 
 function addOrUpdateGpioValue(gpioNumber: number, value: number) {
       // Check if the GPIO number is already in the array
-      const index = activePins.value.gpio.indexOf(gpioNumber);
+      const index = activePins.gpio.indexOf(gpioNumber);
 
       if (index !== -1) {
             // If the GPIO number exists, update its last value
-            activePins.value.lastValue[index] = value;
+            activePins.lastValue[index] = value;
       } else {
             // If the GPIO number does not exist, add it and its value
-            activePins.value.gpio.push(gpioNumber);
-            activePins.value.lastValue.push(value);
+            activePins.gpio.push(gpioNumber);
+            activePins.lastValue.push(value);
       }
 }
 const pinsData: ChartData = {
