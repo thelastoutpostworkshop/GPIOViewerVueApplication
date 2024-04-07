@@ -40,13 +40,14 @@ activePins.gpio.forEach(pin => {
 const checkedPins = reactive<{ [key: number]: boolean }>({});
 
 watch(checkedPins, (newVal, oldVal) => {
+  console.log(newVal);    
   for (const pin in newVal) {
     if (newVal[pin] !== oldVal[pin]) {
       console.log(`GPIO Pin ${pin} toggled to ${newVal[pin]}`);
       // Execute any additional logic here for when a specific pin's state changes
     }
   }
-}, { deep: true }); // Use the deep option to watch nested values
+}); 
 
 
 const gpioCheckboxes = computed(() =>
