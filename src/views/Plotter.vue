@@ -139,8 +139,7 @@ function addDataToDatasetByLabel(chart: ChartData, gpio: number) {
             let pinEntry = store.lastPinValues.find(p => p.gpio === gpio);
             if (pinEntry) {
                   if (pinEntry.values) {
-                        console.log(pinEntry.values);
-                        chart.datasets[datasetIndex].data = pinEntry.values;
+                        chart.datasets[datasetIndex].data = [...pinEntry.values];
                         chart.labels = new Array(pinEntry.values.length).fill(store.SamplingInterval.toString());
 
                   } else {
