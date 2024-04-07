@@ -59,7 +59,7 @@ watch(checkedPins, (newVal, oldVal) => {
             if (newVal[pin]) {
                   addDataset(pinsData, {
                         label: pin,
-                        backgroundColor: '#f87979',
+                        backgroundColor: 'rgb(0,0,0)',
                         borderColor:colors[Number(pin)],
                         data: [],
                         stepped: true,
