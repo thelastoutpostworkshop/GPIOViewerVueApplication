@@ -40,14 +40,26 @@ activePins.gpio.forEach(pin => {
 const checkedPins = reactive<{ [key: number]: boolean }>({});
 
 watch(checkedPins, (newVal, oldVal) => {
-  console.log(newVal);    
-  for (const pin in newVal) {
-    if (newVal[pin] !== oldVal[pin]) {
-      console.log(`GPIO Pin ${pin} toggled to ${newVal[pin]}`);
-      // Execute any additional logic here for when a specific pin's state changes
-    }
-  }
-}); 
+      console.log(newVal);
+      for (const pin in newVal) {
+            if (newVal[pin]) {
+                  addDataset(pinsData, {
+                        label: pin.toString(),
+                        backgroundColor: '#f87979',
+                        data: [],
+                        stepped: true
+                  })
+            } else {
+
+            }
+            console.log(pin);
+            console.log(newVal[pin]);
+            if (newVal[pin] !== oldVal[pin]) {
+                  console.log(`GPIO Pin ${pin} toggled to ${newVal[pin]}`);
+                  // Execute any additional logic here for when a specific pin's state changes
+            }
+      }
+});
 
 
 const gpioCheckboxes = computed(() =>
@@ -72,38 +84,31 @@ function addOrUpdateGpioValue(gpioNumber: number, value: number) {
 }
 const pinsData: ChartData = {
       labels: [],
-      datasets: [
-            {
-                  label: "",
-                  backgroundColor: '#f87979',
-                  data: [],
-                  stepped: true
-            }
-      ],
+      datasets: [],
 };
 
 function removeDatasetByLabel(chart: ChartData, label: string) {
-  if (!chart.datasets) return;
+      if (!chart.datasets) return;
 
-  const index = chart.datasets.findIndex(dataset => dataset.label === label);
+      const index = chart.datasets.findIndex(dataset => dataset.label === label);
 
-  if (index > -1) {
-    chart.datasets.splice(index, 1);
-  }
+      if (index > -1) {
+            chart.datasets.splice(index, 1);
+      }
 }
 
 function addDataset(chart: ChartData, newDataset: any) {
-  if (!chart.datasets) {
-    chart.datasets = [];
-  }
+      if (!chart.datasets) {
+            chart.datasets = [];
+      }
 
-  // Check if dataset with the same label exists
-  const exists = chart.datasets.some(dataset => dataset.label === newDataset.label);
-  
-  if (!exists) {
-    chart.datasets.push(newDataset);
-//     chart.update();
-  }
+      // Check if dataset with the same label exists
+      const exists = chart.datasets.some(dataset => dataset.label === newDataset.label);
+
+      if (!exists) {
+            chart.datasets.push(newDataset);
+            //     chart.update();
+      }
 }
 
 
@@ -125,12 +130,12 @@ function updatePinStates(states: PinStateMap | null) {
       if (states) {
             for (const [gpioId, pinState] of Object.entries(states)) {
                   const gpioIdNum = parseInt(gpioId);
-                        addOrUpdateGpioValue(gpioIdNum, pinState.v)
+                  addOrUpdateGpioValue(gpioIdNum, pinState.v)
             }
       }
 }
 
-function updateDataToPlot(gpio:number,v: number) {
+function updateDataToPlot(gpio: number, v: number) {
       pinsData.datasets[gpio].data.push(v);
       pinsData.labels?.push(store.SamplingInterval);
       cle.value += 1;
@@ -144,7 +149,7 @@ function updateCharts(states: PinStateMap | null) {
 watch(
       () => store.currentStates,
       (newStates) => {
-            
+
             updateCharts(newStates);
             // const result = dataToPlot(7, newStates); // Example for GPIO pin 7
 
