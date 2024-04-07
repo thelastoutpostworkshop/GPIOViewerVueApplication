@@ -25,6 +25,26 @@ onMounted(() => {
   }
 });
 
+function addLastPinValues(states: PinStateMap) {
+  Object.entries(states).forEach(([gpio, pinState]) => {
+    const gpioNum = parseInt(gpio);
+
+    // Find the corresponding pin in lastPinValues or create a new entry if it doesn't exist
+    let pinEntry = store.lastPinValues.find(p => p.gpio === gpioNum);
+    if (!pinEntry) {
+      pinEntry = { gpio: gpioNum, values: [] };
+      store.lastPinValues.push(pinEntry);
+    }
+
+    // Add the new state and ensure only the last 100 states are kept
+    pinEntry.values.push(pinState.v);
+    if (pinEntry.values.length > maxLastPinValuesStored) {
+      pinEntry.values = pinEntry.values.slice(-maxLastPinValuesStored);
+    }
+  });
+
+}
+
 function initEventSource(): void {
   console.log("Waiting to connect to ESP32: with EventSource: ");
   const source = new EventSource("http://" + store.ipAddress + ":" + store.httpPort + "/events");
@@ -34,23 +54,7 @@ function initEventSource(): void {
     (e: MessageEvent) => {
       if (!store.freeze) {
         const states = JSON.parse(e.data) as PinStateMap;
-        Object.entries(states).forEach(([gpio, pinState]) => {
-          const gpioNum = parseInt(gpio);
-
-          // Find the corresponding pin in lastPinValues or create a new entry if it doesn't exist
-          let pinEntry = store.lastPinValues.find(p => p.gpio === gpioNum);
-          if (!pinEntry) {
-            pinEntry = { gpio: gpioNum, values: [] };
-            store.lastPinValues.push(pinEntry);
-          }
-
-          // Add the new state and ensure only the last 100 states are kept
-          pinEntry.values.push(pinState.v);
-          if (pinEntry.values.length > maxLastPinValuesStored) {
-            pinEntry.values = pinEntry.values.slice(-maxLastPinValuesStored);
-          }
-        });
-
+        addLastPinValues(states);
         store.currentStates = states;
       }
     },
