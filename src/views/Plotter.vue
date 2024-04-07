@@ -50,7 +50,7 @@ watch(checkedPins, (newVal, oldVal) => {
                         stepped: true
                   })
             } else {
-                  removeDatasetByLabel(pinsData,pin.toString());
+                  removeDatasetByLabel(pinsData, pin.toString());
             }
       }
 });
@@ -125,7 +125,26 @@ function updatePinStates(states: PinStateMap | null) {
             for (const [gpioId, pinState] of Object.entries(states)) {
                   const gpioIdNum = parseInt(gpioId);
                   addOrUpdateGpioValue(gpioIdNum, pinState.v)
+                  addDataToDatasetByLabel(pinsData, gpioIdNum.toString(), pinState.v);
             }
+      }
+}
+
+function addDataToDatasetByLabel(chart: ChartData, label: string, dataPoint: number) {
+      const datasetIndex = chart.datasets.findIndex(dataset => dataset.label === label);
+
+      // Check if the dataset was found
+      if (datasetIndex !== -1) {
+            // Add the data point to the dataset
+            chart.datasets[datasetIndex].data.push(dataPoint);
+
+            chart.labels?.push(store.SamplingInterval);
+            cle.value += 1;
+            dataAvailable.value = true;
+            // Update the chart to reflect the change
+            //     chart.update();
+      } else {
+            console.warn(`Dataset with label '${label}' not found.`);
       }
 }
 
