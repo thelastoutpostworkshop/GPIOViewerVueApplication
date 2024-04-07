@@ -60,7 +60,7 @@ watch(checkedPins, (newVal, oldVal) => {
                         backgroundColor: '#f87979',
                         data: [],
                         stepped: true
-                  })
+                  },pin)
             } else {
                   removeDatasetByLabel(pinsData, pin.toString());
                   cle.value += 1;
@@ -91,7 +91,7 @@ function removeDatasetByLabel(chart: ChartData, label: string) {
       }
 }
 
-function addDataset(chart: ChartData, newDataset: any) {
+function addDataset(chart: ChartData, newDataset: any,pin:string) {
       if (!chart.datasets) {
             chart.datasets = [];
       }
@@ -100,6 +100,7 @@ function addDataset(chart: ChartData, newDataset: any) {
 
       if (!exists) {
             chart.datasets.push(newDataset);
+            addDataToDatasetByLabel(chart,Number(pin));
       }
 }
 
