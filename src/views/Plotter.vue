@@ -6,6 +6,10 @@ import { Chart as ChartJS, Title, Tooltip, Legend, PointElement, LineElement, Ca
 import type { ChartData, ChartOptions, ChartDatasetProperties } from 'chart.js';
 import { gpioStore } from '@/stores/gpiostore'
 
+interface ActivePins {
+      gpio: number[];
+      lastValue: number[];
+}
 ChartJS.register(
       CategoryScale,
       LinearScale,
@@ -16,9 +20,26 @@ ChartJS.register(
       Legend
 )
 
-interface ActivePins {
-      gpio: number[];
-      lastValue: number[];
+const pinsData: ChartData = {
+      labels: [],
+      datasets: [],
+};
+
+const options: ChartOptions = {
+      responsive: true,
+      animation: false,
+      maintainAspectRatio: true,
+      scales: {
+            x: {
+                  title: {
+                        display: true,
+                        text: "ms (approximative)"
+                  }
+            },
+            y: {
+                  stacked: true
+            }
+      }
 }
 
 const maxDataStored = 25;
@@ -37,6 +58,12 @@ activePins.gpio.forEach(pin => {
       checkedPins[pin] = false;
 });
 
+const gpioCheckboxes = computed(() =>
+      activePins.gpio.map(pin => ({
+            pin,
+            checked: checkedPins[pin]
+      }))
+);
 const checkedPins = reactive<{ [key: number]: boolean }>({});
 
 watch(checkedPins, (newVal, oldVal) => {
@@ -54,12 +81,11 @@ watch(checkedPins, (newVal, oldVal) => {
       }
 });
 
-
-const gpioCheckboxes = computed(() =>
-      activePins.gpio.map(pin => ({
-            pin,
-            checked: checkedPins[pin]
-      }))
+watch(
+      () => store.currentStates,
+      (newStates) => {
+            updatePinStates(newStates);
+      }
 );
 
 function addOrUpdateGpioValue(gpioNumber: number, value: number) {
@@ -72,10 +98,7 @@ function addOrUpdateGpioValue(gpioNumber: number, value: number) {
             activePins.lastValue.push(value);
       }
 }
-const pinsData: ChartData = {
-      labels: [],
-      datasets: [],
-};
+
 
 function removeDatasetByLabel(chart: ChartData, label: string) {
       if (!chart.datasets) return;
@@ -100,22 +123,7 @@ function addDataset(chart: ChartData, newDataset: any) {
 }
 
 
-const options: ChartOptions = {
-      responsive: true,
-      animation: false,
-      maintainAspectRatio: true,
-      scales: {
-            x: {
-                  title: {
-                        display: true,
-                        text: "ms (approximative)"
-                  }
-            },
-            y: {
-                  stacked: true
-            }
-      }
-}
+
 
 function updatePinStates(states: PinStateMap | null) {
       if (states) {
@@ -159,12 +167,6 @@ function addDataToDatasetByLabel(chart: ChartData, label: string, dataPoint: num
       }
 }
 
-watch(
-      () => store.currentStates,
-      (newStates) => {
-            updatePinStates(newStates);
-      }
-);
 </script>
 
 <template>
