@@ -152,7 +152,7 @@ function addDataToDatasetByLabel(chart: ChartData, gpio: number) {
 
                   </div>
             </v-card>
-            <v-sheet class="mt-6">
+            <v-sheet class="mt-6" elevation="16">
                   <Line v-if="dataAvailable" :data="pinsData" :options="options" :key="cle" />
 
             </v-sheet>
