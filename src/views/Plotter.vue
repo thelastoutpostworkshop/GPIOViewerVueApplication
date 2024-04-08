@@ -26,7 +26,7 @@ const pinsData: ChartData = {
 const options: ChartOptions = {
       responsive: true,
       animation: false,
-      maintainAspectRatio: true,
+      maintainAspectRatio: false,
       scales: {
             x: {
                   title: {
