@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { PinStateMap } from '@/types/types';
-import { ref, watch, computed, reactive,onMounted } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { Line } from 'vue-chartjs';
-import { Chart as ChartJS, Title, Tooltip, Legend, PointElement, LineElement, CategoryScale, LinearScale,Filler } from 'chart.js'
+import { Chart as ChartJS, Title, Tooltip, Legend, PointElement, LineElement, CategoryScale, LinearScale, Filler } from 'chart.js'
 import type { ChartData, ChartOptions } from 'chart.js';
 import { gpioStore } from '@/stores/gpiostore'
 import { colors } from '@/colors';
@@ -44,31 +44,26 @@ const store = gpioStore();
 
 const dataAvailable = ref<boolean>(false);
 const cle = ref<number>(0);
+const selectedPins = ref<number[]>([]);
+const pins = ref<number[]>([]);
 
-const checkedPins = reactive<{ [key: number]: boolean }>({});
+watch(selectedPins, (newVal, oldVal) => {
+      newVal.forEach(pin => {
+            addDataset(pinsData, {
+                  label: pin.toString(),
+                  backgroundColor: 'rgb(0,0,0)',
+                  borderColor: colors[Number(pin)],
+                  data: [],
+                  stepped: true,
+            }, pin.toString())
 
-const gpioCheckboxes = computed(() =>
-      store.lastPinValues.map(pin => ({
-            pin,
-            checked: checkedPins[pin.gpio]
-      }))
-);
-
-watch(checkedPins, (newVal, oldVal) => {
-      for (const pin in newVal) {
-            if (newVal[pin]) {
-                  addDataset(pinsData, {
-                        label: pin,
-                        backgroundColor: 'rgb(0,0,0)',
-                        borderColor:colors[Number(pin)],
-                        data: [],
-                        stepped: true,
-                  },pin)
-            } else {
-                  removeDatasetByLabel(pinsData, pin.toString());
+      })
+      pinsData.datasets.forEach(datasets => {
+            if (!selectedPins.value.includes(Number(datasets.label))) {
+                  removeDatasetByLabel(pinsData, String(datasets.label));
                   cle.value += 1;
             }
-      }
+      })
 });
 
 watch(
@@ -80,8 +75,8 @@ watch(
 
 onMounted(() => {
       store.lastPinValues.forEach(pin => {
-      checkedPins[pin.gpio] = false;
-})
+            pins.value.push(pin.gpio);
+      })
 });
 
 function removeDatasetByLabel(chart: ChartData, label: string) {
@@ -94,7 +89,7 @@ function removeDatasetByLabel(chart: ChartData, label: string) {
       }
 }
 
-function addDataset(chart: ChartData, newDataset: any,pin:string) {
+function addDataset(chart: ChartData, newDataset: any, pin: string) {
       if (!chart.datasets) {
             chart.datasets = [];
       }
@@ -103,7 +98,7 @@ function addDataset(chart: ChartData, newDataset: any,pin:string) {
 
       if (!exists) {
             chart.datasets.push(newDataset);
-            addDataToDatasetByLabel(chart,Number(pin));
+            addDataToDatasetByLabel(chart, Number(pin));
       }
 }
 
@@ -144,13 +139,13 @@ function addDataToDatasetByLabel(chart: ChartData, gpio: number) {
                   <v-card-title>
                         Select any active GPIO pins
                   </v-card-title>
-                  <div class="d-flex flex-wrap ml-2">
-                        <div class="mr-6" v-for="pin in gpioCheckboxes" :key="pin.pin.gpio">
-                              <v-switch :label="pin.pin.gpio.toString()" v-model="checkedPins[pin.pin.gpio]" color="primary"
-                                    density="compact"></v-switch>
-                        </div>
+                  <v-card-text>
+                        <v-chip-group column multiple v-model="selectedPins">
+                              <v-chip v-for="pin in pins" :key="pin" :value="pin" color="primary" filter>{{
+                                    pin.toString() }}</v-chip>
+                        </v-chip-group>
 
-                  </div>
+                  </v-card-text>
             </v-card>
             <v-sheet class="mt-6" elevation="16">
                   <Line v-if="dataAvailable" :data="pinsData" :options="options" :key="cle" />
