@@ -9,7 +9,7 @@ import { getAPIUrl } from "@/functions";
 
 const store = gpioStore();
 const drawerOpen = ref(false);
-const maxLastPinValuesStored = 25;
+const maxLastPinValuesStored = 100;
 
 store.WebApplicationRelease = "2.1.0";
 
