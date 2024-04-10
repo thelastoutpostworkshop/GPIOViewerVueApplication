@@ -141,15 +141,15 @@ function addDataToDatasetByLabel(chart: ChartData, gpio: number) {
                   </v-card-title>
                   <v-card-text>
                         <v-chip-group column multiple v-model="selectedPins">
-                              <v-chip v-for="pin in pins" :key="pin" :value="pin" color="blue" filter density="comfortable" size="small" variant="flat">{{
-                                    pin.toString() }}</v-chip>
+                              <v-chip v-for="pin in pins" :key="pin" :value="pin" color="blue" filter
+                                    density="comfortable" size="small" variant="flat">{{
+                                          pin.toString() }}</v-chip>
                         </v-chip-group>
 
                   </v-card-text>
             </v-card>
-            <v-sheet class="mt-6" elevation="16">
+            <v-sheet class="mt-6" elevation="16" height="70vh">
                   <Line v-if="dataAvailable" :data="pinsData" :options="options" :key="cle" />
-
             </v-sheet>
       </v-container>
 </template>
