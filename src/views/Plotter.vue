@@ -18,7 +18,7 @@ ChartJS.register(
       Legend
 )
 
-const pinsData: ChartData = {
+const pinsData: ChartData<'line'> = {
       labels: [],
       datasets: [],
 };
@@ -45,19 +45,6 @@ const options: ChartOptions = {
                   title: {
                         display: true,
                         text: 'Value'
-                  }
-            },
-            y2: {
-                  type: 'linear', // Adjusted from 'category' to 'linear' for numerical representation
-                  position: 'left',
-                  min: 0, // Setting minimum value
-                  max: 1, // Setting maximum value
-                  ticks: {
-                        stepSize: 1 // Ensures ticks at 0 and 1 only
-                  },
-                  title: {
-                        display: true,
-                        text: 'Digital Value (0 or 1)'
                   }
             }
 
@@ -145,9 +132,6 @@ function addDataToDatasetByLabel(chart: ChartData, gpio: number, digitalPin: boo
                   if (pinEntry.values) {
                         chart.datasets[datasetIndex].data = [...pinEntry.values];
                         chart.labels = new Array(pinEntry.values.length).fill(store.SamplingInterval.toString());
-                        if (digitalPin) {
-                              chart.datasets[datasetIndex].yAxisID = digitalPin ? "y2" : "y";
-                        }
 
                   } else {
                         chart.datasets[datasetIndex].data = [];
