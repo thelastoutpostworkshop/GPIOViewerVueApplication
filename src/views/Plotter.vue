@@ -27,6 +27,12 @@ const options: ChartOptions = {
       responsive: true,
       animation: false,
       maintainAspectRatio: false,
+      plugins: {
+            title:{
+                  display:true,
+                  text:"Last 100 values"
+            }
+      },
       scales: {
             x: {
                   title: {
@@ -74,7 +80,7 @@ watch(
 );
 
 onMounted(() => {
-      store.lastPinValues.forEach(pin => {
+      store.lastPinValues.sort((a, b) => a.gpio - b.gpio).forEach(pin => {
             pins.value.push(pin.gpio);
       })
 });
