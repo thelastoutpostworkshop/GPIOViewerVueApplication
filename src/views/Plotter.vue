@@ -41,26 +41,26 @@ const options: ChartOptions = {
                   }
             },
             y: {
-                  type:"linear",
-                  stacked: true,
+                  type: "linear",
                   title: {
                         display: true,
                         text: 'Value'
                   }
             },
-            y2:{
-                  type:'category',
-                  labels: ['ON', 'OFF'],
-                  offset:true,
-                  stacked:true,
-                  position:"left",
-                  stack: 'demo',
-                  stackWeight:1,
+            y2: {
+                  type: 'linear', // Adjusted from 'category' to 'linear' for numerical representation
+                  position: 'left',
+                  min: 0, // Setting minimum value
+                  max: 1, // Setting maximum value
+                  ticks: {
+                        stepSize: 1 // Ensures ticks at 0 and 1 only
+                  },
                   title: {
                         display: true,
-                        text: 'Digital Value'
+                        text: 'Digital Value (0 or 1)'
                   }
             }
+
       }
 }
 
@@ -79,7 +79,7 @@ watch(selectedPins, (newVal, oldVal) => {
                   borderColor: colors[Number(pin)],
                   data: [],
                   stepped: true,
-                  yAxisID:'y'
+                  yAxisID: 'y'
             }, pin.toString())
 
       })
@@ -123,7 +123,7 @@ function addDataset(chart: ChartData, newDataset: any, pin: string) {
 
       if (!exists) {
             chart.datasets.push(newDataset);
-            addDataToDatasetByLabel(chart, Number(pin),false);
+            addDataToDatasetByLabel(chart, Number(pin), false);
       }
 }
 
@@ -131,12 +131,12 @@ function updatePinStates(states: PinStateMap | null) {
       if (states) {
             for (const [gpioId, pinState] of Object.entries(states)) {
                   const gpioIdNum = parseInt(gpioId);
-                  addDataToDatasetByLabel(pinsData, gpioIdNum,pinState.t === PinType.Digital);
+                  addDataToDatasetByLabel(pinsData, gpioIdNum, pinState.t === PinType.Digital);
             }
       }
 }
 
-function addDataToDatasetByLabel(chart: ChartData, gpio: number,digitalPin:boolean) {
+function addDataToDatasetByLabel(chart: ChartData, gpio: number, digitalPin: boolean) {
       const datasetIndex = chart.datasets.findIndex(dataset => dataset.label === gpio.toString());
 
       if (datasetIndex !== -1) {
@@ -145,8 +145,8 @@ function addDataToDatasetByLabel(chart: ChartData, gpio: number,digitalPin:boole
                   if (pinEntry.values) {
                         chart.datasets[datasetIndex].data = [...pinEntry.values];
                         chart.labels = new Array(pinEntry.values.length).fill(store.SamplingInterval.toString());
-                        if(digitalPin) {
-                              chart.datasets[datasetIndex].yAxisID = "y2"
+                        if (digitalPin) {
+                              chart.datasets[datasetIndex].yAxisID = digitalPin ? "y2" : "y";
                         }
 
                   } else {
