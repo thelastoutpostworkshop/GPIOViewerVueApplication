@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PinStateMap } from '@/types/types';
+import { PinType, type PinStateMap } from '@/types/types';
 import { ref, watch, onMounted } from 'vue';
 import { Line } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, PointElement, LineElement, CategoryScale, LinearScale, Filler } from 'chart.js'
@@ -41,6 +41,7 @@ const options: ChartOptions = {
                   }
             },
             y: {
+                  type:"linear",
                   stacked: true,
                   title: {
                         display: true,
@@ -48,10 +49,17 @@ const options: ChartOptions = {
                   }
             },
             y2:{
+                  type:'category',
+                  labels: ['ON', 'OFF'],
                   offset:true,
                   stacked:true,
                   position:"left",
-                  stackWeight:1
+                  stack: 'demo',
+                  stackWeight:1,
+                  title: {
+                        display: true,
+                        text: 'Digital Value'
+                  }
             }
       }
 }
@@ -71,6 +79,7 @@ watch(selectedPins, (newVal, oldVal) => {
                   borderColor: colors[Number(pin)],
                   data: [],
                   stepped: true,
+                  yAxisID:'y'
             }, pin.toString())
 
       })
@@ -114,7 +123,7 @@ function addDataset(chart: ChartData, newDataset: any, pin: string) {
 
       if (!exists) {
             chart.datasets.push(newDataset);
-            addDataToDatasetByLabel(chart, Number(pin));
+            addDataToDatasetByLabel(chart, Number(pin),false);
       }
 }
 
@@ -122,12 +131,12 @@ function updatePinStates(states: PinStateMap | null) {
       if (states) {
             for (const [gpioId, pinState] of Object.entries(states)) {
                   const gpioIdNum = parseInt(gpioId);
-                  addDataToDatasetByLabel(pinsData, gpioIdNum);
+                  addDataToDatasetByLabel(pinsData, gpioIdNum,pinState.t === PinType.Digital);
             }
       }
 }
 
-function addDataToDatasetByLabel(chart: ChartData, gpio: number) {
+function addDataToDatasetByLabel(chart: ChartData, gpio: number,digitalPin:boolean) {
       const datasetIndex = chart.datasets.findIndex(dataset => dataset.label === gpio.toString());
 
       if (datasetIndex !== -1) {
@@ -136,6 +145,9 @@ function addDataToDatasetByLabel(chart: ChartData, gpio: number) {
                   if (pinEntry.values) {
                         chart.datasets[datasetIndex].data = [...pinEntry.values];
                         chart.labels = new Array(pinEntry.values.length).fill(store.SamplingInterval.toString());
+                        if(digitalPin) {
+                              chart.datasets[datasetIndex].yAxisID = "y2"
+                        }
 
                   } else {
                         chart.datasets[datasetIndex].data = [];
