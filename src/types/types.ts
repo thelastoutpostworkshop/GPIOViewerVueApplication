@@ -59,7 +59,6 @@ export type PinStateMap = {
 }
 export type LastPinValues = {
   gpio:number;
-  gpio_type:number;
   values: number[];
 }
 export const PinType = {
