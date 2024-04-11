@@ -28,9 +28,9 @@ const options: ChartOptions = {
       animation: false,
       maintainAspectRatio: false,
       plugins: {
-            title:{
-                  display:true,
-                  text:"Last 100 values"
+            title: {
+                  display: true,
+                  text: "Last 100 values"
             }
       },
       scales: {
@@ -41,7 +41,11 @@ const options: ChartOptions = {
                   }
             },
             y: {
-                  stacked: true
+                  stacked: true,
+                  title: {
+                        display: true,
+                        text: 'Value'
+                  }
             }
       }
 }
