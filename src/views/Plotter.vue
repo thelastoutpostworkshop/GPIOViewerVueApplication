@@ -46,6 +46,12 @@ const options: ChartOptions = {
                         display: true,
                         text: 'Value'
                   }
+            },
+            y2:{
+                  offset:true,
+                  stacked:true,
+                  position:"left",
+                  stackWeight:1
             }
       }
 }
