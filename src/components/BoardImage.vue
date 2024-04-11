@@ -1,6 +1,6 @@
   
 <script setup lang="ts">
-import type { BoardData, PinsConfiguration, PinState, Pins, PinStateMap } from '@/types/types';
+import { type BoardData, type PinsConfiguration, type PinState, type Pins, type PinStateMap,PinType } from '@/types/types';
 import { ref, watch, computed, onUnmounted, onBeforeMount } from 'vue';
 import { gpioStore } from '@/stores/gpiostore'
 import PinInfo from '@/components/PinInformation.vue';
@@ -156,13 +156,13 @@ const getBarValue = (pinState: PinState): number => {
 const getPinType = (pin: PinState): string => {
     let pintype = "";
     switch (pin.t) {
-        case 0:
+        case PinType.Digital:
             pintype = "D";
             break;
-        case 1:
+        case PinType.PWM:
             pintype = "P";
             break;
-        case 2:
+        case PinType.Analog:
             pintype = "A";
             break;
         default:
