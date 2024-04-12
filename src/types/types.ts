@@ -67,6 +67,30 @@ export const PinType = {
   Analog: 2,
 } as const;
 
+export const PinModeValue = {
+  OUTPUT: 3,
+  PULLUP: 4,
+  INPUT_PULLUP: 5,
+  PULLDOWN: 8,
+  INPUT_PULLDOWN: 9,
+  OPEN_DRAIN: 16,
+  OUTPUT_OPEN_DRAIN: 19,
+  ANALOG: 192,
+} as const;
+
+type PinModeKeys = keyof typeof PinModeValue;
+
+export const PinModeDescription: { [key in PinModeKeys]: string } = {
+  OUTPUT: "Output",
+  PULLUP: "Pull-up",
+  INPUT_PULLUP: "Input with Pull-up",
+  PULLDOWN: "Pull-down",
+  INPUT_PULLDOWN: "Input with Pull-down",
+  OPEN_DRAIN: "Open Drain",
+  OUTPUT_OPEN_DRAIN: "Output Open Drain",
+  ANALOG: "Analog",
+};
+
 export type Memory = {
   size: string
 }
