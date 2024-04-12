@@ -97,7 +97,10 @@ onMounted(() => {
 });
 
 function reset() {
-
+      selectedPins.value = [];
+      pinsData.datasets = [];
+      pinsData.labels = [];
+      cle.value+=1;
 }
 
 function removeDatasetByLabel(chart: ChartData, label: string) {
