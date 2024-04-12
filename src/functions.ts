@@ -9,11 +9,11 @@ export const PinModeValue = {
     OPEN_DRAIN: 16,
     OUTPUT_OPEN_DRAIN: 19,
     ANALOG: 192,
-  } as const;
-  
-  export type PinModeKeys = keyof typeof PinModeValue;
-  
-  export const PinModeDescription: { [key in PinModeKeys]: string } = {
+} as const;
+
+export type PinModeKeys = keyof typeof PinModeValue;
+
+export const PinModeDescription: { [key in PinModeKeys]: string } = {
     OUTPUT: "Output",
     PULLUP: "Pull-up",
     INPUT_PULLUP: "Input with Pull-up",
@@ -22,20 +22,17 @@ export const PinModeValue = {
     OPEN_DRAIN: "Open Drain",
     OUTPUT_OPEN_DRAIN: "Output Open Drain",
     ANALOG: "Analog",
-  };
-  
-  // Create a reverse mapping from values to keys
-  export const ValueToKeyMap: { [value: number]: PinModeKeys } = Object.entries(PinModeValue).reduce((acc, [key, value]) => {
+};
+
+export const ValueToKeyMap: { [value: number]: PinModeKeys } = Object.entries(PinModeValue).reduce((acc, [key, value]) => {
     acc[value as number] = key as PinModeKeys;
     return acc;
-  }, {} as { [value: number]: PinModeKeys });
-  
-  // Helper function to get description by value
-  export function getPinMode(value: number): string | undefined {
+}, {} as { [value: number]: PinModeKeys });
+
+export function getPinMode(value: number): string | undefined {
     const key = ValueToKeyMap[value];
     return key ? PinModeDescription[key] : undefined;
-  }
-  
+}
 
 export function getAPIUrl(api: string): string {
     const store = gpioStore();
@@ -90,11 +87,11 @@ export function formatTime(ms: number | undefined): string {
         const minutes = Math.floor(seconds / 60);
         const hours = Math.floor(minutes / 60);
         const days = Math.floor(hours / 24);
-    
+
         const hoursFormatted = (hours % 24).toString().padStart(2, '0');
         const minutesFormatted = (minutes % 60).toString().padStart(2, '0');
         const secondsFormatted = (seconds % 60).toString().padStart(2, '0');
-    
+
         return `${days}d ${hoursFormatted}:${minutesFormatted}:${secondsFormatted}`;
     }
     return "unknown";
