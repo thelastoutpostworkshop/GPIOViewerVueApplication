@@ -1,6 +1,41 @@
-import { ref, computed } from 'vue';
 import { gpioStore } from '@/stores/gpiostore'
 
+export const PinModeValue = {
+    OUTPUT: 3,
+    PULLUP: 4,
+    INPUT_PULLUP: 5,
+    PULLDOWN: 8,
+    INPUT_PULLDOWN: 9,
+    OPEN_DRAIN: 16,
+    OUTPUT_OPEN_DRAIN: 19,
+    ANALOG: 192,
+  } as const;
+  
+  export type PinModeKeys = keyof typeof PinModeValue;
+  
+  export const PinModeDescription: { [key in PinModeKeys]: string } = {
+    OUTPUT: "Output",
+    PULLUP: "Pull-up",
+    INPUT_PULLUP: "Input with Pull-up",
+    PULLDOWN: "Pull-down",
+    INPUT_PULLDOWN: "Input with Pull-down",
+    OPEN_DRAIN: "Open Drain",
+    OUTPUT_OPEN_DRAIN: "Output Open Drain",
+    ANALOG: "Analog",
+  };
+  
+  // Create a reverse mapping from values to keys
+  export const ValueToKeyMap: { [value: number]: PinModeKeys } = Object.entries(PinModeValue).reduce((acc, [key, value]) => {
+    acc[value as number] = key as PinModeKeys;
+    return acc;
+  }, {} as { [value: number]: PinModeKeys });
+  
+  // Helper function to get description by value
+  export function getPinMode(value: number): string | undefined {
+    const key = ValueToKeyMap[value];
+    return key ? PinModeDescription[key] : undefined;
+  }
+  
 
 export function getAPIUrl(api: string): string {
     const store = gpioStore();

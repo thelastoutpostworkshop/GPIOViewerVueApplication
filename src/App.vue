@@ -136,7 +136,6 @@ onMounted(async () => {
   fetchGPIOViewerReleaseVersion();
   fetchSamplingInterval();
   store.pinModes = await fetchPinModes();
-  console.log(store.pinModes);
 });
 
 async function loadBoardsData(): Promise<BoardData[]> {
