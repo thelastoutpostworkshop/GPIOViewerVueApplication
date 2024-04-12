@@ -28,6 +28,11 @@ const options: ChartOptions = {
       animation: false,
       maintainAspectRatio: false,
       plugins: {
+            tooltip: {
+                  callbacks: {
+                        title:function(context) {return ''}
+                  }
+            },
             title: {
                   display: true,
                   text: "Last 100 values"
