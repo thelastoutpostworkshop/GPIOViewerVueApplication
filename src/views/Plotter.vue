@@ -23,14 +23,14 @@ const pinsData: ChartData<'line'> = {
       datasets: [],
 };
 
-const options: ChartOptions<'line'>  = {
+const options: ChartOptions<'line'> = {
       responsive: true,
       animation: false,
       maintainAspectRatio: false,
       plugins: {
             tooltip: {
                   callbacks: {
-                        title:function(context) {return ''}
+                        title: function (context) { return '' }
                   }
             },
             title: {
@@ -100,7 +100,7 @@ function reset() {
       selectedPins.value = [];
       pinsData.datasets = [];
       pinsData.labels = [];
-      cle.value+=1;
+      cle.value += 1;
 }
 
 function removeDatasetByLabel(chart: ChartData, label: string) {
@@ -172,10 +172,10 @@ function addDataToDatasetByLabel(chart: ChartData, gpio: number, digitalPin: boo
 
                   </v-card-text>
                   <v-card-actions>
-                        <v-btn @click="reset()">Reset</v-btn>
+                        <v-btn @click="reset()" elevation="4" :disabled="selectedPins.length == 0">Reset</v-btn>
                   </v-card-actions>
             </v-card>
-            <v-sheet class="mt-6" elevation="16" height="70vh">
+            <v-sheet class="mt-6" elevation="16" height="65vh">
                   <Line v-if="dataAvailable" :data="pinsData" :options="options" :key="cle" />
             </v-sheet>
       </v-container>
