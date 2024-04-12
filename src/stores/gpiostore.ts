@@ -8,7 +8,7 @@ export const gpioStore = defineStore('gpioviewer', () => {
   const currentStates = ref<PinStateMap | null>(null)
   const pinsPreserved = ref<PinsConfiguration | null>(null)
   const lastPinValues = ref<LastPinValues[]>([])
-  const pinModes = ref<PinMode[]>();
+  const pinModes = ref<PinMode[] | null>(null);
   const freeHeap = ref<Memory | null>(null)
   const freePSRAM = ref<Memory | null>(null)
   const freeSketch = ref<Memory | null>(null)

@@ -2,7 +2,7 @@
 import { RouterLink, RouterView, useRoute } from 'vue-router'
 import { ref, computed, onMounted } from 'vue';
 import ParamsError from '@/components/ParamsError.vue';
-import type { Memory, PinStateMap, GPIOViewerRelease, SamplingInterval } from "../src/types/types";
+import type { Memory, PinStateMap, GPIOViewerRelease, SamplingInterval,PinMode } from "@/types/types";
 import type { BoardData } from "@/types/types";
 import { gpioStore } from '@/stores/gpiostore'
 import { getAPIUrl } from "@/functions";
@@ -135,6 +135,8 @@ onMounted(async () => {
   store.boards = await loadBoardsData();
   fetchGPIOViewerReleaseVersion();
   fetchSamplingInterval();
+  store.pinModes = await fetchPinModes();
+  console.log(store.pinModes);
 });
 
 async function loadBoardsData(): Promise<BoardData[]> {
@@ -149,6 +151,19 @@ async function loadBoardsData(): Promise<BoardData[]> {
     return [] as BoardData[];
   }
 }
+
+async function fetchPinModes(): Promise<PinMode[] | null> {
+      try {
+            const response = await fetch(getAPIUrl("pinmodes"));
+            const data: PinMode[] = await response.json();
+            return data;
+
+      } catch (error) {
+            console.error("Error fetching pin modes", error);
+            return null
+      }
+}
+
 async function fetchGPIOViewerReleaseVersion() {
   try {
     const response = await fetch(getAPIUrl("release"));
