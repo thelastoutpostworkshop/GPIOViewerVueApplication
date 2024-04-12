@@ -23,7 +23,7 @@ const pinsData: ChartData<'line'> = {
       datasets: [],
 };
 
-const options: ChartOptions = {
+const options: ChartOptions<'line'>  = {
       responsive: true,
       animation: false,
       maintainAspectRatio: false,
@@ -96,6 +96,10 @@ onMounted(() => {
       })
 });
 
+function reset() {
+
+}
+
 function removeDatasetByLabel(chart: ChartData, label: string) {
       if (!chart.datasets) return;
 
@@ -164,6 +168,9 @@ function addDataToDatasetByLabel(chart: ChartData, gpio: number, digitalPin: boo
                         </v-chip-group>
 
                   </v-card-text>
+                  <v-card-actions>
+                        <v-btn @click="reset()">Reset</v-btn>
+                  </v-card-actions>
             </v-card>
             <v-sheet class="mt-6" elevation="16" height="70vh">
                   <Line v-if="dataAvailable" :data="pinsData" :options="options" :key="cle" />
