@@ -104,3 +104,8 @@ export type ESPPartition = {
   size:number;
   calcPour:number;
 }
+
+export type PinMode = {
+  pin:number;
+  mode:number;
+}
