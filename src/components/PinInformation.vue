@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import type { Pins } from '@/types/types';
 import logo from '@/assets/images/pinlogo.png';
 import pwm from '@/assets/images/pwmlogo.png';
 import digital from '@/assets/images/digitallogo.png';
 import analog from '@/assets/images/analoglogo.png';
+import { PinModeValue, getPinModeDescription } from '@/functions'
+import { gpioStore } from '@/stores/gpiostore'
+const store = gpioStore();
 
 // Define a prop for controlling dialog visibility
 const props = defineProps({
@@ -18,6 +21,13 @@ const dialogOpen = ref(props.showPinInfo);
 // Watch for changes in the prop and update the internal state
 watch(() => props.showPinInfo, (newVal) => {
     dialogOpen.value = newVal;
+});
+
+const pinMode = computed(() => {
+    if (props.pin) {
+        return store.getPinModeValue(props.pin.gpioid);
+    }
+    return -1; // Default or error value
 });
 
 function pinType(pin: Pins | null | undefined): string {
@@ -61,7 +71,8 @@ function pinIcon(pin: Pins | null | undefined): string {
     <v-dialog v-model="dialogOpen" width="300">
         <v-card color="secondary">
             <template v-slot:title>
-                <div class="pin" :style="{ backgroundColor: pin?.color }">{{ pin?.gpioid }}</div>
+                <div class="pin" :style="{ backgroundColor: pin?.color }">{{ pin?.gpioid }} </div>
+                <div>{{ pinMode }}</div>
             </template>
             <template v-slot:prepend>
                 <v-avatar>
@@ -72,7 +83,7 @@ function pinIcon(pin: Pins | null | undefined): string {
             </template>
             <v-card-text>
                 <v-container>
-                    <v-row >
+                    <v-row>
                         <v-col><v-img :width="100" :src="pinIcon(pin)"></v-img></v-col>
                         <v-col align-self="center">{{ pinType(pin) }}</v-col>
                     </v-row>

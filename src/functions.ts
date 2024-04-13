@@ -1,6 +1,7 @@
 import { gpioStore } from '@/stores/gpiostore'
 
 export const PinModeValue = {
+    UNKNOWN: -1,
     OUTPUT: 3,
     PULLUP: 4,
     INPUT_PULLUP: 5,
@@ -14,6 +15,7 @@ export const PinModeValue = {
 export type PinModeKeys = keyof typeof PinModeValue;
 
 export const PinModeDescription: { [key in PinModeKeys]: string } = {
+    UNKNOWN: "Unknown",
     OUTPUT: "Output",
     PULLUP: "Pull-up",
     INPUT_PULLUP: "Input with Pull-up",
@@ -29,7 +31,7 @@ export const ValueToKeyMap: { [value: number]: PinModeKeys } = Object.entries(Pi
     return acc;
 }, {} as { [value: number]: PinModeKeys });
 
-export function getPinMode(value: number): string | undefined {
+export function getPinModeDescription(value: number): string | undefined {
     const key = ValueToKeyMap[value];
     return key ? PinModeDescription[key] : undefined;
 }

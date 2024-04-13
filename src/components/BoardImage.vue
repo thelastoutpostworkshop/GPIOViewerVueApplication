@@ -1,9 +1,9 @@
-  
 <script setup lang="ts">
-import { type BoardData, type PinsConfiguration, type PinState, type Pins, type PinStateMap,PinType } from '@/types/types';
-import { ref, watch, computed, onUnmounted, onBeforeMount } from 'vue';
+import { type BoardData, type PinsConfiguration, type PinState, type Pins, type PinStateMap, PinType } from '@/types/types';
+import { ref, watch, computed, onUnmounted } from 'vue';
 import { gpioStore } from '@/stores/gpiostore'
 import PinInfo from '@/components/PinInformation.vue';
+import { PinModeValue, getPinModeDescription } from '@/functions'
 
 const props = defineProps({
     board: Object as () => BoardData | null
@@ -78,7 +78,7 @@ watch(() => props.board, async (newBoard, oldBoard) => {
                 restorePinsState(store.pinsPreserved);
             }
         }
-        store.magnifyImage=80;
+        store.magnifyImage = 80;
     }
 }, { immediate: true }); // immediate: true ensures the effect runs on mount
 
@@ -180,7 +180,7 @@ const showPinInfo = (pin: Pins) => {
 
 
 </script>
-  
+
 <template>
     <div v-if="board" class="board-container">
         <img v-if="board.image" :src="board.image" class="board-image"
@@ -188,7 +188,8 @@ const showPinInfo = (pin: Pins) => {
         <div v-if="pinsConf" v-for="pin in pinsConf.pins" :key="pin.gpioid" class="indicator"
             :style="{ top: pin.top + '%', left: pin.left + '%', width: pinsConf.settings.pinWidth + '%', height: pinsConf.settings.pinHeight + '%', backgroundColor: pin.color }"
             :id="`gpio${pin.gpioid}`" @click="showPinInfo(pin)">
-            <div v-if="!store.pintype" class="non-clickable" :style="{ fontSize: pinsConf.settings.valueFontSize + 'dvb' }">
+            <div v-if="!store.pintype" class="non-clickable"
+                :style="{ fontSize: pinsConf.settings.valueFontSize + 'dvb' }">
                 {{
                     pin.gpioid }}</div>
             <div v-else class="non-clickable" :style="{ fontSize: pinsConf.settings.valueFontSize + 'dvb' }">
@@ -223,7 +224,8 @@ const showPinInfo = (pin: Pins) => {
                 :style="{ top: pinsConf.wifiFeedback.top + '%', left: pinsConf.wifiFeedback.left + '%', width: pinsConf.wifiFeedback.width + '% ' }" />
         </div>
 
-        <PinInfo :pin="selectedPin" :showPinInfo="showPinInfoCard" @update:modelValue="showPinInfoCard = false"></PinInfo>
+        <PinInfo :pin="selectedPin" :showPinInfo="showPinInfoCard" @update:modelValue="showPinInfoCard = false">
+        </PinInfo>
     </div>
 </template>
 <style scoped>
@@ -326,4 +328,3 @@ const showPinInfo = (pin: Pins) => {
     /* For right-aligned bars */
 }
 </style>
-  

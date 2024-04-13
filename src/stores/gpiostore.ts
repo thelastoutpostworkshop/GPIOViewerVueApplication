@@ -22,6 +22,17 @@ export const gpioStore = defineStore('gpioviewer', () => {
   const wifiActivity = ref(0);
   const GPIOViewerRelease = ref("")
   const WebApplicationRelease = ref("")
+  function getPinModeValue(pin: number) {
+    console.log(pinModes.value)
+    console.log("pin is"+pin)
+    if (pinModes.value === null) {
+      return -1;
+    }
+
+    const pinWithMode = pinModes.value.find(p => Number(p.pin) === pin);
+    console.log(pinWithMode);
+    return pinWithMode ? Number(pinWithMode.mode) : -1;
+  }
   // const count = ref(0)
   // const name = ref('Eduardo')
   // const doubleCount = computed(() => count.value * 2)
@@ -32,6 +43,6 @@ export const gpioStore = defineStore('gpioviewer', () => {
   return {
     currentBoard, ipAddress, httpPort, currentStates, freeHeap, freePSRAM,
     freeSketch, freeze, boards, pintype, SamplingInterval, pinsPreserved, connectedToESP32, magnifyImage,
-    wifiActivity,GPIOViewerRelease,WebApplicationRelease,lastPinValues,pinModes
+    wifiActivity, GPIOViewerRelease, WebApplicationRelease, lastPinValues, pinModes,getPinModeValue
   }
 })
