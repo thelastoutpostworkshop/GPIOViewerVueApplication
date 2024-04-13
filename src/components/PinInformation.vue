@@ -81,13 +81,13 @@ function pinIcon(pin: Pins | null | undefined): string {
                 </v-avatar>
             </template>
             <template v-slot:append>
-                Mode: {{ pinMode }}
+                Pin Mode: {{ pinMode }}
             </template>
             <v-card-text>
                 <v-container>
                     <v-row>
                         <v-col><v-img :width="100" :src="pinIcon(pin)"></v-img></v-col>
-                        <v-col align-self="center">{{ pinType(pin) }}</v-col>
+                        <v-col align-self="center">{{ pinType(pin) }} pin</v-col>
                     </v-row>
                 </v-container>
 

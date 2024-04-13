@@ -15,7 +15,7 @@ export const PinModeValue = {
 export type PinModeKeys = keyof typeof PinModeValue;
 
 export const PinModeDescription: { [key in PinModeKeys]: string } = {
-    UNKNOWN: "Unknown",
+    UNKNOWN: "Not set",
     OUTPUT: "Output",
     PULLUP: "Pull-up",
     INPUT_PULLUP: "Input with Pull-up",
