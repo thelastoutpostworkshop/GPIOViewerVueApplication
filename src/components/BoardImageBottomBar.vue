@@ -33,10 +33,10 @@ function decreaseSize() {
     <v-btn @click="nextState">
         <v-icon>mdi-pin</v-icon>
         <div v-if="currentPinShowState.id === 0">
-            Pin Types
+            Pin Numbers
         </div>
         <div v-if="currentPinShowState.id === 1">
-            Pin Numbers
+            Pin Types
         </div>
         <div v-if="currentPinShowState.id === 2">
             Pin Modes

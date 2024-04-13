@@ -3,7 +3,6 @@ import { type BoardData, type PinsConfiguration, type PinState, type Pins, type 
 import { ref, watch, computed, onUnmounted } from 'vue';
 import { gpioStore } from '@/stores/gpiostore'
 import PinInfo from '@/components/PinInformation.vue';
-import { PinModeValue, getPinModeDescription } from '@/functions'
 
 const props = defineProps({
     board: Object as () => BoardData | null
@@ -22,8 +21,6 @@ const wifiClass = computed(() => {
         return wifiActivity.value ? 'wifi-icon-dark animate-wifi-dark' : 'wifi-icon-dark';
     }
 });
-
-
 
 const colors: string[] = ["#00ff00",
     "#1fff00",
@@ -61,14 +58,15 @@ async function loadIndicators(): Promise<PinsConfiguration | undefined> {
     }
 }
 
-
 // Watch for changes in the board prop and call loadIndicators
 watch(() => props.board, async (newBoard, oldBoard) => {
     if (newBoard && newBoard !== oldBoard) {
         let oldPinConf = pinsConf.value;
         pinsConf.value = await loadIndicators();
-        if (!pinsConf.value?.settings.showPinNumber) {
-            store.pintype = true;
+        if (pinsConf.value?.settings.showPinNumber) {
+            store.pinTypeDisplay = 0;
+        } else {
+            store.pinTypeDisplay = 1;
         }
         if (oldPinConf) {
             restorePinsState(oldPinConf);
@@ -188,11 +186,11 @@ const showPinInfo = (pin: Pins) => {
         <div v-if="pinsConf" v-for="pin in pinsConf.pins" :key="pin.gpioid" class="indicator"
             :style="{ top: pin.top + '%', left: pin.left + '%', width: pinsConf.settings.pinWidth + '%', height: pinsConf.settings.pinHeight + '%', backgroundColor: pin.color }"
             :id="`gpio${pin.gpioid}`" @click="showPinInfo(pin)">
-            <div v-if="!store.pintype" class="non-clickable"
+            <div v-if="store.pinTypeDisplay === 0" class="non-clickable"
                 :style="{ fontSize: pinsConf.settings.valueFontSize + 'dvb' }">
                 {{
                     pin.gpioid }}</div>
-            <div v-else class="non-clickable" :style="{ fontSize: pinsConf.settings.valueFontSize + 'dvb' }">
+            <div v-if="store.pinTypeDisplay === 1" class="non-clickable" :style="{ fontSize: pinsConf.settings.valueFontSize + 'dvb' }">
                 {{ pin.displayType }}
             </div>
         </div>
