@@ -72,7 +72,6 @@ function pinIcon(pin: Pins | null | undefined): string {
         <v-card color="secondary">
             <template v-slot:title>
                 <div class="pin" :style="{ backgroundColor: pin?.color }">{{ pin?.gpioid }} </div>
-                <div>{{ pinMode }}</div>
             </template>
             <template v-slot:prepend>
                 <v-avatar>
@@ -80,6 +79,9 @@ function pinIcon(pin: Pins | null | undefined): string {
 
                     </v-img>
                 </v-avatar>
+            </template>
+            <template v-slot:append>
+                Mode: {{ pinMode }}
             </template>
             <v-card-text>
                 <v-container>
