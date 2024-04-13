@@ -1,8 +1,20 @@
 <script setup lang="ts">
+import { ref, computed } from 'vue';
 import { gpioStore } from '@/stores/gpiostore'
 
 const store = gpioStore();
 
+const pinShowStates = [
+    { id: 0, name: "Pin Numbers" },
+    { id: 1, name: "Pin Type" },
+    { id: 2, name: "Pin Mode" }
+];
+
+function nextState() {
+    store.pinTypeDisplay = (store.pinTypeDisplay + 1) % pinShowStates.length;
+}
+
+const currentPinShowState = computed(() => pinShowStates[store.pinTypeDisplay]);
 
 function increaseSize() {
     store.magnifyImage += 2;
@@ -18,10 +30,17 @@ function decreaseSize() {
         <v-icon :color="store.freeze ? 'blue' : ''">mdi-snowflake</v-icon>
         <span>Freeze</span>
     </v-btn>
-    <v-btn @click="store.pintype = !store.pintype">
+    <v-btn @click="nextState">
         <v-icon>mdi-pin</v-icon>
-        <span v-if="store.pintype">Pin Types</span>
-        <span v-else="store.pintype">Pin Numbers</span>
+        <div v-if="currentPinShowState.id === 0">
+            Pin Types
+        </div>
+        <div v-if="currentPinShowState.id === 1">
+            Pin Numbers
+        </div>
+        <div v-if="currentPinShowState.id === 2">
+            Pin Modes
+        </div>
     </v-btn>
     <v-btn @click="decreaseSize">
         <v-icon>mdi-magnify-minus</v-icon>

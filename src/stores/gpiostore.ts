@@ -16,7 +16,7 @@ export const gpioStore = defineStore('gpioviewer', () => {
   const ipAddress = ref("")
   const httpPort = ref(0)
   const freeze = ref(false)
-  const pintype = ref(false)
+  const pinTypeDisplay = ref(0)
   const SamplingInterval = ref(0)
   const connectedToESP32 = ref(false)
   const magnifyImage = ref(0)
@@ -39,7 +39,7 @@ export const gpioStore = defineStore('gpioviewer', () => {
 
   return {
     currentBoard, ipAddress, httpPort, currentStates, freeHeap, freePSRAM,
-    freeSketch, freeze, boards, pintype, SamplingInterval, pinsPreserved, connectedToESP32, magnifyImage,
+    freeSketch, freeze, boards, pinTypeDisplay, SamplingInterval, pinsPreserved, connectedToESP32, magnifyImage,
     wifiActivity, GPIOViewerRelease, WebApplicationRelease, lastPinValues, pinModes,getPinModeValue
   }
 })
