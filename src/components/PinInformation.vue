@@ -23,11 +23,17 @@ watch(() => props.showPinInfo, (newVal) => {
     dialogOpen.value = newVal;
 });
 
-const pinMode = computed(() => {
+const pinModeDescription = computed(() => {
     if (props.pin) {
         return getPinModeDescription(store.getPinModeValue(props.pin.gpioid));
     }
     return -1; // Default or error value
+});
+const pinMode = computed(() => {
+    if (props.pin) {
+        return store.getPinModeValue(props.pin.gpioid);
+    }
+    return PinModeValue.UNAVAILABLE; // Default or error value
 });
 
 function pinType(pin: Pins | null | undefined): string {
@@ -81,7 +87,9 @@ function pinIcon(pin: Pins | null | undefined): string {
                 </v-avatar>
             </template>
             <template v-slot:append>
-                Pin Mode: {{ pinMode }}
+                <div v-if="pinMode != PinModeValue.UNAVAILABLE">
+                    Pin Mode: {{ pinModeDescription }}
+                </div>
             </template>
             <v-card-text>
                 <v-container>

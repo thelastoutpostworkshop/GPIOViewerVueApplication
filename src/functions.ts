@@ -1,7 +1,8 @@
 import { gpioStore } from '@/stores/gpiostore'
 
 export const PinModeValue = {
-    UNKNOWN: -1,
+    NOT_SET: -1,
+    UNAVAILABLE:-2,
     OUTPUT: 3,
     PULLUP: 4,
     INPUT_PULLUP: 5,
@@ -15,7 +16,8 @@ export const PinModeValue = {
 export type PinModeKeys = keyof typeof PinModeValue;
 
 export const PinModeDescription: { [key in PinModeKeys]: string } = {
-    UNKNOWN: "Not set",
+    NOT_SET: "Not set",
+    UNAVAILABLE:"Unavailable",
     OUTPUT: "Output",
     PULLUP: "Pull-up",
     INPUT_PULLUP: "Input with Pull-up",

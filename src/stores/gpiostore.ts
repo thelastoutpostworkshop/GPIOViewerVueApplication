@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue';
 import { type BoardData, type PinStateMap, type Memory, type PinsConfiguration, type LastPinValues, type PinMode } from '@/types/types';
+import { PinModeValue } from '@/functions';
 
 export const gpioStore = defineStore('gpioviewer', () => {
   const boards = ref<BoardData[] | null>(null)
@@ -24,10 +25,10 @@ export const gpioStore = defineStore('gpioviewer', () => {
   const WebApplicationRelease = ref("")
   function getPinModeValue(pin: number) {
     if (pinModes.value === null) {
-      return -1;
+      return PinModeValue.UNAVAILABLE;
     }
     const pinWithMode = pinModes.value.find(p => Number(p.pin) === pin);
-    return pinWithMode ? Number(pinWithMode.mode) : -1;
+    return pinWithMode ? Number(pinWithMode.mode) : PinModeValue.NOT_SET;
   }
   // const count = ref(0)
   // const name = ref('Eduardo')
