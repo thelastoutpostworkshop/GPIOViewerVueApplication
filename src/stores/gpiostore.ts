@@ -23,14 +23,10 @@ export const gpioStore = defineStore('gpioviewer', () => {
   const GPIOViewerRelease = ref("")
   const WebApplicationRelease = ref("")
   function getPinModeValue(pin: number) {
-    console.log(pinModes.value)
-    console.log("pin is"+pin)
     if (pinModes.value === null) {
       return -1;
     }
-
     const pinWithMode = pinModes.value.find(p => Number(p.pin) === pin);
-    console.log(pinWithMode);
     return pinWithMode ? Number(pinWithMode.mode) : -1;
   }
   // const count = ref(0)

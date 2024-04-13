@@ -25,7 +25,7 @@ watch(() => props.showPinInfo, (newVal) => {
 
 const pinMode = computed(() => {
     if (props.pin) {
-        return store.getPinModeValue(props.pin.gpioid);
+        return getPinModeDescription(store.getPinModeValue(props.pin.gpioid));
     }
     return -1; // Default or error value
 });
