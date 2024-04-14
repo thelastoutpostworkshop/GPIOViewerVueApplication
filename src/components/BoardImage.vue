@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type {  BoardData,  PinsConfiguration,  PinState,  Pins,  PinStateMap } from '@/types/types';
+import type { BoardData, PinsConfiguration, PinState, Pins, PinStateMap } from '@/types/types';
 import { ref, watch, computed, onUnmounted } from 'vue';
 import { gpioStore } from '@/stores/gpiostore'
 import PinInfo from '@/components/PinInformation.vue';
-import { pinMode } from '@/functions'
-import { PinColors,PinType } from '@/const';
+import { pinBroadMode } from '@/functions'
+import { PinColors, PinType } from '@/const';
 
 const props = defineProps({
     board: Object as () => BoardData | null
@@ -177,7 +177,7 @@ const showPinInfo = (pin: Pins) => {
             </div>
             <div v-if="store.pinTypeDisplay === 2" class="non-clickable"
                 :style="{ fontSize: pinsConf.settings.valueFontSize + 'dvb' }">
-                {{ pinMode(pin) }}
+                {{ pinBroadMode(pin) }}
             </div>
         </div>
         <div v-if="pinsConf" v-for="pin in pinsConf.pins" :key="pin.gpioid"
