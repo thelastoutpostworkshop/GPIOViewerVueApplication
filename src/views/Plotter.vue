@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import type { PinStateMap } from '@/types/types';
-import { ref, watch, onMounted,computed } from 'vue';
+import { ref, watch, onMounted, computed } from 'vue';
 import { Line } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, PointElement, LineElement, CategoryScale, LinearScale, Filler } from 'chart.js'
 import type { ChartData, ChartOptions } from 'chart.js';
 import { gpioStore } from '@/stores/gpiostore'
-import { PinType,GraphColors } from '@/const';
+import { PinType, GraphColors,PinModeBroad } from '@/const';
 import { pinBroadMode } from '@/functions'
 
 ChartJS.register(
@@ -97,20 +97,30 @@ onMounted(() => {
       })
 });
 
-function selectPinTypes(pintype:number) {
+function selectPinTypes(pintype: number) {
       reset();
       const digitalPins = store.lastPinValues.filter(pin => pin.gpioType === pintype);
-      digitalPins.forEach(pin => {selectedPins.value.push(pin.gpio)})
+      digitalPins.forEach(pin => { selectedPins.value.push(pin.gpio) })
 }
 
-function selectPinBroadMode(mode:string) {
+function selectPinBroadMode(mode: string) {
       reset();
-      store.lastPinValues.forEach(pin=>{
+      store.lastPinValues.forEach(pin => {
+            if (pinBroadMode(pin.gpioType, pin.gpio) === mode) {
+                  selectedPins.value.push(pin.gpio)
+            }
       })
 }
 
-const isPinTypeAvailable = (pintype:number) => computed(() => {
-  return store.lastPinValues.some(pin => pin.gpioType === pintype);
+const isPinTypeAvailable = (pintype: number) => computed(() => {
+      return store.lastPinValues.some(pin => pin.gpioType === pintype);
+});
+
+const isPinBroadModeAvailable = (mode: string) => computed(() => {
+  return store.lastPinValues.some(pin => {
+    const pinMode = pinBroadMode(pin.gpioType, pin.gpio);
+    return pinMode === mode;
+  });
 });
 
 function reset() {
@@ -190,9 +200,16 @@ function addDataToDatasetByLabel(chart: ChartData, gpio: number, digitalPin: boo
                   </v-card-text>
                   <v-card-actions>
                         <v-btn @click="reset()" elevation="4" :disabled="selectedPins.length == 0">Reset</v-btn>
-                        <v-btn :disabled="!isPinTypeAvailable(PinType.Digital).value" @click="selectPinTypes(PinType.Digital)">Digital</v-btn>
-                        <v-btn :disabled="!isPinTypeAvailable(PinType.Analog).value" @click="selectPinTypes(PinType.Analog)">Analog</v-btn>
-                        <v-btn :disabled="!isPinTypeAvailable(PinType.PWM).value" @click="selectPinTypes(PinType.PWM)">PWM</v-btn>
+                        <v-btn :disabled="!isPinTypeAvailable(PinType.Digital).value"
+                              @click="selectPinTypes(PinType.Digital)">Digital</v-btn>
+                        <v-btn :disabled="!isPinTypeAvailable(PinType.Analog).value"
+                              @click="selectPinTypes(PinType.Analog)">Analog</v-btn>
+                        <v-btn :disabled="!isPinTypeAvailable(PinType.PWM).value"
+                              @click="selectPinTypes(PinType.PWM)">PWM</v-btn>
+                        <v-btn :disabled="!isPinBroadModeAvailable(PinModeBroad.OUTPUT).value"
+                              @click="selectPinBroadMode(PinModeBroad.OUTPUT)">Output</v-btn>
+                        <v-btn :disabled="!isPinBroadModeAvailable(PinModeBroad.INPUT).value"
+                              @click="selectPinBroadMode(PinModeBroad.INPUT)">Input</v-btn>
                   </v-card-actions>
             </v-card>
             <v-sheet class="mt-6" elevation="16" height="65vh">
