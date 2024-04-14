@@ -5,7 +5,7 @@ import { Line } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, PointElement, LineElement, CategoryScale, LinearScale, Filler } from 'chart.js'
 import type { ChartData, ChartOptions } from 'chart.js';
 import { gpioStore } from '@/stores/gpiostore'
-import { PinType, GraphColors,PinModeBroad } from '@/const';
+import { PinType, GraphColors, PinModeBroad } from '@/const';
 import { pinBroadMode } from '@/functions'
 
 ChartJS.register(
@@ -117,10 +117,10 @@ const isPinTypeAvailable = (pintype: number) => computed(() => {
 });
 
 const isPinBroadModeAvailable = (mode: string) => computed(() => {
-  return store.lastPinValues.some(pin => {
-    const pinMode = pinBroadMode(pin.gpioType, pin.gpio);
-    return pinMode === mode;
-  });
+      return store.lastPinValues.some(pin => {
+            const pinMode = pinBroadMode(pin.gpioType, pin.gpio);
+            return pinMode === mode;
+      });
 });
 
 function reset() {
@@ -199,17 +199,18 @@ function addDataToDatasetByLabel(chart: ChartData, gpio: number, digitalPin: boo
 
                   </v-card-text>
                   <v-card-actions>
-                        <v-btn @click="reset()" elevation="4" :disabled="selectedPins.length == 0">Reset</v-btn>
+                        <v-btn @click="reset()" elevation="4" size="x-small" class="pa-1"
+                              :disabled="selectedPins.length == 0">Reset</v-btn>
                         <v-btn :disabled="!isPinTypeAvailable(PinType.Digital).value"
-                              @click="selectPinTypes(PinType.Digital)">Digital</v-btn>
+                              @click="selectPinTypes(PinType.Digital)" size="x-small" class="pa-1">Digital</v-btn>
                         <v-btn :disabled="!isPinTypeAvailable(PinType.Analog).value"
-                              @click="selectPinTypes(PinType.Analog)">Analog</v-btn>
-                        <v-btn :disabled="!isPinTypeAvailable(PinType.PWM).value"
-                              @click="selectPinTypes(PinType.PWM)">PWM</v-btn>
+                              @click="selectPinTypes(PinType.Analog)" size="x-small" class="pa-1">Analog</v-btn>
+                        <v-btn :disabled="!isPinTypeAvailable(PinType.PWM).value" @click="selectPinTypes(PinType.PWM)"
+                              size="x-small" class="pa-1">PWM</v-btn>
                         <v-btn :disabled="!isPinBroadModeAvailable(PinModeBroad.OUTPUT).value"
-                              @click="selectPinBroadMode(PinModeBroad.OUTPUT)">Output</v-btn>
+                              @click="selectPinBroadMode(PinModeBroad.OUTPUT)" size="x-small" class="pa-1">Output</v-btn>
                         <v-btn :disabled="!isPinBroadModeAvailable(PinModeBroad.INPUT).value"
-                              @click="selectPinBroadMode(PinModeBroad.INPUT)">Input</v-btn>
+                              @click="selectPinBroadMode(PinModeBroad.INPUT)" size="x-small" class="pa-1">Input</v-btn>
                   </v-card-actions>
             </v-card>
             <v-sheet class="mt-6" elevation="16" height="65vh">
