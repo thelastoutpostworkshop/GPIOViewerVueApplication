@@ -6,6 +6,7 @@ import { Chart as ChartJS, Title, Tooltip, Legend, PointElement, LineElement, Ca
 import type { ChartData, ChartOptions } from 'chart.js';
 import { gpioStore } from '@/stores/gpiostore'
 import { PinType,GraphColors } from '@/const';
+import { pinBroadMode } from '@/functions'
 
 ChartJS.register(
       CategoryScale,
@@ -100,6 +101,12 @@ function selectPinTypes(pintype:number) {
       reset();
       const digitalPins = store.lastPinValues.filter(pin => pin.gpioType === pintype);
       digitalPins.forEach(pin => {selectedPins.value.push(pin.gpio)})
+}
+
+function selectPinBroadMode(mode:string) {
+      reset();
+      store.lastPinValues.forEach(pin=>{
+      })
 }
 
 const isPinTypeAvailable = (pintype:number) => computed(() => {
