@@ -96,9 +96,9 @@ onMounted(() => {
       })
 });
 
-function selectDigitalPins() {
+function selectPinTypes(pintype:number) {
       reset();
-      const digitalPins = store.lastPinValues.filter(pin => pin.gpioType === PinType.Digital);
+      const digitalPins = store.lastPinValues.filter(pin => pin.gpioType === pintype);
       digitalPins.forEach(pin => {selectedPins.value.push(pin.gpio)})
 }
 
@@ -179,7 +179,9 @@ function addDataToDatasetByLabel(chart: ChartData, gpio: number, digitalPin: boo
                   </v-card-text>
                   <v-card-actions>
                         <v-btn @click="reset()" elevation="4" :disabled="selectedPins.length == 0">Reset</v-btn>
-                        <v-btn @click="selectDigitalPins()">Digital</v-btn>
+                        <v-btn @click="selectPinTypes(PinType.Digital)">Digital</v-btn>
+                        <v-btn @click="selectPinTypes(PinType.Analog)">Analog</v-btn>
+                        <v-btn @click="selectPinTypes(PinType.PWM)">PWM</v-btn>
                   </v-card-actions>
             </v-card>
             <v-sheet class="mt-6" elevation="16" height="65vh">
