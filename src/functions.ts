@@ -1,4 +1,5 @@
 import { gpioStore } from '@/stores/gpiostore'
+import { type Pins } from '@/types/types';
 
 export const PinModeValue = {
     NOT_SET: -1,
@@ -26,6 +27,31 @@ export const PinModeDescription: { [key in PinModeKeys]: string } = {
     OPEN_DRAIN: "Open Drain",
     OUTPUT_OPEN_DRAIN: "Output Open Drain",
     ANALOG: "Analog",
+};
+
+export const pinMode = (pin: Pins): string => {
+    const store = gpioStore();
+    let mode: number = 0;
+    let modeID: string = ""
+    if (pin.displayType === 'P') {
+        mode = PinModeValue.OUTPUT
+    } else {
+        mode = store.getPinModeValue(pin.gpioid);
+    }
+    switch (mode) {
+        case PinModeValue.OUTPUT_OPEN_DRAIN:
+        case PinModeValue.OUTPUT:
+            modeID = 'O'
+            break;
+        case PinModeValue.INPUT_PULLDOWN:
+        case PinModeValue.INPUT_PULLUP:
+            modeID = 'I'
+            break;
+        default:
+            modeID = '-'
+            break;
+    }
+    return modeID
 };
 
 export const ValueToKeyMap: { [value: number]: PinModeKeys } = Object.entries(PinModeValue).reduce((acc, [key, value]) => {

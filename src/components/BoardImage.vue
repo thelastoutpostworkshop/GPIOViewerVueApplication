@@ -3,7 +3,7 @@ import { type BoardData, type PinsConfiguration, type PinState, type Pins, type 
 import { ref, watch, computed, onUnmounted } from 'vue';
 import { gpioStore } from '@/stores/gpiostore'
 import PinInfo from '@/components/PinInformation.vue';
-import { PinModeValue } from '@/functions'
+import { pinMode } from '@/functions'
 
 const props = defineProps({
     board: Object as () => BoardData | null
@@ -151,31 +151,6 @@ const getBarValue = (pinState: PinState): number => {
     const widthPercent = (value / 255) * 100;
     return widthPercent;
 };
-
-const pinMode = (pin: Pins): string => {
-    let mode: number = 0;
-    let modeID: string = ""
-    if (pin.displayType === 'P') {
-        mode = PinModeValue.OUTPUT
-    } else {
-        mode = store.getPinModeValue(pin.gpioid);
-    }
-    switch (mode) {
-        case PinModeValue.OUTPUT_OPEN_DRAIN:
-        case PinModeValue.OUTPUT:
-            modeID = 'O'
-            break;
-        case PinModeValue.INPUT_PULLDOWN:
-        case PinModeValue.INPUT_PULLUP:
-            modeID = 'I'
-            break;
-        default:
-            modeID = '-'
-            break;
-    }
-    return modeID
-};
-
 
 const getPinType = (pin: PinState): string => {
     let pintype = "";
