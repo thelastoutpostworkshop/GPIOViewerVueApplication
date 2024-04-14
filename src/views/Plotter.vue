@@ -5,8 +5,7 @@ import { Line } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, PointElement, LineElement, CategoryScale, LinearScale, Filler } from 'chart.js'
 import type { ChartData, ChartOptions } from 'chart.js';
 import { gpioStore } from '@/stores/gpiostore'
-import { colors } from '@/colors';
-import { PinType } from '@/const';
+import { PinType,GraphColors } from '@/const';
 
 ChartJS.register(
       CategoryScale,
@@ -69,7 +68,7 @@ watch(selectedPins, (newVal, oldVal) => {
             addDataset(pinsData, {
                   label: pin.toString(),
                   backgroundColor: 'rgb(0,0,0)',
-                  borderColor: colors[Number(pin)],
+                  borderColor: GraphColors[Number(pin)],
                   data: [],
                   stepped: true,
                   yAxisID: 'y'
