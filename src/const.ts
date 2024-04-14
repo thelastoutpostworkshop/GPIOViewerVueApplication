@@ -45,8 +45,13 @@ export const PinDisplayTypeShort = {
 } as const
 
 export const DigitalValuesDisplay = {
-    Low:"Low",
-    High:"High"
+    Low: "Low",
+    High: "High"
+} as const
+
+export const WifiFeedbackConfigKey = {
+    Light:"light",
+    Dark:"dark"
 } as const
 
 export const PinColors: string[] = ["#00ff00",

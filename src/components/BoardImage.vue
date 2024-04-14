@@ -4,7 +4,7 @@ import { ref, watch, computed, onUnmounted } from 'vue';
 import { gpioStore } from '@/stores/gpiostore'
 import PinInfo from '@/components/PinInformation.vue';
 import { pinBroadMode } from '@/functions'
-import { PinColors, PinType,PinDisplayTypeShort,DigitalValuesDisplay } from '@/const';
+import { PinColors, PinType,PinDisplayTypeShort,DigitalValuesDisplay,WifiFeedbackConfigKey } from '@/const';
 
 const props = defineProps({
     board: Object as () => BoardData | null
@@ -16,7 +16,7 @@ watch([() => store.currentStates, () => store.freeHeap, () => store.wifiActivity
 }, { immediate: true });
 
 const wifiClass = computed(() => {
-    if (pinsConf?.value?.wifiFeedback.background === "light") {
+    if (pinsConf?.value?.wifiFeedback.background === WifiFeedbackConfigKey.Light) {
 
         return wifiActivity.value ? 'wifi-icon-light animate-wifi-light' : 'wifi-icon-light';
     } else {
