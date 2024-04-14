@@ -30,4 +30,4 @@ export const PinModeDescription: { [key in PinModeKeys]: string } = {
     OPEN_DRAIN: "Open Drain",
     OUTPUT_OPEN_DRAIN: "Output Open Drain",
     ANALOG: "Analog",
-};
+} as const;
