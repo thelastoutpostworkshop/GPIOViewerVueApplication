@@ -5,7 +5,8 @@ import logo from '@/assets/images/pinlogo.png';
 import pwm from '@/assets/images/pwmlogo.png';
 import digital from '@/assets/images/digitallogo.png';
 import analog from '@/assets/images/analoglogo.png';
-import { PinModeValue, getPinModeDescription } from '@/functions'
+import { getPinModeDescription } from '@/functions'
+import { PinModeValue } from '@/const';
 import { gpioStore } from '@/stores/gpiostore'
 const store = gpioStore();
 

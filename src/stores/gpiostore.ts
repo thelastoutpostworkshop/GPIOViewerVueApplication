@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue';
 import { type BoardData, type PinStateMap, type Memory, type PinsConfiguration, type LastPinValues, type PinMode } from '@/types/types';
-import { PinModeValue } from '@/functions';
+import { PinModeValue } from '@/const';
 
 export const gpioStore = defineStore('gpioviewer', () => {
   const boards = ref<BoardData[] | null>(null)
