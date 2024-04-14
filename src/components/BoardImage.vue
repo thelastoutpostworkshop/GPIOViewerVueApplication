@@ -4,6 +4,7 @@ import { ref, watch, computed, onUnmounted } from 'vue';
 import { gpioStore } from '@/stores/gpiostore'
 import PinInfo from '@/components/PinInformation.vue';
 import { pinMode } from '@/functions'
+import { PinColors } from '@/const';
 
 const props = defineProps({
     board: Object as () => BoardData | null
@@ -23,27 +24,6 @@ const wifiClass = computed(() => {
     }
 });
 
-const colors: string[] = ["#00ff00",
-    "#1fff00",
-    "#3eff00",
-    "#5dff00",
-    "#7cff00",
-    "#9bff00",
-    "#baff00",
-    "#d9ff00",
-    "#f8ff00",
-    "#ffff00", // Yellow
-    "#ffef00",
-    "#ffdf00",
-    "#ffcf00",
-    "#ffbf00",
-    "#ffaf00",
-    "#ff9f00",
-    "#ff8f00",
-    "#ff7f00",
-    "#FE5454",
-    "#ff0000", // Red
-];
 const pinsConf = ref<PinsConfiguration | undefined>();
 async function loadIndicators(): Promise<PinsConfiguration | undefined> {
     try {
@@ -142,8 +122,8 @@ const getValueForPin = (pinState: PinState): string => {
 
 const getColorForPin = (pinState: PinState): string => {
     const value = Math.max(0, Math.min(pinState.s, 255));
-    const index = Math.floor((value / 255) * (colors.length - 1));
-    return colors[index];
+    const index = Math.floor((value / 255) * (PinColors.length - 1));
+    return PinColors[index];
 };
 
 const getBarValue = (pinState: PinState): number => {
