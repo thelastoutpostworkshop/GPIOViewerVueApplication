@@ -32,7 +32,7 @@ function addLastPinValues(states: PinStateMap) {
     let pinEntry = store.lastPinValues.find(p => p.gpio === gpioNum);
 
     if (!pinEntry) {
-      pinEntry = { gpio: gpioNum, values: [] };
+      pinEntry = { gpio: gpioNum, values: [],gpioType:pinState.t };
       store.lastPinValues.push(pinEntry);
     }
 

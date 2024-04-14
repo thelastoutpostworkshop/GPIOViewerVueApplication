@@ -59,6 +59,7 @@ export type PinStateMap = {
 }
 export type LastPinValues = {
   gpio:number;
+  gpioType:number;
   values: number[];
 }
 export const PinType = {
@@ -105,6 +106,7 @@ export type ESPPartition = {
   calcPour:number;
 }
 
+// PinMode set in the code
 export type PinMode = {
   pin:number;
   mode:number;
