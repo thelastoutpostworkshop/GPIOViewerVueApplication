@@ -14,6 +14,12 @@ export const PinModeValue = {
     ANALOG: 192,
 } as const;
 
+export const PinModeBroad = {
+    OUTPUT:'O',
+    INPUT:'I',
+    UNKNOWN:'-'
+} as const
+
 export type PinModeKeys = keyof typeof PinModeValue;
 
 export const PinModeDescription: { [key in PinModeKeys]: string } = {
@@ -32,7 +38,7 @@ export const PinModeDescription: { [key in PinModeKeys]: string } = {
 export const pinMode = (pin: Pins): string => {
     const store = gpioStore();
     let mode: number = 0;
-    let modeID: string = ""
+    let modeID:string = PinModeBroad.UNKNOWN
     if (pin.displayType === 'P') {
         mode = PinModeValue.OUTPUT
     } else {
@@ -41,14 +47,11 @@ export const pinMode = (pin: Pins): string => {
     switch (mode) {
         case PinModeValue.OUTPUT_OPEN_DRAIN:
         case PinModeValue.OUTPUT:
-            modeID = 'O'
+            modeID = PinModeBroad.OUTPUT
             break;
         case PinModeValue.INPUT_PULLDOWN:
         case PinModeValue.INPUT_PULLUP:
-            modeID = 'I'
-            break;
-        default:
-            modeID = '-'
+            modeID = PinModeBroad.INPUT
             break;
     }
     return modeID
