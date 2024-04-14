@@ -7,7 +7,6 @@ export interface BoardData {
   chipname: string;
 }
 
-
 //Pins configuration for the board
 export interface PinsSettings {
   pinWidth: number;

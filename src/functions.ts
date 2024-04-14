@@ -1,28 +1,7 @@
 import { gpioStore } from '@/stores/gpiostore'
 import { type Pins } from '@/types/types';
-import {PinModeValue} from '@/const'
+import {PinModeValue,PinModeBroad,type PinModeKeys,PinModeDescription} from '@/const'
 
-
-export const PinModeBroad = {
-    OUTPUT:'O',
-    INPUT:'I',
-    UNKNOWN:'-'
-} as const
-
-export type PinModeKeys = keyof typeof PinModeValue;
-
-export const PinModeDescription: { [key in PinModeKeys]: string } = {
-    NOT_SET: "Not set",
-    UNAVAILABLE:"Unavailable",
-    OUTPUT: "Output",
-    PULLUP: "Pull-up",
-    INPUT_PULLUP: "Input with Pull-up",
-    PULLDOWN: "Pull-down",
-    INPUT_PULLDOWN: "Input with Pull-down",
-    OPEN_DRAIN: "Open Drain",
-    OUTPUT_OPEN_DRAIN: "Output Open Drain",
-    ANALOG: "Analog",
-};
 
 export const pinMode = (pin: Pins): string => {
     const store = gpioStore();
