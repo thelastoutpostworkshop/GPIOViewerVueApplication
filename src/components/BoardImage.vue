@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { type BoardData, type PinsConfiguration, type PinState, type Pins, type PinStateMap, PinType } from '@/types/types';
+import type {  BoardData,  PinsConfiguration,  PinState,  Pins,  PinStateMap } from '@/types/types';
 import { ref, watch, computed, onUnmounted } from 'vue';
 import { gpioStore } from '@/stores/gpiostore'
 import PinInfo from '@/components/PinInformation.vue';
 import { pinMode } from '@/functions'
-import { PinColors } from '@/const';
+import { PinColors,PinType } from '@/const';
 
 const props = defineProps({
     board: Object as () => BoardData | null

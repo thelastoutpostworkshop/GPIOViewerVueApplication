@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { PinType, type PinStateMap } from '@/types/types';
+import type { PinStateMap } from '@/types/types';
 import { ref, watch, onMounted,computed } from 'vue';
 import { Line } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, PointElement, LineElement, CategoryScale, LinearScale, Filler } from 'chart.js'
 import type { ChartData, ChartOptions } from 'chart.js';
 import { gpioStore } from '@/stores/gpiostore'
 import { colors } from '@/colors';
+import { PinType } from '@/const';
 
 ChartJS.register(
       CategoryScale,

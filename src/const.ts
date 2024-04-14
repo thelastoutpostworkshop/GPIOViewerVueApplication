@@ -32,6 +32,12 @@ export const PinModeDescription: { [key in PinModeKeys]: string } = {
     ANALOG: "Analog",
 } as const;
 
+export const PinType = {
+    Digital: 0,
+    PWM: 1,
+    Analog: 2,
+  } as const;
+
 export const PinColors: string[] = ["#00ff00",
     "#1fff00",
     "#3eff00",

@@ -61,11 +61,6 @@ export type LastPinValues = {
   gpioType:number;
   values: number[];
 }
-export const PinType = {
-  Digital: 0,
-  PWM: 1,
-  Analog: 2,
-} as const;
 
 export type Memory = {
   size: string
