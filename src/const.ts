@@ -38,6 +38,12 @@ export const PinType = {
     Analog: 2,
   } as const;
 
+  export const PinDisplayTypeShort = {
+    Digital:'D',
+    Analog:'A',
+    PMW:'P'
+  } as const
+
 export const PinColors: string[] = ["#00ff00",
     "#1fff00",
     "#3eff00",

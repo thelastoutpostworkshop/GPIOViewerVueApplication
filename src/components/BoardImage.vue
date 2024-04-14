@@ -4,7 +4,7 @@ import { ref, watch, computed, onUnmounted } from 'vue';
 import { gpioStore } from '@/stores/gpiostore'
 import PinInfo from '@/components/PinInformation.vue';
 import { pinBroadMode } from '@/functions'
-import { PinColors, PinType } from '@/const';
+import { PinColors, PinType,PinDisplayTypeShort } from '@/const';
 
 const props = defineProps({
     board: Object as () => BoardData | null
@@ -137,13 +137,13 @@ const getPinType = (pin: PinState): string => {
     let pintype = "";
     switch (pin.t) {
         case PinType.Digital:
-            pintype = "D";
+            pintype = PinDisplayTypeShort.Digital;
             break;
         case PinType.PWM:
-            pintype = "P";
+            pintype = PinDisplayTypeShort.PMW;
             break;
         case PinType.Analog:
-            pintype = "A";
+            pintype = PinDisplayTypeShort.Analog;
             break;
         default:
             break;
