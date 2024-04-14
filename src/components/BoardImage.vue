@@ -87,6 +87,7 @@ function updatePinStates(newStates: PinStateMap, pinsConfiguration: PinsConfigur
             pin.displayValue = getValueForPin(pinState);
             pin.displayBarValue = getBarValue(pinState);
             pin.displayType = getPinType(pinState);
+            pin.type = pinState.t;
         }
     });
 }
@@ -177,7 +178,7 @@ const showPinInfo = (pin: Pins) => {
             </div>
             <div v-if="store.pinTypeDisplay === 2" class="non-clickable"
                 :style="{ fontSize: pinsConf.settings.valueFontSize + 'dvb' }">
-                {{ pinBroadMode(pin) }}
+                {{ pinBroadMode(pin.type,pin.gpioid) }}
             </div>
         </div>
         <div v-if="pinsConf" v-for="pin in pinsConf.pins" :key="pin.gpioid"

@@ -27,6 +27,7 @@ export interface Pins {
   displayValue: string;
   displayBarValue: number;
   displayType:string;
+  type:number;
 }
 export interface StatsConfiguration {
   top: number;

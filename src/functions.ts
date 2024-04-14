@@ -1,16 +1,16 @@
 import { gpioStore } from '@/stores/gpiostore'
 import { type Pins } from '@/types/types';
-import { PinModeValue, PinModeBroad, type PinModeKeys, PinModeDescription } from '@/const'
+import { PinModeValue, PinModeBroad, type PinModeKeys, PinModeDescription, PinType } from '@/const'
 
 
-export const pinBroadMode = (pin: Pins): string => {
+export const pinBroadMode = (pintype:number,gpio:number): string => {
     const store = gpioStore();
     let mode: number = 0;
     let modeID: string = PinModeBroad.UNKNOWN
-    if (pin.displayType === 'P') {
+    if (pintype=== PinType.PWM) {
         mode = PinModeValue.OUTPUT
     } else {
-        mode = store.getPinModeValue(pin.gpioid);
+        mode = store.getPinModeValue(gpio);
     }
     switch (mode) {
         case PinModeValue.OUTPUT_OPEN_DRAIN:
