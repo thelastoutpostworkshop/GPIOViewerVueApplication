@@ -2,7 +2,7 @@ export type PinModeKeys = keyof typeof PinModeValue;
 
 export const PinModeValue = {
     NOT_SET: -1,
-    UNAVAILABLE:-2,
+    UNAVAILABLE: -2,
     OUTPUT: 3,
     PULLUP: 4,
     INPUT_PULLUP: 5,
@@ -14,14 +14,14 @@ export const PinModeValue = {
 } as const;
 
 export const PinModeBroad = {
-    OUTPUT:'O',
-    INPUT:'I',
-    UNKNOWN:'-'
+    OUTPUT: 'O',
+    INPUT: 'I',
+    UNKNOWN: '-'
 } as const
 
 export const PinModeDescription: { [key in PinModeKeys]: string } = {
     NOT_SET: "Not set",
-    UNAVAILABLE:"Unavailable",
+    UNAVAILABLE: "Unavailable",
     OUTPUT: "Output",
     PULLUP: "Pull-up",
     INPUT_PULLUP: "Input with Pull-up",
@@ -36,13 +36,18 @@ export const PinType = {
     Digital: 0,
     PWM: 1,
     Analog: 2,
-  } as const;
+} as const;
 
-  export const PinDisplayTypeShort = {
-    Digital:'D',
-    Analog:'A',
-    PMW:'P'
-  } as const
+export const PinDisplayTypeShort = {
+    Digital: 'D',
+    Analog: 'A',
+    PMW: 'P'
+} as const
+
+export const DigitalValuesDisplay = {
+    Low:"Low",
+    High:"High"
+} as const
 
 export const PinColors: string[] = ["#00ff00",
     "#1fff00",
@@ -118,5 +123,4 @@ export const GraphColors: string[] = [
     "rgb(245, 255, 250)",  // Mint Cream
     "rgb(255, 228, 225)",  // Misty Rose
     "rgb(255, 228, 181)"   // Moccasin
-  ];
-  
+];

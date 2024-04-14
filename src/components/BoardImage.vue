@@ -4,7 +4,7 @@ import { ref, watch, computed, onUnmounted } from 'vue';
 import { gpioStore } from '@/stores/gpiostore'
 import PinInfo from '@/components/PinInformation.vue';
 import { pinBroadMode } from '@/functions'
-import { PinColors, PinType,PinDisplayTypeShort } from '@/const';
+import { PinColors, PinType,PinDisplayTypeShort,DigitalValuesDisplay } from '@/const';
 
 const props = defineProps({
     board: Object as () => BoardData | null
@@ -107,10 +107,10 @@ const getValueForPin = (pinState: PinState): string => {
     if (pinState.t == 0) {
         //it's a digital pin
         if (pinState.v == 0) {
-            displayValue = "LOW";
+            displayValue = DigitalValuesDisplay.Low;
         } else {
             if (pinState.v == 1) {
-                displayValue = "HIGH";
+                displayValue = DigitalValuesDisplay.High;
             } else {
                 displayValue = pinState.v.toString();
             }
