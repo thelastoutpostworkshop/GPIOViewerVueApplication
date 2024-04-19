@@ -53,7 +53,7 @@ function pinType(pin: Pins | null | undefined): string {
             break;
 
         default:
-            return "Not used"
+            return "Inactive"
             break;
     }
 }
@@ -98,7 +98,9 @@ function pinIcon(pin: Pins | null | undefined): string {
             <v-card-text>
                 <v-container>
                     <v-row>
-                        <v-col><v-img :width="100" :src="pinIcon(pin)"></v-img></v-col>
+                        <v-col><v-img v-if="pin?.displayType" :width="100" :src="pinIcon(pin)"></v-img>
+                            <v-icon v-if="!pin?.displayType">mdi-pin-off</v-icon>
+                        </v-col>
                         <v-col align-self="center">{{ pinType(pin) }} pin</v-col>
                     </v-row>
                 </v-container>
