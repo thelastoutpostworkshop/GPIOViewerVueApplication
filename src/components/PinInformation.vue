@@ -78,7 +78,7 @@ function pinIcon(pin: Pins | null | undefined): string {
 </script>
 
 <template>
-    <v-dialog v-model="dialogOpen" width="300">
+    <v-dialog v-model="dialogOpen" max-width="400">
         <v-card color="secondary">
             <template v-slot:title>
                 <div class="pin" :style="{ backgroundColor: pin?.color }">{{ pin?.gpioid }} </div>
