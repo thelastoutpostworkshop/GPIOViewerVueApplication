@@ -24,24 +24,42 @@ const menu = ref(false);
 
                 <div v-if="store.pinTypeDisplay === 1">
                     <v-list-item min-height="24">
-                        D = Digital
+                        D
+                        <template v-slot:append>
+                            Digital
+                        </template>
                     </v-list-item>
                     <v-list-item min-height="24">
-                        A = Analog
+                        A
+                        <template v-slot:append>
+                            Analog
+                        </template>
                     </v-list-item>
                     <v-list-item min-height="24">
-                        P = PWM
+                        P
+                        <template v-slot:append>
+                            PWM
+                        </template>
                     </v-list-item>
                 </div>
                 <div v-if="store.pinTypeDisplay === 2">
                     <v-list-item min-height="24">
-                        O = Output
+                        O
+                        <template v-slot:append>
+                            Output
+                        </template>
                     </v-list-item>
                     <v-list-item min-height="24">
-                        I = Input
+                        I
+                        <template v-slot:append>
+                            Input
+                        </template>
                     </v-list-item>
                     <v-list-item min-height="24">
-                        - = Not Set
+                        -
+                        <template v-slot:append>
+                            Not Set
+                        </template>
                     </v-list-item>
                 </div>
             </v-list>
