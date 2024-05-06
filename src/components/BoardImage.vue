@@ -4,7 +4,7 @@ import { ref, watch, computed, onUnmounted } from 'vue';
 import { gpioStore } from '@/stores/gpiostore'
 import PinInfo from '@/components/PinInformation.vue';
 import { pinBroadMode } from '@/functions'
-import { PinColors, PinType,PinDisplayTypeShort,DigitalValuesDisplay,WifiFeedbackConfigKey } from '@/const';
+import { PinColors, PinType, PinDisplayTypeShort, DigitalValuesDisplay, WifiFeedbackConfigKey } from '@/const';
 
 const props = defineProps({
     board: Object as () => BoardData | null
@@ -157,6 +157,44 @@ const showPinInfo = (pin: Pins) => {
     showPinInfoCard.value = true;
 };
 
+function getLeftPosition(pin: Pins) {
+    if (pinsConf.value) {
+        if (pin.valueJustify === -1) {
+            return pin.left - pinsConf.value.settings.valueMinWidth - pinsConf.value.settings.valuePinMargin;
+        } else if (pin.valueJustify === -2) {
+            // Example: center the vertical bar; adjust as needed for your UI
+            return pin.left - (pinsConf.value.settings.pinWidth / 2);
+        } else {
+            return pin.left + pinsConf.value.settings.valuePinMargin;
+        }
+    }
+}
+function getTopPosition(pin: Pins) {
+    if (pinsConf.value) {
+        if (pin.valueJustify === -1) {
+            return pin.top - (pinsConf.value.settings.pinHeight / 2);
+        } else if (pin.valueJustify === -2) {
+            // Example: center the vertical bar; adjust as needed for your UI
+            return pin.top + (pinsConf.value.settings.pinHeight / 2);
+        } else {
+            return pin.top - (pinsConf.value.settings.pinHeight / 2);
+        }
+    }
+}
+
+function getValueBarStyle(pin: Pins) {
+    if (pin.valueJustify === -2) {
+        // For vertical bars, set the height dynamically and width to 100%
+        return {
+            height: `${pin.displayBarValue}%`
+        };
+    } else {
+        // For horizontal bars or any other case, set the width dynamically and height to 100%
+        return {
+            width: `${pin.displayBarValue}%`,
+        };
+    }
+}
 
 
 </script>
@@ -178,20 +216,27 @@ const showPinInfo = (pin: Pins) => {
             </div>
             <div v-if="store.pinTypeDisplay === 2" class="non-clickable"
                 :style="{ fontSize: pinsConf.settings.valueFontSize + 'dvb' }">
-                {{ pinBroadMode(pin.type,pin.gpioid) }}
+                {{ pinBroadMode(pin.type, pin.gpioid) }}
             </div>
         </div>
-        <div v-if="pinsConf" v-for="pin in pinsConf.pins" :key="pin.gpioid"
-            :class="pin.valueJustify === -1 ? 'value value_right' : 'value'" :style="{
-                top: pin.top - (pinsConf.settings.pinHeight / 2) + '%',
-                left: (pin.valueJustify === -1 ? pin.left - pinsConf.settings.valueMinWidth - pinsConf.settings.valuePinMargin : pin.left + pinsConf.settings.valuePinMargin) + '%',
-                height: pinsConf.settings.pinHeight - 0.25 + '%',
-                backgroundColor: pinsConf.settings.valueBackGroundColor,
-                minWidth: pinsConf.settings.valueMinWidth + '%',
-                fontSize: pinsConf.settings.valueFontSize + 'dvb'
-            }" :id="`gpio${pin.gpioid}`">
+        <div v-if="pinsConf" v-for="pin in pinsConf.pins" :key="pin.gpioid" :class="{
+            'value': pin.valueJustify !== -1 && pin.valueJustify !== -2,
+            'value value_right': pin.valueJustify === -1,
+            'value_vertical': pin.valueJustify === -2
+        }" :style="{
+            top: getTopPosition(pin) + '%',
+            left: getLeftPosition(pin) + '%',
+            backgroundColor: pinsConf.settings.valueBackGroundColor,
+            '--pin-height': pinsConf.settings.pinHeight - 0.25 + '%',
+            '--min-width': pinsConf.settings.valueMinWidth + '%',
+            '--bar-height': pin.displayBarValue,
+            '--vertical-bar-height': pinsConf.settings.valueMinWidth + '%',
+            '--vertical-bar-width': pinsConf.settings.pinWidth + '%',
+            fontSize: pinsConf.settings.valueFontSize + 'dvb'
+
+        }" :id="`gpio${pin.gpioid}`">
             <div>{{ pin.displayValue }}</div>
-            <div class="value-bar" :style="{ width: pin.displayBarValue + '%' }"></div>
+            <div class="value-bar" :style="getValueBarStyle(pin)"></div>
         </div>
         <div v-if="pinsConf && pinsConf.stats" class="stats"
             :style="{ top: pinsConf.stats.top + '%', left: pinsConf.stats.left + '%', fontSize: pinsConf.stats.fontSize + 'dvb' }">
@@ -282,20 +327,30 @@ const showPinInfo = (pin: Pins) => {
     /* Relative positioning for the container */
 }
 
-.value {
+.value,
+.value_right,
+.value_vertical {
     position: absolute;
     font-family: "Lucida Console", monospace;
     font-weight: bold;
     color: rgb(6, 23, 175);
     display: flex;
     align-items: center;
-    justify-content: left;
+}
+
+.value,
+.value_right {
+    justify-content: flex-start;
+    /* Align text to the left by default */
+    min-width: var(--min-width);
+    /* Dynamically adjust based on settings */
+    height: var(--pin-height);
+    /* Dynamically adjust based on settings */
 }
 
 .value_right {
-    position: absolute;
-    justify-content: right;
-    /* Horizontal alignment */
+    justify-content: flex-end;
+    /* Align text to the right */
 }
 
 .value .value-bar,
@@ -305,11 +360,30 @@ const showPinInfo = (pin: Pins) => {
     height: 100%;
     background-color: rgba(0, 0, 255, 0.25);
     transition: width 0.5s ease;
-    /* Animate the width change over 0.5 seconds */
+    /* Smooth transition for width changes */
 }
 
-.value_right .value-bar {
-    right: 0;
-    /* For right-aligned bars */
+.value_vertical {
+    flex-direction: column;
+    /* Stack children vertically */
+    justify-content: flex-start;
+    /* Align content to the top */
+}
+
+.value_vertical .value-bar {
+    width: 100%;
+    /* Full width of the container */
+    height: var(--bar-height);
+    /* Controlled by JavaScript */
+    transition: height 0.5s ease;
+    background-color: rgba(0, 0, 255, 0.25);
+
+    /* Smooth transition for height changes */
+}
+
+.value_vertical {
+    height: var(--vertical-bar-height, 10%);
+    width: var(--vertical-bar-width, 10%);
+    /* Default height if not set by Vue */
 }
 </style>
