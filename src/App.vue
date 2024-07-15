@@ -25,6 +25,10 @@ onMounted(() => {
   }
 });
 
+function goToTutorial() {
+  window.open('https://youtu.be/JJzRXcQrl3I', '_blank');
+}
+
 function addLastPinValues(states: PinStateMap) {
   // First, update or add new states from the states object
   Object.entries(states).forEach(([gpio, pinState]) => {
@@ -207,6 +211,8 @@ async function fetchSamplingInterval() {
         <v-list-item link title="ESP32 Information" @click="$router.push({ name: 'espinfo' })"></v-list-item>
         <v-list-item link title="Memory Map" @click="$router.push({ name: 'memorymap' })"></v-list-item>
         <v-list-item link title="Pin Data Graph" @click="$router.push({ name: 'pinplotter' })"></v-list-item>
+        <v-divider></v-divider>
+        <v-list-item link title="Tutorial" @click="goToTutorial()"></v-list-item>
         <template v-slot:append>
           <v-divider></v-divider>
           <div class="pa-2 text-caption text-grey-lighten-1">
