@@ -212,7 +212,7 @@ async function fetchSamplingInterval() {
         <v-list-item link title="Memory Map" @click="$router.push({ name: 'memorymap' })"></v-list-item>
         <v-list-item link title="Pin Data Graph" @click="$router.push({ name: 'pinplotter' })"></v-list-item>
         <v-divider></v-divider>
-        <v-list-item link title="Tutorial" @click="goToTutorial()"></v-list-item>
+        <v-list-item link title="Tutorial" @click="goToTutorial()" append-icon="mdi-open-in-new"></v-list-item>
         <template v-slot:append>
           <v-divider></v-divider>
           <div class="pa-2 text-caption text-grey-lighten-1">
