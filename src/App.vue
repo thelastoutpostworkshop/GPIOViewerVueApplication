@@ -11,7 +11,7 @@ const store = gpioStore();
 const drawerOpen = ref(false);
 const maxLastPinValuesStored = 100;
 
-store.WebApplicationRelease = "2.1.3";
+store.WebApplicationRelease = "2.1.4";
 
 declare var window: any;
 
