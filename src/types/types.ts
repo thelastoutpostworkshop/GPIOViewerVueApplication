@@ -91,6 +91,7 @@ export type ESPInfo = {
   up_time:number;
   sketch_size:number;
   free_sketch:number;
+  arduino_core_version:string;
 }
 
 export type ESPPartition = {

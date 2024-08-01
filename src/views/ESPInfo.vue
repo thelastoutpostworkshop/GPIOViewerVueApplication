@@ -50,6 +50,11 @@ onMounted(() => {
             <v-table class="mt-5" density="compact">
                   <tbody>
                         <tr>
+                              <td>Espressif Arduino Core Version</td>
+                              <td v-if=" espInfo.arduino_core_version">{{ espInfo?.arduino_core_version }}</td>
+                              <td>Unknown</td>
+                        </tr>
+                        <tr>
                               <td>Chip Model</td>
                               <td>{{ espInfo?.chip_model }}</td>
                         </tr>
