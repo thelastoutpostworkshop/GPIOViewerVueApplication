@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { RouterLink, RouterView, useRoute } from 'vue-router'
+import { RouterLink, RouterView, useRouter } from 'vue-router'
 import { ref, computed, onMounted } from 'vue';
 import ParamsError from '@/components/ParamsError.vue';
 import type { Memory, PinStateMap, GPIOViewerRelease, SamplingInterval, PinMode } from "@/types/types";
@@ -10,6 +10,7 @@ import { getAPIUrl } from "@/functions";
 const store = gpioStore();
 const drawerOpen = ref(false);
 const maxLastPinValuesStored = 100;
+const router = useRouter()
 
 store.WebApplicationRelease = "2.1.5";
 
@@ -206,11 +207,11 @@ async function fetchSamplingInterval() {
       <v-navigation-drawer color="primary" v-model="drawerOpen" temporary>
         <v-list-item title="GPIOViewer" :subtitle="'v' + store.GPIOViewerRelease"></v-list-item>
         <v-divider></v-divider>
-        <v-list-item link title="About" @click="$router.push({ name: 'about' })"></v-list-item>
-        <v-list-item link title="GPIOViewer" @click="$router.push({ name: 'gpioview' })"></v-list-item>
-        <v-list-item link title="ESP32 Information" @click="$router.push({ name: 'espinfo' })"></v-list-item>
-        <v-list-item link title="Memory Map" @click="$router.push({ name: 'memorymap' })"></v-list-item>
-        <v-list-item link title="Pin Data Graph" @click="$router.push({ name: 'pinplotter' })"></v-list-item>
+        <v-list-item link title="About" @click="router.push({ name: 'about' })"></v-list-item>
+        <v-list-item link title="GPIOViewer" @click="router.push({ name: 'gpioview' })"></v-list-item>
+        <v-list-item link title="ESP32 Information" @click="router.push({ name: 'espinfo' })"></v-list-item>
+        <v-list-item link title="Memory Map" @click="router.push({ name: 'memorymap' })"></v-list-item>
+        <v-list-item link title="Pin Data Graph" @click="router.push({ name: 'pinplotter' })"></v-list-item>
         <v-divider></v-divider>
         <v-list-item link title="Tutorial" @click="goToTutorial()" append-icon="mdi-open-in-new"></v-list-item>
         <template v-slot:append>
