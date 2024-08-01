@@ -43,7 +43,7 @@ const options: ChartOptions<'line'> = {
             x: {
                   title: {
                         display: true,
-                        text: "ms (approximative)"
+                        text: "Time"
                   }
             },
             y: {
