@@ -52,7 +52,7 @@ onMounted(() => {
                         <tr>
                               <td>Espressif Arduino Core Version</td>
                               <td v-if=" espInfo.arduino_core_version">{{ espInfo?.arduino_core_version }}</td>
-                              <td>Unknown</td>
+                              <td v-else>Unknown</td>
                         </tr>
                         <tr>
                               <td>Chip Model</td>
