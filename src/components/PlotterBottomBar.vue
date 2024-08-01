@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import logo from '@/assets/images/GPIOViewerLogo.png';
 import { gpioStore } from '@/stores/gpiostore'
+import { RouterLink, RouterView, useRouter } from 'vue-router'
 
+const router = useRouter()
 const store = gpioStore();
 
 </script>
@@ -11,7 +13,7 @@ const store = gpioStore();
         <v-icon :color="store.freeze ? 'blue' : ''">mdi-snowflake</v-icon>
         <span>Freeze</span>
     </v-btn>
-    <v-btn icon="mdi-home-automation" @click="$router.push({ name: 'gpioview' })">
+    <v-btn icon="mdi-home-automation" @click="router.push({ name: 'gpioview' })">
         <v-img width="30" :src="logo"></v-img>
         <span>GPIOViewer</span>
     </v-btn>
