@@ -13,7 +13,7 @@ const menu = ref(false);
     <v-spacer></v-spacer>
     <v-btn icon :disabled="store.pinTypeDisplay === 0">
         <v-icon>mdi-tooltip</v-icon>
-        <v-menu activator="parent" location="bottom end" transition="fade-transition">
+        <v-menu activator="parent" location="bottom end" transition="fade-transition" width="175">
             <v-list density="compact" rounded="lg" slim>
                 <v-list-item v-if="store.pinTypeDisplay === 1" prepend-icon="mdi-pin" title="Pin Types"
                     link></v-list-item>
@@ -32,7 +32,7 @@ const menu = ref(false);
                     <v-list-item min-height="24">
                         A
                         <template v-slot:append>
-                            Analog
+                            Analog (ADC)
                         </template>
                     </v-list-item>
                     <v-list-item min-height="24">
