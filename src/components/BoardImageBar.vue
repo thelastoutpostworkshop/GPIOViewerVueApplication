@@ -5,12 +5,31 @@ import { ref } from 'vue';
 
 const store = gpioStore();
 const menu = ref(false);
+const settings = ref(false);
 
 </script>
 
 <template>
     <BoardSelect v-if="store.boards" :boards="store.boards" />
     <v-spacer></v-spacer>
+    <v-btn icon >
+        <v-icon>mdi-cog</v-icon>
+        <v-menu activator="parent" location="bottom end" :close-on-content-click="false" >
+            <v-card min-width="300">
+                <v-list>
+                    <v-list-item>
+                        <v-switch v-model="settings" color="blue-darken-3" label="Hide Activity on analog pins"
+                            hint="Hide analog values (can be floating if ADC not used on pins)" persistent-hint inline></v-switch>
+                    </v-list-item>
+                    <!-- <v-list-item>
+                        <v-switch v-model="settings" color="blue-darken-3" label="Hide Activity on analog pins"
+                            hint="Hide analog values (can be floating if ADC not used on pins)" persistent-hint inline></v-switch>
+                    </v-list-item> -->
+                </v-list>
+            </v-card>
+        </v-menu>
+    </v-btn>
+
     <v-btn icon :disabled="store.pinTypeDisplay === 0">
         <v-icon>mdi-tooltip</v-icon>
         <v-menu activator="parent" location="bottom end" transition="fade-transition" width="175">
