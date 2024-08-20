@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue';
-import type { Pins, PinFunctions, PinFunctionDescriptions } from '@/types/types';
+import type { Pins} from '@/types/types';
 import logo from '@/assets/images/pinlogo.png';
 import pwm from '@/assets/images/pwmlogo.png';
 import digital from '@/assets/images/digitallogo.png';
