@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue';
-import { type BoardData, type PinStateMap, type Memory, type PinsConfiguration, type LastPinValues, type PinMode } from '@/types/types';
+import { ref } from 'vue';
+import { type BoardData, type PinStateMap, type Memory, type PinsConfiguration, type LastPinValues, type PinMode, type PinsFunctions, type PinFunctionDescriptions, type BoardPinsFunction } from '@/types/types';
 import { PinModeValue } from '@/const';
 
 export const gpioStore = defineStore('gpioviewer', () => {
@@ -23,6 +23,7 @@ export const gpioStore = defineStore('gpioviewer', () => {
   const wifiActivity = ref(0);
   const GPIOViewerRelease = ref("")
   const WebApplicationRelease = ref("")
+  const boardPinFunctions = ref<BoardPinsFunction | null>(null)
   function getPinModeValue(pin: number) {
     if (pinModes.value === null) {
       return PinModeValue.UNAVAILABLE;
@@ -30,6 +31,23 @@ export const gpioStore = defineStore('gpioviewer', () => {
     const pinWithMode = pinModes.value.find(p => Number(p.pin) === pin);
     return pinWithMode ? Number(pinWithMode.mode) : PinModeValue.NOT_SET;
   }
+  function getPinFunction(pin: number): PinFunctionDescriptions[] {
+    if (!boardPinFunctions.value?.boardpinsfunction) {
+      return [];
+    }
+
+    const results: PinFunctionDescriptions[] = [];
+    console.log("Getting pin functions")
+    // Iterate through each PinsFunctions in boardPinsFunction.boardpinsfunction
+    for (const pinsFunction of boardPinFunctions.value.boardpinsfunction) {
+      // Find all descriptions where the pin matches
+      const matchingDescriptions = pinsFunction.functions.filter(description => description.pin === pin);
+      results.push(...matchingDescriptions);
+    }
+    console.log(results)
+    return results;
+  }
+
   // const count = ref(0)
   // const name = ref('Eduardo')
   // const doubleCount = computed(() => count.value * 2)
@@ -40,6 +58,6 @@ export const gpioStore = defineStore('gpioviewer', () => {
   return {
     currentBoard, ipAddress, httpPort, currentStates, freeHeap, freePSRAM,
     freeSketch, freeze, boards, pinTypeDisplay, SamplingInterval, pinsPreserved, connectedToESP32, magnifyImage,
-    wifiActivity, GPIOViewerRelease, WebApplicationRelease, lastPinValues, pinModes,getPinModeValue
+    wifiActivity, GPIOViewerRelease, WebApplicationRelease, lastPinValues, pinModes, getPinModeValue, getPinFunction, boardPinFunctions
   }
 })

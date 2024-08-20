@@ -26,8 +26,8 @@ export interface Pins {
   valueFontSize: number;
   displayValue: string;
   displayBarValue: number;
-  displayType:string;
-  type:number;
+  displayType: string;
+  type: number;
 }
 export interface StatsConfiguration {
   top: number;
@@ -58,8 +58,8 @@ export type PinStateMap = {
   [gpio: number]: PinState;
 }
 export type LastPinValues = {
-  gpio:number;
-  gpioType:number;
+  gpio: number;
+  gpioType: number;
   values: number[];
 }
 
@@ -67,43 +67,57 @@ export type Memory = {
   size: string
 }
 export type GPIOViewerRelease = {
-  release:string
+  release: string
 }
 export type SamplingInterval = {
-  sampling:number
+  sampling: number
 }
 export type ESPInfo = {
-  chip_model:string;
-  cores_count:number;
-  chip_revision:number;
-  cpu_frequency:number;
-  cycle_count:number;
-  mac:number;
-  flash_mode:number;
-  flash_chip_size:number;
-  flash_chip_speed:number;
-  heap_size:number;
-  heap_max_alloc:number;
-  psram_size:number;
-  free_psram:number;
-  psram_max_alloc:number;
-  free_heap:number;
-  up_time:number;
-  sketch_size:number;
-  free_sketch:number;
-  arduino_core_version:string;
+  chip_model: string;
+  cores_count: number;
+  chip_revision: number;
+  cpu_frequency: number;
+  cycle_count: number;
+  mac: number;
+  flash_mode: number;
+  flash_chip_size: number;
+  flash_chip_speed: number;
+  heap_size: number;
+  heap_max_alloc: number;
+  psram_size: number;
+  free_psram: number;
+  psram_max_alloc: number;
+  free_heap: number;
+  up_time: number;
+  sketch_size: number;
+  free_sketch: number;
+  arduino_core_version: string;
 }
 
 export type ESPPartition = {
-  label:string;
-  subtype:number;
-  address:string;
-  size:number;
-  calcPour:number;
+  label: string;
+  subtype: number;
+  address: string;
+  size: number;
+  calcPour: number;
 }
 
 // PinMode set in the code
 export type PinMode = {
-  pin:number;
-  mode:number;
+  pin: number;
+  mode: number;
+}
+
+export type PinFunctionDescriptions = {
+  function: string;
+  pin: number;
+}
+
+export type PinsFunctions = {
+  name:string
+  functions: PinFunctionDescriptions[];
+}
+
+export type BoardPinsFunction = {
+  boardpinsfunction : PinsFunctions[]
 }

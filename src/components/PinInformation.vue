@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue';
-import type { Pins } from '@/types/types';
+import type { Pins, PinFunctions, PinFunctionDescriptions } from '@/types/types';
 import logo from '@/assets/images/pinlogo.png';
 import pwm from '@/assets/images/pwmlogo.png';
 import digital from '@/assets/images/digitallogo.png';
@@ -39,6 +39,14 @@ const pinMode = computed(() => {
     }
     return PinModeValue.UNAVAILABLE; // Default or error value
 });
+function functionsOfThePin(pin: number | undefined) {
+    if(pin) {
+        const results = store.getPinFunction(pin);
+        console.log(results);
+        return results ;
+    }
+    return [];
+};
 
 function pinType(pin: Pins | null | undefined): string {
     switch (pin?.displayType) {
@@ -104,7 +112,14 @@ function pinIcon(pin: Pins | null | undefined): string {
                         <v-col align-self="center">{{ pinType(pin) }} pin</v-col>
                     </v-row>
                 </v-container>
-
+                <v-divider></v-divider>
+                <v-container>
+                    <v-row v-for="(description, index) in functionsOfThePin(pin?.gpioid)" :key="index">
+                        <v-col>{{ description.function }}</v-col>
+                        <v-col>{{ description.pin }}</v-col>
+                    </v-row>
+                </v-container>
+                <v-divider></v-divider>
                 <div class="value-bar" :style="{ width: pin?.displayBarValue + '%' }">{{ pin?.displayValue }}</div>
             </v-card-text>
             <v-card-actions>
