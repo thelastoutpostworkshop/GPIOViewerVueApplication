@@ -40,10 +40,8 @@ const pinMode = computed(() => {
     return PinModeValue.UNAVAILABLE; // Default or error value
 });
 function functionsOfThePin(pin: number | undefined) {
-    if(pin) {
-        const results = store.getPinFunction(pin);
-        console.log(results);
-        return results ;
+    if (pin) {
+        return store.getPinFunction(pin);
     }
     return [];
 };
@@ -114,12 +112,11 @@ function pinIcon(pin: Pins | null | undefined): string {
                 </v-container>
                 <v-divider></v-divider>
                 <v-container>
-                    <v-row v-for="(description, index) in functionsOfThePin(pin?.gpioid)" :key="index">
-                        <v-col>{{ description.function }}</v-col>
-                        <v-col>{{ description.pin }}</v-col>
-                    </v-row>
+                    <span>Pin functions: </span>
+                    <span v-for="(description, index) in functionsOfThePin(pin?.gpioid)" :key="index">
+                        <v-chip>{{ description.function }}</v-chip>
+                    </span>
                 </v-container>
-                <v-divider></v-divider>
                 <div class="value-bar" :style="{ width: pin?.displayBarValue + '%' }">{{ pin?.displayValue }}</div>
             </v-card-text>
             <v-card-actions>

@@ -37,14 +37,12 @@ export const gpioStore = defineStore('gpioviewer', () => {
     }
 
     const results: PinFunctionDescriptions[] = [];
-    console.log("Getting pin functions")
     // Iterate through each PinsFunctions in boardPinsFunction.boardpinsfunction
     for (const pinsFunction of boardPinFunctions.value.boardpinsfunction) {
       // Find all descriptions where the pin matches
       const matchingDescriptions = pinsFunction.functions.filter(description => description.pin === pin);
       results.push(...matchingDescriptions);
     }
-    console.log(results)
     return results;
   }
 
