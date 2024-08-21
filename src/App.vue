@@ -174,7 +174,7 @@ async function fetchPinFunctions(): Promise<BoardPinsFunction | null> {
     return await response.json() as BoardPinsFunction
 
   } catch (error) {
-    console.error("Error fetching pin modes", error);
+    console.error("Error fetching pin pinfunctions", error);
     return null
   }
 }
