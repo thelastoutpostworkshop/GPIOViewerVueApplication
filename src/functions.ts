@@ -2,6 +2,7 @@ import { gpioStore } from '@/stores/gpiostore'
 import { type Pins } from '@/types/types';
 import { PinModeValue, PinModeBroad, type PinModeKeys, PinModeDescription, PinType } from '@/const'
 
+export const themeCookie = 'theme';
 
 export const pinBroadMode = (pintype:number,gpio:number): string => {
     const store = gpioStore();

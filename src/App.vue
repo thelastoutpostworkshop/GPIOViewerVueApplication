@@ -5,7 +5,7 @@ import ParamsError from '@/components/ParamsError.vue';
 import type { Memory, PinStateMap, GPIOViewerRelease, SamplingInterval, PinMode, BoardPinsFunction } from "@/types/types";
 import type { BoardData } from "@/types/types";
 import { gpioStore } from '@/stores/gpiostore'
-import { getAPIUrl } from "@/functions";
+import { getAPIUrl, getCookie, setCookie, themeCookie } from "@/functions";
 import { useTheme } from 'vuetify'
 import { darkThemeGPIO, lightThemeGPIO } from './main';
 
@@ -18,6 +18,12 @@ const theme = useTheme();
 store.WebApplicationRelease = "2.1.6";
 
 declare var window: any;
+function getTheme() {
+  const theme_name = getCookie(themeCookie);
+  if(theme_name) {
+    theme.global.name.value = theme_name;
+  }
+}
 
 onMounted(() => {
   if (window.gpio_settings) {
@@ -26,6 +32,7 @@ onMounted(() => {
     store.freeSketch = window.gpio_settings.freeSketchRam;
     console.log(window.gpio_settings);
     initEventSource();
+    getTheme();
   }
 });
 
@@ -207,8 +214,10 @@ async function fetchSamplingInterval() {
 function toggleTheme() {
   if (theme.global.name.value === darkThemeGPIO) {
     theme.global.name.value = lightThemeGPIO
+    setCookie(themeCookie,lightThemeGPIO)
   } else {
     theme.global.name.value = darkThemeGPIO
+    setCookie(themeCookie,darkThemeGPIO)
   }
 }
 </script>
