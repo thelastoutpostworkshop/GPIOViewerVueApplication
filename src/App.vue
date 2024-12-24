@@ -12,7 +12,7 @@ const drawerOpen = ref(false);
 const maxLastPinValuesStored = 100;
 const router = useRouter()
 
-store.WebApplicationRelease = "2.1.5";
+store.WebApplicationRelease = "2.1.6";
 
 declare var window: any;
 
