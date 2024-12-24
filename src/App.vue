@@ -6,11 +6,14 @@ import type { Memory, PinStateMap, GPIOViewerRelease, SamplingInterval, PinMode,
 import type { BoardData } from "@/types/types";
 import { gpioStore } from '@/stores/gpiostore'
 import { getAPIUrl } from "@/functions";
+import { useTheme } from 'vuetify'
+import { darkThemeGPIO, lightThemeGPIO } from './main';
 
 const store = gpioStore();
 const drawerOpen = ref(false);
 const maxLastPinValuesStored = 100;
 const router = useRouter()
+const theme = useTheme();
 
 store.WebApplicationRelease = "2.1.6";
 
@@ -37,7 +40,7 @@ function addLastPinValues(states: PinStateMap) {
     let pinEntry = store.lastPinValues.find(p => p.gpio === gpioNum);
 
     if (!pinEntry) {
-      pinEntry = { gpio: gpioNum, values: [],gpioType:pinState.t };
+      pinEntry = { gpio: gpioNum, values: [], gpioType: pinState.t };
       store.lastPinValues.push(pinEntry);
     }
 
@@ -201,6 +204,13 @@ async function fetchSamplingInterval() {
     console.error("Error fetching sampling interval:", error);
   }
 }
+function toggleTheme() {
+  if (theme.global.name.value === darkThemeGPIO) {
+    theme.global.name.value = lightThemeGPIO
+  } else {
+    theme.global.name.value = darkThemeGPIO
+  }
+}
 </script>
 
 <template>
@@ -224,6 +234,7 @@ async function fetchSamplingInterval() {
         <v-list-item link title="ESP32 Information" @click="router.push({ name: 'espinfo' })"></v-list-item>
         <v-list-item link title="Memory Map" @click="router.push({ name: 'memorymap' })"></v-list-item>
         <v-list-item link title="Pin Data Graph" @click="router.push({ name: 'pinplotter' })"></v-list-item>
+        <v-list-item link title="Toggle Theme" @click="toggleTheme"></v-list-item>
         <v-divider></v-divider>
         <v-list-item link title="Tutorial" @click="goToTutorial()" append-icon="mdi-open-in-new"></v-list-item>
         <template v-slot:append>

@@ -7,11 +7,11 @@ import router from './router'
 import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css'
 import { createVuetify, type ThemeDefinition } from 'vuetify'
-import { aliases, mdi } from 'vuetify/iconsets/mdi'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 
-const GPIOViewerTheme: ThemeDefinition = {
+
+const GPIOViewerThemeLight: ThemeDefinition = {
   dark: false,
   colors: {
     background: '#FFFFFF',
@@ -26,14 +26,31 @@ const GPIOViewerTheme: ThemeDefinition = {
     warning: '#FB8C00',
   },
 }
+const GPIOViewerThemeDark: ThemeDefinition = {
+  dark: true,
+  colors: {
+    background: '#FFFFFF',
+    surface: '#d9dad7',
+    primary: '#1a2639',
+    'primary-darken-1': '#3700B3',
+    secondary: '#d9dad7',
+    'secondary-darken-1': '#018786',
+    error: '#B00020',
+    info: '#2196F3',
+    success: '#4CAF50',
+    warning: '#FB8C00',
+  },
+}
 
+export const darkThemeGPIO = 'GPIOViewerThemeDark';
+export const lightThemeGPIO = 'GPIOViewerThemeLight';
 const vuetify = createVuetify({
   components,
   directives,
   theme: {
-    defaultTheme: 'GPIOViewerTheme',
+    defaultTheme: lightThemeGPIO,
     themes: {
-      GPIOViewerTheme,
+      GPIOViewerThemeDark,GPIOViewerThemeLight
     },
   },
   icons: {
