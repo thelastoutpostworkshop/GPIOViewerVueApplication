@@ -25,7 +25,7 @@
     "@types/node": "^22.0.2",
     "@vitejs/plugin-vue": "^5.0.3",
     "@vue/tsconfig": "^0.7.0",
-    "npm-run-all2": "^7.0.2",
+    "npm-run-all2": "^8.0.3",
     "typescript": "^5.4.2",
     "vite": "^6.0.5",
     "vue-tsc": "^2.0.6"
