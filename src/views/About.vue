@@ -56,6 +56,28 @@ const highlights = [
   'Optimized dashboards tuned for the lab bench, production line, and field service calls.'
 ];
 
+const darkButtonStyles: Record<string, { background: string; color: string; boxShadow?: string }> = {
+  primary: {
+    background: 'linear-gradient(135deg, rgba(129, 140, 248, 0.45), rgba(99, 102, 241, 0.5))',
+    color: '#eef2ff',
+    boxShadow: '0 8px 20px rgba(99, 102, 241, 0.45)'
+  },
+  error: {
+    background: 'linear-gradient(135deg, rgba(239, 83, 80, 0.55), rgba(255, 138, 128, 0.5))',
+    color: '#ffeef0',
+    boxShadow: '0 8px 20px rgba(244, 67, 54, 0.4)'
+  },
+  'amber-darken-2': {
+    background: 'linear-gradient(135deg, rgba(255, 196, 0, 0.6), rgba(255, 214, 102, 0.55))',
+    color: '#2b1a00',
+    boxShadow: '0 8px 20px rgba(255, 196, 0, 0.35)'
+  }
+};
+
+function buttonStyle(color: string) {
+  return isDarkTheme.value ? darkButtonStyles[color] ?? {} : {};
+}
+
 function openExternal(url: string) {
   window.open(url, '_blank', 'noopener');
 }
@@ -110,7 +132,13 @@ function openExternal(url: string) {
             {{ action.summary }}
           </v-card-text>
           <v-card-actions>
-            <v-btn :color="action.color" variant="tonal" block @click="openExternal(action.url)">
+            <v-btn
+              :color="action.color"
+              variant="tonal"
+              block
+              :style="buttonStyle(action.color)"
+              @click="openExternal(action.url)"
+            >
               {{ action.buttonLabel }}
               <v-icon icon="mdi-open-in-new" end size="18" />
             </v-btn>
