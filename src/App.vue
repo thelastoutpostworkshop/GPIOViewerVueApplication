@@ -21,7 +21,7 @@ declare var window: any;
 function getTheme() {
   const theme_name = getCookie(themeCookie);
   if(theme_name) {
-    theme.global.name.value = theme_name;
+    theme.change(theme_name);
   }
 }
 
@@ -212,13 +212,10 @@ async function fetchSamplingInterval() {
   }
 }
 function toggleTheme() {
-  if (theme.global.name.value === darkThemeGPIO) {
-    theme.global.name.value = lightThemeGPIO
-    setCookie(themeCookie,lightThemeGPIO)
-  } else {
-    theme.global.name.value = darkThemeGPIO
-    setCookie(themeCookie,darkThemeGPIO)
-  }
+  const currentName = theme.global.name.value;
+  const nextTheme = currentName === darkThemeGPIO ? lightThemeGPIO : darkThemeGPIO;
+  theme.change(nextTheme);
+  setCookie(themeCookie,nextTheme);
 }
 </script>
 
