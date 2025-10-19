@@ -52,8 +52,7 @@ const actions: AboutAction[] = [
 
 const highlights = [
   'Visualize GPIO pin states and transitions instantly from any browser.',
-  'Inspect flash, heap, and PSRAM usage without reflashing your ESP32.',
-  'Optimized dashboards tuned for the lab bench, production line, and field service calls.'
+  'Inspect flash, heap, and PSRAM usage without reflashing your ESP32.'
 ];
 
 const darkButtonStyles: Record<string, { background: string; color: string; boxShadow?: string }> = {
