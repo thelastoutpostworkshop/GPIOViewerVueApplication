@@ -485,7 +485,12 @@ onMounted(async () => {
 
   .memory-pane--flash-layout {
     grid-column: 1;
-    grid-row: 1 / span 4;
+    grid-row: 1;
+  }
+
+  .memory-pane--flash-stack {
+    grid-column: 1;
+    grid-row: 2;
   }
 
   .memory-pane--flash-usage {
@@ -493,19 +498,14 @@ onMounted(async () => {
     grid-row: 1;
   }
 
-  .memory-pane--flash-stack {
+  .memory-pane--heap {
     grid-column: 2;
     grid-row: 2;
   }
 
-  .memory-pane--heap {
-    grid-column: 2;
-    grid-row: 3;
-  }
-
   .memory-pane--psram {
     grid-column: 2;
-    grid-row: 4;
+    grid-row: 3;
   }
 }
 
