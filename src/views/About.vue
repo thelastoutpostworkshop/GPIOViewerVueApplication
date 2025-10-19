@@ -120,14 +120,16 @@ function openExternal(url: string) {
                 Drop a star on GitHub, share GPIOViewer with your lab mates, or open issues when you spot rough edges.
               </p>
             </div>
-            <v-btn
-              color="primary"
-              variant="flat"
-              @click="openExternal('https://github.com/thelastoutpostworkshop/gpio_viewer')"
-            >
-              Visit the repository
-              <v-icon icon="mdi-github" end />
-            </v-btn>
+            <v-card-actions>
+              <v-btn
+                color="primary"
+                variant="flat"
+                @click="openExternal('https://github.com/thelastoutpostworkshop/gpio_viewer')"
+              >
+                Visit the repository
+                <v-icon icon="mdi-github" end />
+              </v-btn>
+            </v-card-actions>
           </div>
         </v-card>
       </div>
@@ -379,26 +381,26 @@ function openExternal(url: string) {
 }
 
 .about-action-card__body {
-  flex: 1;
   color: #465464;
   font-size: 0.95rem;
-  line-height: 1.55;
+  line-height: 1.45;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0;
 }
 
 .about-footer-card {
   border-radius: 20px;
-  padding: 1.75rem 2rem;
+  padding: 1.5rem 1.75rem;
   background: rgba(57, 73, 171, 0.12);
 }
 
 .about-footer-card--inline {
-  margin-top: 0.5rem;
+  margin-top: 0.75rem;
 }
 
 .about-footer-card__content {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
 }
 
 .about-footer-card__title {
@@ -409,7 +411,7 @@ function openExternal(url: string) {
 }
 
 .about-footer-card__subtitle {
-  margin: 0.35rem 0 0;
+  margin: 0.2rem 0 0;
   color: #475569;
 }
 
