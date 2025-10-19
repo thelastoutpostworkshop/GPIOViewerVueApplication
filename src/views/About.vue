@@ -85,8 +85,8 @@ function openExternal(url: string) {
 
 <template>
   <v-container :class="['about-page', { 'about-page--dark': isDarkTheme }]" fluid>
-    <v-row justify="center">
-      <v-col cols="12" md="10" lg="8">
+    <div class="about-main">
+      <div class="about-main__left">
         <v-card :class="['about-hero', { 'about-hero--dark': isDarkTheme }]" elevation="12">
           <div class="about-hero__badge">Open Source | ESP32</div>
           <h1 class="about-hero__title">GPIOViewer for ESP32</h1>
@@ -111,12 +111,34 @@ function openExternal(url: string) {
             </div>
           </div>
         </v-card>
-      </v-col>
-    </v-row>
 
-    <v-row class="about-actions" justify="center">
-      <v-col cols="12" md="4" v-for="action in actions" :key="action.title">
-        <v-card class="about-action-card" elevation="8">
+        <v-card class="about-footer-card about-footer-card--inline" elevation="0" variant="tonal">
+          <div class="about-footer-card__content">
+            <div>
+              <h3 class="about-footer-card__title">Stars & shout-outs keep the project healthy</h3>
+              <p class="about-footer-card__subtitle">
+                Drop a star on GitHub, share GPIOViewer with your lab mates, or open issues when you spot rough edges.
+              </p>
+            </div>
+            <v-btn
+              color="primary"
+              variant="flat"
+              @click="openExternal('https://github.com/thelastoutpostworkshop/gpio_viewer')"
+            >
+              Visit the repository
+              <v-icon icon="mdi-github" end />
+            </v-btn>
+          </div>
+        </v-card>
+      </div>
+
+      <div class="about-actions-column">
+        <v-card
+          v-for="action in actions"
+          :key="action.title"
+          class="about-action-card"
+          elevation="8"
+        >
           <v-card-item>
             <div class="about-action-card__header">
               <div class="about-action-card__icon" :class="`about-action-card__icon--${action.color}`">
@@ -144,31 +166,9 @@ function openExternal(url: string) {
             </v-btn>
           </v-card-actions>
         </v-card>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
 
-    <v-row justify="center">
-      <v-col cols="12" md="10" lg="8">
-        <v-card class="about-footer-card" elevation="0" variant="tonal">
-          <div class="about-footer-card__content">
-            <div>
-              <h3 class="about-footer-card__title">Stars & shout-outs keep the project healthy</h3>
-              <p class="about-footer-card__subtitle">
-                Drop a star on GitHub, share GPIOViewer with your lab mates, or open issues when you spot rough edges.
-              </p>
-            </div>
-            <v-btn
-              color="primary"
-              variant="flat"
-              @click="openExternal('https://github.com/thelastoutpostworkshop/gpio_viewer')"
-            >
-              Visit the repository
-              <v-icon icon="mdi-github" end />
-            </v-btn>
-          </div>
-        </v-card>
-      </v-col>
-    </v-row>
   </v-container>
 </template>
 
@@ -180,6 +180,17 @@ function openExternal(url: string) {
   gap: 2.5rem;
 }
 
+.about-main {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.about-main__left {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
 .about-hero {
   padding: 2.25rem 2.5rem;
   border-radius: 24px;
@@ -187,6 +198,7 @@ function openExternal(url: string) {
   box-shadow: 0 12px 36px rgba(15, 23, 42, 0.12);
   position: relative;
   overflow: hidden;
+  height: 100%;
 }
 
 .about-hero--dark {
@@ -305,8 +317,12 @@ function openExternal(url: string) {
   opacity: 0.35;
 }
 
-.about-actions {
-  gap: 1.5rem 0;
+.about-actions-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  height: 100%;
+  align-self: stretch;
 }
 
 .about-action-card {
@@ -373,6 +389,10 @@ function openExternal(url: string) {
   border-radius: 20px;
   padding: 1.75rem 2rem;
   background: rgba(57, 73, 171, 0.12);
+}
+
+.about-footer-card--inline {
+  margin-top: 0.5rem;
 }
 
 .about-footer-card__content {
@@ -456,6 +476,13 @@ function openExternal(url: string) {
 
   .about-hero__highlights {
     font-size: 0.9rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .about-main {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    align-items: stretch;
   }
 }
 </style>
