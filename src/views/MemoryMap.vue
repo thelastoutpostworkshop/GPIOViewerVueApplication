@@ -374,7 +374,7 @@ onMounted(async () => {
 
           <v-alert
             v-if="hasReclaimableFlash"
-            color="primary"
+            color="orange-darken-2"
             variant="tonal"
             border="start"
             class="reclaim-hint"
@@ -676,6 +676,9 @@ onMounted(async () => {
   flex: 1 1 100%;
   min-width: 220px;
   align-self: stretch;
+  background: linear-gradient(135deg, rgba(255, 171, 64, 0.22), rgba(255, 214, 102, 0.28));
+  border-left-width: 6px !important;
+  border-color: rgba(255, 143, 0, 0.8) !important;
 }
 
 .reclaim-link {
