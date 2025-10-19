@@ -24,6 +24,15 @@ interface FlashOverview {
   freeBytes: number;
 }
 
+interface FlashStackSegment {
+  id: string;
+  label: string;
+  percent: number;
+  bytes: number;
+  background: string;
+  textColor: string;
+}
+
 interface MemoryUsageOverview {
   totalBytes: number;
   usedBytes: number;
@@ -33,6 +42,7 @@ interface MemoryUsageOverview {
 const espInfo = ref<ESPInfo>();
 const partitionCards = ref<PartitionCard[]>([]);
 const flashOverview = ref<FlashOverview | null>(null);
+const flashStackSegments = ref<FlashStackSegment[]>([]);
 const heapOverview = ref<MemoryUsageOverview | null>(null);
 const psramOverview = ref<MemoryUsageOverview | null>(null);
 const isLoading = ref(true);
@@ -136,6 +146,42 @@ function calculateMetrics(info: ESPInfo, partitions: ESPPartition[]) {
     freePercent,
     freeBytes
   };
+
+  const stackSegments: FlashStackSegment[] = [];
+  if (sketchPercent > 0) {
+    stackSegments.push({
+      id: "sketch",
+      label: "Sketch",
+      percent: sketchPercent,
+      bytes: info.sketch_size,
+      background: "linear-gradient(180deg, #3949ab, #5c6bc0)",
+      textColor: "#ffffff"
+    });
+  }
+
+  if (fsPercent > 0) {
+    stackSegments.push({
+      id: "filesystem",
+      label: fsPartition?.label ? fsPartition.label.toUpperCase() : "FILESYSTEM",
+      percent: fsPercent,
+      bytes: fsPartition?.size ?? 0,
+      background: "linear-gradient(180deg, #00897b, #26a69a)",
+      textColor: "#ffffff"
+    });
+  }
+
+  if (freePercent > 0) {
+    stackSegments.push({
+      id: "free",
+      label: "Free",
+      percent: freePercent,
+      bytes: freeBytes,
+      background: "linear-gradient(180deg, #e0e7ec, #f5f7fa)",
+      textColor: "#1f2933"
+    });
+  }
+
+  flashStackSegments.value = stackSegments;
 
   const heapUsedBytes = Math.max(0, info.heap_size - info.free_heap);
   heapOverview.value = {
@@ -284,6 +330,48 @@ onMounted(async () => {
         </div>
       </section>
 
+      <section class="memory-pane memory-pane--flash-stack">
+        <header class="pane-header">
+          <h2>Flash Stack Map</h2>
+          <span class="pane-meta">Relative share of flash by usage</span>
+        </header>
+
+        <div v-if="flashStackSegments.length" class="stacked-column-wrapper">
+          <div class="stacked-column">
+            <v-tooltip
+              v-for="segment in flashStackSegments"
+              :key="segment.id"
+              :text="`${segment.label}: ${segment.percent}% - ${formatBytes(segment.bytes)}`"
+              location="right"
+            >
+              <template #activator="{ props }">
+                <div
+                  class="stacked-column__segment"
+                  v-bind="props"
+                  :style="[
+                    { height: segment.percent + '%', background: segment.background, color: segment.textColor },
+                    segment.percent < 6 ? { minHeight: '28px' } : {}
+                  ]"
+                >
+                  <span v-if="segment.percent >= 12" class="stacked-column__label">{{ segment.label }}</span>
+                </div>
+              </template>
+            </v-tooltip>
+          </div>
+
+          <ul class="stacked-legend">
+            <li v-for="segment in flashStackSegments" :key="`${segment.id}-legend`">
+              <span class="stacked-legend__color" :style="{ background: segment.background }"></span>
+              <span class="stacked-legend__text">{{ segment.label }}</span>
+              <span class="stacked-legend__value">{{ segment.percent }}% - {{ formatBytes(segment.bytes) }}</span>
+            </li>
+          </ul>
+        </div>
+        <div v-else class="empty-state">
+          Flash usage data unavailable.
+        </div>
+      </section>
+
       <section class="memory-pane memory-pane--heap">
         <header class="pane-header">
           <h2>Heap Usage</h2>
@@ -377,7 +465,7 @@ onMounted(async () => {
 
   .memory-pane--flash-layout {
     grid-column: 1;
-    grid-row: 1 / span 3;
+    grid-row: 1 / span 4;
   }
 
   .memory-pane--flash-usage {
@@ -385,14 +473,19 @@ onMounted(async () => {
     grid-row: 1;
   }
 
-  .memory-pane--heap {
+  .memory-pane--flash-stack {
     grid-column: 2;
     grid-row: 2;
   }
 
-  .memory-pane--psram {
+  .memory-pane--heap {
     grid-column: 2;
     grid-row: 3;
+  }
+
+  .memory-pane--psram {
+    grid-column: 2;
+    grid-row: 4;
   }
 }
 
@@ -481,6 +574,81 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+}
+
+.stacked-column-wrapper {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+
+.stacked-column {
+  flex: 0 0 120px;
+  height: 260px;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column-reverse;
+  box-shadow: inset 0 0 0 1px rgba(99, 110, 123, 0.1);
+  background: #edf1f7;
+}
+
+.stacked-column__segment {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.35rem 0.25rem;
+  text-align: center;
+}
+
+.stacked-column__label {
+  display: block;
+}
+
+.stacked-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  flex: 1 1 180px;
+}
+
+.stacked-legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+.stacked-legend__color {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  box-shadow: inset 0 0 0 1px rgba(31, 41, 51, 0.08);
+  flex-shrink: 0;
+}
+
+.stacked-legend__text {
+  font-weight: 600;
+  color: #1f2933;
+  flex: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.stacked-legend__value {
+  font-variant-numeric: tabular-nums;
+  color: #334155;
 }
 
 .stacked-bar {
