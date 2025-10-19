@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import type { ESPInfo, ESPPartition } from "@/types/types";
 import { getAPIUrl, formatBytes } from "@/functions";
 
@@ -46,6 +46,7 @@ const flashStackSegments = ref<FlashStackSegment[]>([]);
 const heapOverview = ref<MemoryUsageOverview | null>(null);
 const psramOverview = ref<MemoryUsageOverview | null>(null);
 const isLoading = ref(true);
+const partitionTutorialUrl = "https://youtu.be/EuHxodrye6E";
 
 const partitionColorOverrides: Record<string, string> = {
   boot: "#3949ab",
@@ -203,6 +204,10 @@ function calculateMetrics(info: ESPInfo, partitions: ESPPartition[]) {
     psramOverview.value = null;
   }
 }
+
+const hasReclaimableFlash = computed(() =>
+  flashStackSegments.value.some((segment) => segment.id === "free" && segment.bytes > 0)
+);
 
 onMounted(async () => {
   try {
@@ -366,6 +371,21 @@ onMounted(async () => {
               <span class="stacked-legend__value">{{ segment.percent }}% - {{ formatBytes(segment.bytes) }}</span>
             </li>
           </ul>
+
+          <v-alert
+            v-if="hasReclaimableFlash"
+            color="primary"
+            variant="tonal"
+            border="start"
+            class="reclaim-hint"
+            density="compact"
+            icon="mdi-lightbulb-on-outline"
+          >
+            <span>
+              Unused flash detected. Reclaim space by adjusting partitions in the
+              <a :href="partitionTutorialUrl" target="_blank" rel="noopener" class="reclaim-link">partition tutorial</a>.
+            </span>
+          </v-alert>
         </div>
         <div v-else class="empty-state">
           Flash usage data unavailable.
@@ -649,6 +669,23 @@ onMounted(async () => {
 .stacked-legend__value {
   font-variant-numeric: tabular-nums;
   color: #334155;
+}
+
+.reclaim-hint {
+  margin-top: 0.75rem;
+  flex: 1 1 100%;
+  min-width: 220px;
+  align-self: stretch;
+}
+
+.reclaim-link {
+  color: #1a57c5;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.reclaim-link:hover {
+  text-decoration: none;
 }
 
 .stacked-bar {
