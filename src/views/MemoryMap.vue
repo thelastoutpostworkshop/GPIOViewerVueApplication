@@ -397,57 +397,59 @@ onMounted(async () => {
           <span class="pane-meta">Relative share of flash by usage</span>
         </header>
 
-        <div v-if="flashStackSegments.length" class="stacked-column-wrapper">
-          <div class="stacked-column">
-            <v-tooltip
-              v-for="segment in flashStackSegments"
-              :key="segment.id"
-              :text="`${segment.label}: ${segment.percent}% - ${formatBytes(segment.bytes)}`"
-              location="right"
-            >
-              <template #activator="{ props }">
-                <div
-                  class="stacked-column__segment"
-                  v-bind="props"
-                  :style="[
-                    { height: segment.percent + '%', background: segment.background, color: segment.textColor },
-                    segment.percent < 6 ? { minHeight: '28px' } : {}
-                  ]"
-                >
-                  <span v-if="segment.percent >= 12" class="stacked-column__label">{{ segment.label }}</span>
-                </div>
-              </template>
-            </v-tooltip>
+        <v-alert
+          v-if="flashStackSegments.length && hasReclaimableFlash"
+          color="orange-darken-2"
+          variant="tonal"
+          border="start"
+          class="reclaim-hint reclaim-hint--inline"
+          density="compact"
+          icon="mdi-lightbulb-on-outline"
+        >
+          <span>
+            Unused flash detected. Reclaim space by adjusting partitions in the
+            <a :href="partitionTutorialUrl" target="_blank" rel="noopener" class="reclaim-link">partition tutorial</a>.
+          </span>
+        </v-alert>
+
+        <template v-if="flashStackSegments.length">
+          <div class="stacked-column-wrapper">
+            <div class="stacked-column">
+              <v-tooltip
+                v-for="segment in flashStackSegments"
+                :key="segment.id"
+                :text="`${segment.label}: ${segment.percent}% - ${formatBytes(segment.bytes)}`"
+                location="right"
+              >
+                <template #activator="{ props }">
+                  <div
+                    class="stacked-column__segment"
+                    v-bind="props"
+                    :style="[
+                      { height: segment.percent + '%', background: segment.background, color: segment.textColor },
+                      segment.percent < 6 ? { minHeight: '28px' } : {}
+                    ]"
+                  >
+                    <span v-if="segment.percent >= 12" class="stacked-column__label">{{ segment.label }}</span>
+                  </div>
+                </template>
+              </v-tooltip>
+            </div>
+
+            <ul class="stacked-legend">
+              <li v-for="segment in flashStackSegments" :key="`${segment.id}-legend`">
+                <span class="stacked-legend__color" :style="{ background: segment.background }"></span>
+                <span class="stacked-legend__text">{{ segment.label }}</span>
+                <span class="stacked-legend__value">{{ segment.percent }}% - {{ formatBytes(segment.bytes) }}</span>
+              </li>
+            </ul>
           </div>
 
-          <ul class="stacked-legend">
-            <li v-for="segment in flashStackSegments" :key="`${segment.id}-legend`">
-              <span class="stacked-legend__color" :style="{ background: segment.background }"></span>
-              <span class="stacked-legend__text">{{ segment.label }}</span>
-              <span class="stacked-legend__value">{{ segment.percent }}% - {{ formatBytes(segment.bytes) }}</span>
-            </li>
-          </ul>
-
-          <v-alert
-            v-if="hasReclaimableFlash"
-            color="orange-darken-2"
-            variant="tonal"
-            border="start"
-            class="reclaim-hint"
-            density="compact"
-            icon="mdi-lightbulb-on-outline"
-          >
-            <span>
-              Unused flash detected. Reclaim space by adjusting partitions in the
-              <a :href="partitionTutorialUrl" target="_blank" rel="noopener" class="reclaim-link">partition tutorial</a>.
-            </span>
-          </v-alert>
-        </div>
+        </template>
         <div v-else class="empty-state">
           Flash usage data unavailable.
         </div>
       </section>
-
     </div>
   </div>
 
@@ -633,10 +635,10 @@ onMounted(async () => {
 
 .stacked-column-wrapper {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 1rem;
   align-items: stretch;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .stacked-column {
@@ -670,19 +672,19 @@ onMounted(async () => {
 .stacked-legend {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 0 0 0.25rem;
   display: flex;
   flex-direction: column;
-  gap: 0.55rem;
-  flex: 1 1 180px;
+  gap: 0.45rem;
 }
 
 .stacked-legend li {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.85rem;
-  color: #475569;
+  column-gap: 0.4rem;
+  font-size: 0.86rem;
+  color: #334155;
 }
 
 .stacked-legend__color {
@@ -696,24 +698,37 @@ onMounted(async () => {
 .stacked-legend__text {
   font-weight: 600;
   color: #1f2933;
-  flex: 1;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
 
 .stacked-legend__value {
   font-variant-numeric: tabular-nums;
-  color: #334155;
+  color: #24344b;
+  justify-self: end;
 }
 
 .reclaim-hint {
-  margin-top: 0.75rem;
-  flex: 1 1 100%;
-  min-width: 220px;
-  align-self: stretch;
   background: linear-gradient(135deg, rgba(255, 171, 64, 0.22), rgba(255, 214, 102, 0.28));
   border-left-width: 6px !important;
   border-color: rgba(255, 143, 0, 0.8) !important;
+}
+
+.reclaim-hint--inline {
+  margin-bottom: 0.85rem;
+}
+
+@media (min-width: 1024px) {
+  .stacked-column-wrapper {
+    flex-direction: row;
+    gap: 1.2rem;
+    align-items: stretch;
+  }
+
+  .stacked-legend {
+    flex: 1 1 auto;
+    align-self: center;
+  }
 }
 
 .reclaim-link {
