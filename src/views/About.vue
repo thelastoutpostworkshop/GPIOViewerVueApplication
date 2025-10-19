@@ -1,7 +1,11 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+import { useTheme } from 'vuetify';
 import { gpioStore } from '@/stores/gpiostore';
 
 const store = gpioStore();
+const theme = useTheme();
+const isDarkTheme = computed(() => theme.global.current.value?.dark ?? false);
 
 interface AboutAction {
   icon: string;
@@ -58,10 +62,10 @@ function openExternal(url: string) {
 </script>
 
 <template>
-  <v-container class="about-page" fluid>
+  <v-container :class="['about-page', { 'about-page--dark': isDarkTheme }]" fluid>
     <v-row justify="center">
       <v-col cols="12" md="10" lg="8">
-        <v-card class="about-hero" elevation="12">
+        <v-card :class="['about-hero', { 'about-hero--dark': isDarkTheme }]" elevation="12">
           <div class="about-hero__badge">Open Source | ESP32</div>
           <h1 class="about-hero__title">GPIOViewer for ESP32</h1>
           <p class="about-hero__subtitle">
@@ -155,6 +159,40 @@ function openExternal(url: string) {
   box-shadow: 0 12px 36px rgba(15, 23, 42, 0.12);
   position: relative;
   overflow: hidden;
+}
+
+.about-hero--dark {
+  background: linear-gradient(135deg, rgba(38, 50, 79, 0.85), rgba(56, 78, 128, 0.68));
+  box-shadow: 0 24px 48px rgba(7, 12, 23, 0.6);
+}
+
+.about-hero--dark .about-hero__badge {
+  background: rgba(148, 163, 184, 0.18);
+  color: #c7d2fe;
+}
+
+.about-hero--dark .about-hero__title {
+  color: #f8fafc;
+}
+
+.about-hero--dark .about-hero__subtitle {
+  color: #d1d9ff;
+}
+
+.about-hero--dark .about-hero__highlights {
+  color: #e2e8f0;
+}
+
+.about-hero--dark .about-hero__bullet {
+  color: #34d399;
+}
+
+.about-hero--dark .about-hero__meta-label {
+  color: #9ca9c6;
+}
+
+.about-hero--dark .about-hero__meta-value {
+  color: #f9fbff;
 }
 
 .about-hero__badge {
@@ -327,65 +365,35 @@ function openExternal(url: string) {
   color: #475569;
 }
 
-:deep(.v-theme--dark) .about-page {
+.about-page--dark {
   color: #e2e8f0;
 }
 
-:deep(.v-theme--dark) .about-hero {
-  background: linear-gradient(135deg, rgba(38, 50, 79, 0.85), rgba(56, 78, 128, 0.68));
-  box-shadow: 0 24px 48px rgba(7, 12, 23, 0.6);
-}
-
-:deep(.v-theme--dark) .about-hero__badge {
-  background: rgba(148, 163, 184, 0.18);
-  color: #c7d2fe;
-}
-
-:deep(.v-theme--dark) .about-hero__title {
-  color: #f8fafc;
-}
-
-:deep(.v-theme--dark) .about-hero__subtitle {
-  color: #d1d9ff;
-}
-
-:deep(.v-theme--dark) .about-hero__highlights {
-  color: #e2e8f0;
-}
-
-:deep(.v-theme--dark) .about-hero__meta-label {
-  color: #94a3b8;
-}
-
-:deep(.v-theme--dark) .about-hero__meta-value {
-  color: #f8fafc;
-}
-
-:deep(.v-theme--dark) .about-action-card {
+.about-page--dark .about-action-card {
   background: rgba(19, 28, 46, 0.85);
   box-shadow: 0 16px 36px rgba(7, 12, 24, 0.6);
   border: 1px solid rgba(148, 163, 184, 0.12);
 }
 
-:deep(.v-theme--dark) .about-action-card__title,
-:deep(.v-theme--dark) .about-action-card__body {
+.about-page--dark .about-action-card__title,
+.about-page--dark .about-action-card__body {
   color: #eceff9;
 }
 
-:deep(.v-theme--dark) .about-action-card__chip {
+.about-page--dark .about-action-card__chip {
   color: #c7cffb;
 }
 
-:deep(.v-theme--dark) .about-footer-card {
+.about-page--dark .about-footer-card {
   background: rgba(37, 49, 83, 0.7);
   color: #e2e8f0;
 }
 
-:deep(.v-theme--dark) .about-footer-card__title {
+.about-page--dark .about-footer-card__title {
   color: #f8fafc;
 }
 
-:deep(.v-theme--dark) .about-footer-card__subtitle {
+.about-page--dark .about-footer-card__subtitle {
   color: #cbd5f5;
 }
 
