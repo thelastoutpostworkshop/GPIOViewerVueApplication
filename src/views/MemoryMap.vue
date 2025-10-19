@@ -177,7 +177,7 @@ onMounted(async () => {
 <template>
   <div v-if="!isLoading && espInfo" class="memory-dashboard">
     <div class="memory-grid">
-      <section class="memory-pane">
+      <section class="memory-pane memory-pane--flash-layout">
         <header class="pane-header">
           <h2>Flash Layout</h2>
           <span class="pane-meta">Total {{ formatBytes(espInfo.flash_chip_size) }}</span>
@@ -217,7 +217,7 @@ onMounted(async () => {
         </div>
       </section>
 
-      <section class="memory-pane">
+      <section class="memory-pane memory-pane--flash-usage">
         <header class="pane-header">
           <h2>Flash Usage</h2>
           <span class="pane-meta">Overview of sketch and filesystem usage</span>
@@ -284,7 +284,7 @@ onMounted(async () => {
         </div>
       </section>
 
-      <section class="memory-pane">
+      <section class="memory-pane memory-pane--heap">
         <header class="pane-header">
           <h2>Heap Usage</h2>
           <span class="pane-meta">Total {{ formatBytes(heapOverview?.totalBytes ?? 0) }}</span>
@@ -311,7 +311,7 @@ onMounted(async () => {
         </div>
       </section>
 
-      <section v-if="psramOverview" class="memory-pane">
+      <section v-if="psramOverview" class="memory-pane memory-pane--psram">
         <header class="pane-header">
           <h2>PSRAM Usage</h2>
           <span class="pane-meta">Total {{ formatBytes(psramOverview.totalBytes) }}</span>
@@ -354,8 +354,46 @@ onMounted(async () => {
 
 .memory-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.5rem;
+}
+
+@media (min-width: 900px) {
+  .memory-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-flow: row dense;
+  }
+
+  .memory-pane--flash-layout {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 1280px) {
+  .memory-grid {
+    grid-template-columns: 2fr 1fr;
+    grid-auto-rows: minmax(0, auto);
+  }
+
+  .memory-pane--flash-layout {
+    grid-column: 1;
+    grid-row: 1 / span 3;
+  }
+
+  .memory-pane--flash-usage {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .memory-pane--heap {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .memory-pane--psram {
+    grid-column: 2;
+    grid-row: 3;
+  }
 }
 
 .memory-pane {
