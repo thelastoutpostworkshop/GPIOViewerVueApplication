@@ -243,43 +243,49 @@ onMounted(() => {
       </div>
     </section>
 
-    <section v-if="summaryCards.length" class="summary-grid">
-      <v-card
-        v-for="card in summaryCards"
-        :key="card.title"
-        flat
-        class="summary-card"
-        :style="{ borderColor: card.accent, background: card.tint }"
-      >
-        <div class="summary-card__content">
-          <div class="summary-card__icon" :style="{ color: card.accent }">
-            <v-icon :icon="card.icon" size="28"></v-icon>
-          </div>
-          <div class="summary-card__body">
-            <div class="summary-card__title">{{ card.title }}</div>
-            <div class="summary-card__value">{{ card.value }}</div>
-            <div class="summary-card__caption">{{ card.caption }}</div>
-          </div>
-        </div>
-      </v-card>
-    </section>
+    <section class="content-grid">
+      <div class="content-grid__left">
+        <section v-if="summaryCards.length" class="summary-grid">
+          <v-card
+            v-for="card in summaryCards"
+            :key="card.title"
+            flat
+            class="summary-card"
+            :style="{ borderColor: card.accent, background: card.tint }"
+          >
+            <div class="summary-card__content">
+              <div class="summary-card__icon" :style="{ color: card.accent }">
+                <v-icon :icon="card.icon" size="28"></v-icon>
+              </div>
+              <div class="summary-card__body">
+                <div class="summary-card__title">{{ card.title }}</div>
+                <div class="summary-card__value">{{ card.value }}</div>
+                <div class="summary-card__caption">{{ card.caption }}</div>
+              </div>
+            </div>
+          </v-card>
+        </section>
+      </div>
 
-    <section class="info-sections">
-      <article v-for="section in infoSections" :key="section.title" class="info-section">
-        <header class="info-section__header">
-          <v-icon :icon="section.icon" size="22"></v-icon>
-          <span>{{ section.title }}</span>
-        </header>
-        <dl class="info-list">
-          <div v-for="item in section.items" :key="`${section.title}-${item.label}`" class="info-list__row">
-            <dt>{{ item.label }}</dt>
-            <dd>
-              <span>{{ item.value }}</span>
-              <small v-if="item.hint">{{ item.hint }}</small>
-            </dd>
-          </div>
-        </dl>
-      </article>
+      <div class="content-grid__right">
+        <section class="info-sections">
+          <article v-for="section in infoSections" :key="section.title" class="info-section">
+            <header class="info-section__header">
+              <v-icon :icon="section.icon" size="22"></v-icon>
+              <span>{{ section.title }}</span>
+            </header>
+            <dl class="info-list">
+              <div v-for="item in section.items" :key="`${section.title}-${item.label}`" class="info-list__row">
+                <dt>{{ item.label }}</dt>
+                <dd>
+                  <span>{{ item.value }}</span>
+                  <small v-if="item.hint">{{ item.hint }}</small>
+                </dd>
+              </div>
+            </dl>
+          </article>
+        </section>
+      </div>
     </section>
   </div>
 
@@ -300,7 +306,7 @@ onMounted(() => {
 
 <style scoped>
 .esp-info-dashboard {
-  max-width: 960px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 1.5rem 0 2.5rem;
   display: flex;
@@ -327,6 +333,18 @@ onMounted(() => {
 .hero__subtitle {
   color: #4a5568;
   font-size: 0.95rem;
+}
+
+.content-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.content-grid__left,
+.content-grid__right {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
 .summary-grid {
@@ -486,6 +504,32 @@ onMounted(() => {
 
   .info-list__row dd {
     font-size: 0.9rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .content-grid {
+    grid-template-columns: 1.1fr 1.6fr;
+    align-items: start;
+  }
+
+  .content-grid__left {
+    position: sticky;
+    top: 1.25rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .esp-info-dashboard {
+    max-width: 1400px;
+  }
+
+  .summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .info-sections {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 </style>
