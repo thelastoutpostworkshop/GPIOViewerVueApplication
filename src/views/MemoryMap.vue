@@ -817,4 +817,66 @@ onMounted(async () => {
   color: #607086;
   text-align: center;
 }
+
+:deep(.v-theme--dark) .memory-dashboard {
+  color: #e2e8f0;
+}
+
+:deep(.v-theme--dark) .memory-pane {
+  background-color: rgba(15, 23, 42, 0.78);
+  box-shadow: 0 12px 32px rgba(10, 17, 29, 0.72);
+}
+
+:deep(.v-theme--dark) .pane-header h2 {
+  color: #f8fafc;
+}
+
+:deep(.v-theme--dark) .pane-meta {
+  color: #94a3b8;
+}
+
+:deep(.v-theme--dark) .partition-card {
+  background-color: rgba(24, 35, 52, 0.9);
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.1);
+}
+
+:deep(.v-theme--dark) .partition-title {
+  color: #f8fafc;
+}
+
+:deep(.v-theme--dark) .partition-size,
+:deep(.v-theme--dark) .partition-meta {
+  color: #cbd5f5;
+}
+
+:deep(.v-theme--dark) .stacked-column {
+  background: rgba(15, 23, 42, 0.92);
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.18);
+}
+
+:deep(.v-theme--dark) .stacked-legend__text {
+  color: #f8fafc;
+}
+
+:deep(.v-theme--dark) .stacked-legend__value {
+  color: #cbd5f5;
+}
+
+:deep(.v-theme--dark) .usage-list li,
+:deep(.v-theme--dark) .usage-footer {
+  color: #cbd5f5;
+}
+
+:deep(.v-theme--dark) .usage-label {
+  color: #f8fafc;
+}
+
+:deep(.v-theme--dark) .reclaim-hint {
+  background: linear-gradient(135deg, rgba(255, 155, 55, 0.25), rgba(255, 204, 102, 0.3));
+}
+
+:deep(.v-theme--dark) .empty-state {
+  background: rgba(226, 232, 240, 0.06);
+  color: #cbd5f5;
+}
 </style>

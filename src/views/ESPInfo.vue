@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { getAPIUrl, formatBytes, formatHz, formatMacAddress, formatTime } from "@/functions";
 import type { ESPInfo } from "@/types/types";
+import { useTheme } from 'vuetify';
 
 interface SummaryCard {
   title: string;
@@ -9,7 +10,8 @@ interface SummaryCard {
   caption: string;
   icon: string;
   accent: string;
-  tint: string;
+  tintLight: string;
+  tintDark: string;
 }
 
 interface InfoSectionItem {
@@ -27,6 +29,8 @@ interface InfoSection {
 const espInfo = ref<ESPInfo>();
 const isLoading = ref(true);
 const numberFormatter = new Intl.NumberFormat();
+const theme = useTheme();
+const isDarkTheme = computed(() => theme.global.current.value?.dark ?? false);
 
 async function fetchESPInformation() {
   isLoading.value = true;
@@ -76,7 +80,8 @@ const summaryCards = computed<SummaryCard[]>(() => {
       caption: "Since last reset",
       icon: "mdi-clock-outline",
       accent: "#3949ab",
-      tint: "rgba(57, 73, 171, 0.12)"
+      tintLight: "rgba(57, 73, 171, 0.12)",
+      tintDark: "linear-gradient(135deg, rgba(96, 125, 255, 0.6), rgba(129, 140, 248, 0.55))"
     },
     {
       title: "CPU Frequency",
@@ -84,7 +89,8 @@ const summaryCards = computed<SummaryCard[]>(() => {
       caption: `${info.cores_count} core${info.cores_count === 1 ? "" : "s"}`,
       icon: "mdi-speedometer",
       accent: "#ef6c00",
-      tint: "rgba(239, 108, 0, 0.12)"
+      tintLight: "rgba(239, 108, 0, 0.12)",
+      tintDark: "linear-gradient(135deg, rgba(255, 193, 120, 0.7), rgba(255, 214, 153, 0.6))"
     },
     {
       title: "Flash Size",
@@ -92,7 +98,8 @@ const summaryCards = computed<SummaryCard[]>(() => {
       caption: flashMode(info.flash_mode),
       icon: "mdi-chip",
       accent: "#26a69a",
-      tint: "rgba(38, 166, 154, 0.12)"
+      tintLight: "rgba(38, 166, 154, 0.12)",
+      tintDark: "linear-gradient(135deg, rgba(77, 210, 195, 0.65), rgba(128, 222, 234, 0.55))"
     },
     {
       title: "Heap Usage",
@@ -100,7 +107,8 @@ const summaryCards = computed<SummaryCard[]>(() => {
       caption: `${formatBytes(info.heap_size)} total`,
       icon: "mdi-memory",
       accent: "#8e24aa",
-      tint: "rgba(142, 36, 170, 0.12)"
+      tintLight: "rgba(142, 36, 170, 0.12)",
+      tintDark: "linear-gradient(135deg, rgba(186, 104, 200, 0.65), rgba(224, 176, 255, 0.55))"
     }
   ];
 
@@ -111,7 +119,8 @@ const summaryCards = computed<SummaryCard[]>(() => {
       caption: `${formatBytes(info.psram_size)} total`,
       icon: "mdi-server",
       accent: "#5c6bc0",
-      tint: "rgba(92, 107, 192, 0.12)"
+      tintLight: "rgba(92, 107, 192, 0.12)",
+      tintDark: "linear-gradient(135deg, rgba(153, 162, 255, 0.65), rgba(196, 208, 255, 0.55))"
     });
   }
 
@@ -236,7 +245,7 @@ onMounted(() => {
 
 <template>
   <div v-if="!isLoading && espInfo" class="esp-info-dashboard">
-    <section class="hero">
+    <section :class="['hero', { 'hero--dark': isDarkTheme }]">
       <div class="hero__title">ESP32 Runtime Overview</div>
       <div class="hero__subtitle">
         Live diagnostics for the board running GPIOViewer.
@@ -246,13 +255,16 @@ onMounted(() => {
     <section class="content-grid">
       <div class="content-grid__left">
         <section v-if="summaryCards.length" class="summary-grid">
-          <v-card
-            v-for="card in summaryCards"
-            :key="card.title"
-            flat
-            class="summary-card"
-            :style="{ borderColor: card.accent, background: card.tint }"
-          >
+      <v-card
+        v-for="card in summaryCards"
+        :key="card.title"
+        flat
+        :class="['summary-card', { 'summary-card--dark': isDarkTheme }]"
+        :style="{
+          borderColor: card.accent,
+          background: isDarkTheme ? card.tintDark : card.tintLight
+        }"
+      >
             <div class="summary-card__content">
               <div class="summary-card__icon" :style="{ color: card.accent }">
                 <v-icon :icon="card.icon" size="28"></v-icon>
@@ -322,6 +334,19 @@ onMounted(() => {
   flex-direction: column;
   gap: 0.5rem;
   box-shadow: inset 0 0 0 1px rgba(57, 73, 171, 0.15);
+}
+
+.hero--dark {
+  background: linear-gradient(135deg, rgba(79, 129, 255, 0.65), rgba(63, 81, 181, 0.45));
+  box-shadow: inset 0 0 0 1px rgba(129, 140, 248, 0.55);
+}
+
+.hero--dark .hero__title {
+  color: #f1f5f9 !important;
+}
+
+.hero--dark .hero__subtitle {
+  color: #cbd5f5 !important;
 }
 
 .hero__title {
@@ -407,6 +432,23 @@ onMounted(() => {
   color: #5f6b7a;
 }
 
+.summary-card--dark {
+  color: #f8fafc;
+}
+
+.summary-card--dark .summary-card__title,
+.summary-card--dark .summary-card__value {
+  color: #ffffff;
+}
+
+.summary-card--dark .summary-card__caption {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.summary-card--dark .summary-card__icon {
+  background-color: rgba(15, 23, 42, 0.35);
+}
+
 .info-sections {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -486,6 +528,63 @@ onMounted(() => {
 .error-state__caption {
   color: #5f6b7a;
   font-size: 0.9rem;
+}
+
+:deep(.v-theme--dark) .esp-info-dashboard {
+  color: #e2e8f0;
+}
+
+:deep(.v-theme--dark) .summary-card {
+  background: rgba(30, 41, 59, 0.85);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.55);
+}
+
+:deep(.v-theme--dark) .summary-card__title {
+  color: #ffffff !important;
+}
+
+:deep(.v-theme--dark) .summary-card__value {
+  color: #f8fafc !important;
+}
+
+:deep(.v-theme--dark) .summary-card__caption {
+  color: #f8fafc !important;
+  opacity: 0.92;
+}
+
+:deep(.v-theme--dark) .summary-card__body {
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(10, 19, 38, 0.45);
+}
+
+:deep(.v-theme--dark) .summary-card__icon {
+  background-color: rgba(241, 245, 249, 0.22);
+}
+
+:deep(.v-theme--dark) .info-section {
+  background-color: rgba(36, 48, 74, 0.78);
+  box-shadow: 0 16px 36px rgba(8, 13, 23, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+:deep(.v-theme--dark) .info-section__header {
+  color: #e2e8f0 !important;
+}
+
+:deep(.v-theme--dark) .info-list__row dt {
+  color: #d1d9ff;
+}
+
+:deep(.v-theme--dark) .info-list__row dd {
+  color: #f9fbff;
+}
+
+:deep(.v-theme--dark) .info-list__row dd small {
+  color: #c7cffb;
+}
+
+:deep(.v-theme--dark) .error-state__title {
+  color: #e2e8f0;
 }
 
 @media (max-width: 640px) {
