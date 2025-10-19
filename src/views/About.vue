@@ -45,7 +45,7 @@ const actions: AboutAction[] = [
       'If GPIOViewer saves you time, fuel future releases with a coffee and keep these dashboards evolving.',
     url: 'https://www.buymeacoffee.com/thelastoutpostworkshop',
     color: 'amber-darken-2',
-    buttonLabel: 'Buy Mila a coffee',
+    buttonLabel: 'Buy me a coffee',
     chip: 'Support'
   }
 ];
