@@ -407,7 +407,8 @@ onMounted(async () => {
           icon="mdi-lightbulb-on-outline"
         >
           <span>
-            Unused flash detected. Reclaim wasted space—see the
+            Unused flash detected.
+            <span class="reclaim-highlight">Reclaim wasted space</span> - see the
             <a :href="partitionTutorialUrl" target="_blank" rel="noopener" class="reclaim-link">partition tutorial</a>.
           </span>
         </v-alert>
@@ -716,6 +717,11 @@ onMounted(async () => {
 
 .reclaim-hint--inline {
   margin-bottom: 0.85rem;
+}
+
+.reclaim-highlight {
+  font-weight: 700;
+  color: #c05621;
 }
 
 @media (min-width: 1024px) {
