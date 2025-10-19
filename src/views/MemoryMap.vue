@@ -268,72 +268,128 @@ onMounted(async () => {
         </div>
       </section>
 
-      <section class="memory-pane memory-pane--flash-usage">
-        <header class="pane-header">
-          <h2>Flash Usage</h2>
-          <span class="pane-meta">Overview of sketch and filesystem usage</span>
-        </header>
+      <div class="memory-right-column">
+        <section class="memory-pane memory-pane--flash-usage">
+          <header class="pane-header">
+            <h2>Flash Usage</h2>
+            <span class="pane-meta">Overview of sketch and filesystem usage</span>
+          </header>
 
-        <div v-if="flashOverview" class="usage-block">
-          <div class="stacked-bar" v-if="flashOverview.totalBytes">
-            <v-tooltip
-              :text="`Sketch: ${flashOverview.sketchPercent}% - ${formatBytes(flashOverview.sketchBytes)}`"
-              location="bottom"
-            >
-              <template #activator="{ props }">
-                <div
-                  class="stacked-segment stacked-segment--sketch"
-                  v-bind="props"
-                  :style="{ width: flashOverview.sketchPercent + '%' }"
-                ></div>
-              </template>
-            </v-tooltip>
+          <div v-if="flashOverview" class="usage-block">
+            <div class="stacked-bar" v-if="flashOverview.totalBytes">
+              <v-tooltip
+                :text="`Sketch: ${flashOverview.sketchPercent}% - ${formatBytes(flashOverview.sketchBytes)}`"
+                location="bottom"
+              >
+                <template #activator="{ props }">
+                  <div
+                    class="stacked-segment stacked-segment--sketch"
+                    v-bind="props"
+                    :style="{ width: flashOverview.sketchPercent + '%' }"
+                  ></div>
+                </template>
+              </v-tooltip>
 
-            <v-tooltip
-              v-if="flashOverview.fsPercent > 0"
-              :text="`${flashOverview.fsLabel.toUpperCase()}: ${flashOverview.fsPercent}% - ${formatBytes(flashOverview.fsBytes)}`"
-              location="bottom"
-            >
-              <template #activator="{ props }">
-                <div
-                  class="stacked-segment stacked-segment--fs"
-                  v-bind="props"
-                  :style="{ width: flashOverview.fsPercent + '%' }"
-                ></div>
-              </template>
-            </v-tooltip>
+              <v-tooltip
+                v-if="flashOverview.fsPercent > 0"
+                :text="`${flashOverview.fsLabel.toUpperCase()}: ${flashOverview.fsPercent}% - ${formatBytes(flashOverview.fsBytes)}`"
+                location="bottom"
+              >
+                <template #activator="{ props }">
+                  <div
+                    class="stacked-segment stacked-segment--fs"
+                    v-bind="props"
+                    :style="{ width: flashOverview.fsPercent + '%' }"
+                  ></div>
+                </template>
+              </v-tooltip>
 
-            <v-tooltip
-              v-if="flashOverview.freePercent > 0"
-              :text="`Free: ${flashOverview.freePercent}% - ${formatBytes(flashOverview.freeBytes)}`"
-              location="bottom"
-            >
-              <template #activator="{ props }">
-                <div
-                  class="stacked-segment stacked-segment--free"
-                  v-bind="props"
-                  :style="{ width: flashOverview.freePercent + '%' }"
-                ></div>
-              </template>
-            </v-tooltip>
+              <v-tooltip
+                v-if="flashOverview.freePercent > 0"
+                :text="`Free: ${flashOverview.freePercent}% - ${formatBytes(flashOverview.freeBytes)}`"
+                location="bottom"
+              >
+                <template #activator="{ props }">
+                  <div
+                    class="stacked-segment stacked-segment--free"
+                    v-bind="props"
+                    :style="{ width: flashOverview.freePercent + '%' }"
+                  ></div>
+                </template>
+              </v-tooltip>
+            </div>
+
+            <ul class="usage-list">
+              <li>
+                <span class="usage-label">Sketch</span>
+                <span class="usage-value">{{ flashOverview.sketchPercent }}% - {{ formatBytes(flashOverview.sketchBytes) }}</span>
+              </li>
+              <li v-if="flashOverview.fsPercent > 0">
+                <span class="usage-label">{{ flashOverview.fsLabel }}</span>
+                <span class="usage-value">{{ flashOverview.fsPercent }}% - {{ formatBytes(flashOverview.fsBytes) }}</span>
+              </li>
+              <li>
+                <span class="usage-label">Free</span>
+                <span class="usage-value">{{ flashOverview.freePercent }}% - {{ formatBytes(flashOverview.freeBytes) }}</span>
+              </li>
+            </ul>
           </div>
+        </section>
 
-          <ul class="usage-list">
-            <li>
-              <span class="usage-label">Sketch</span>
-              <span class="usage-value">{{ flashOverview.sketchPercent }}% - {{ formatBytes(flashOverview.sketchBytes) }}</span>
-            </li>
-            <li v-if="flashOverview.fsPercent > 0">
-              <span class="usage-label">{{ flashOverview.fsLabel }}</span>
-              <span class="usage-value">{{ flashOverview.fsPercent }}% - {{ formatBytes(flashOverview.fsBytes) }}</span>
-            </li>
-            <li>
-              <span class="usage-label">Free</span>
-              <span class="usage-value">{{ flashOverview.freePercent }}% - {{ formatBytes(flashOverview.freeBytes) }}</span>
-            </li>
-          </ul>
-        </div>
-      </section>
+        <section class="memory-pane memory-pane--heap">
+          <header class="pane-header">
+            <h2>Heap Usage</h2>
+            <span class="pane-meta">Total {{ formatBytes(heapOverview?.totalBytes ?? 0) }}</span>
+          </header>
+
+          <div v-if="heapOverview" class="usage-block">
+            <v-tooltip
+              :text="`Used: ${heapOverview.percent}% - ${formatBytes(heapOverview.usedBytes)}`"
+              location="bottom"
+            >
+              <template #activator="{ props }">
+                <v-progress-linear
+                  v-bind="props"
+                  :model-value="heapOverview.percent"
+                  color="#3949ab"
+                  height="14"
+                  rounded
+                ></v-progress-linear>
+              </template>
+            </v-tooltip>
+            <div class="usage-footer">
+              {{ heapOverview.percent }}% used ({{ formatBytes(heapOverview.usedBytes) }})
+            </div>
+          </div>
+        </section>
+
+        <section v-if="psramOverview" class="memory-pane memory-pane--psram">
+          <header class="pane-header">
+            <h2>PSRAM Usage</h2>
+            <span class="pane-meta">Total {{ formatBytes(psramOverview.totalBytes) }}</span>
+          </header>
+
+          <div class="usage-block">
+            <v-tooltip
+              :text="`Used: ${psramOverview.percent}% - ${formatBytes(psramOverview.usedBytes)}`"
+              location="bottom"
+            >
+              <template #activator="{ props }">
+                <v-progress-linear
+                  v-bind="props"
+                  :model-value="psramOverview.percent"
+                  color="#8e24aa"
+                  height="14"
+                  rounded
+                ></v-progress-linear>
+              </template>
+            </v-tooltip>
+            <div class="usage-footer">
+              {{ psramOverview.percent }}% used ({{ formatBytes(psramOverview.usedBytes) }})
+            </div>
+          </div>
+        </section>
+      </div>
 
       <section class="memory-pane memory-pane--flash-stack">
         <header class="pane-header">
@@ -392,59 +448,6 @@ onMounted(async () => {
         </div>
       </section>
 
-      <section class="memory-pane memory-pane--heap">
-        <header class="pane-header">
-          <h2>Heap Usage</h2>
-          <span class="pane-meta">Total {{ formatBytes(heapOverview?.totalBytes ?? 0) }}</span>
-        </header>
-
-        <div v-if="heapOverview" class="usage-block">
-          <v-tooltip
-            :text="`Used: ${heapOverview.percent}% - ${formatBytes(heapOverview.usedBytes)}`"
-            location="bottom"
-          >
-            <template #activator="{ props }">
-              <v-progress-linear
-                v-bind="props"
-                :model-value="heapOverview.percent"
-                color="#3949ab"
-                height="14"
-                rounded
-              ></v-progress-linear>
-            </template>
-          </v-tooltip>
-          <div class="usage-footer">
-            {{ heapOverview.percent }}% used ({{ formatBytes(heapOverview.usedBytes) }})
-          </div>
-        </div>
-      </section>
-
-      <section v-if="psramOverview" class="memory-pane memory-pane--psram">
-        <header class="pane-header">
-          <h2>PSRAM Usage</h2>
-          <span class="pane-meta">Total {{ formatBytes(psramOverview.totalBytes) }}</span>
-        </header>
-
-        <div class="usage-block">
-          <v-tooltip
-            :text="`Used: ${psramOverview.percent}% - ${formatBytes(psramOverview.usedBytes)}`"
-            location="bottom"
-          >
-            <template #activator="{ props }">
-              <v-progress-linear
-                v-bind="props"
-                :model-value="psramOverview.percent"
-                color="#8e24aa"
-                height="14"
-                rounded
-              ></v-progress-linear>
-            </template>
-          </v-tooltip>
-          <div class="usage-footer">
-            {{ psramOverview.percent }}% used ({{ formatBytes(psramOverview.usedBytes) }})
-          </div>
-        </div>
-      </section>
     </div>
   </div>
 
@@ -466,6 +469,12 @@ onMounted(async () => {
   gap: 1.5rem;
 }
 
+.memory-right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
 @media (min-width: 900px) {
   .memory-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -475,37 +484,63 @@ onMounted(async () => {
   .memory-pane--flash-layout {
     grid-column: 1 / -1;
   }
+
+  .memory-right-column {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (min-width: 1280px) {
   .memory-grid {
-    grid-template-columns: 2fr 1fr;
-    grid-auto-rows: minmax(0, auto);
+    grid-template-columns: 1.75fr 1fr;
+    grid-template-areas:
+      "flash-layout right-column"
+      "flash-stack right-column";
+    align-items: start;
   }
 
   .memory-pane--flash-layout {
-    grid-column: 1;
-    grid-row: 1;
+    grid-area: flash-layout;
   }
 
   .memory-pane--flash-stack {
-    grid-column: 1;
-    grid-row: 2;
+    grid-area: flash-stack;
   }
 
-  .memory-pane--flash-usage {
-    grid-column: 2;
-    grid-row: 1;
+  .memory-right-column {
+    grid-area: right-column;
+    align-self: start;
+    max-width: 400px;
+    gap: 1rem;
   }
 
-  .memory-pane--heap {
-    grid-column: 2;
-    grid-row: 2;
+  .memory-right-column .memory-pane {
+    padding: 0.85rem 1rem;
+    gap: 0.55rem;
   }
 
-  .memory-pane--psram {
-    grid-column: 2;
-    grid-row: 3;
+  .memory-right-column .pane-header {
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.35rem;
+  }
+
+  .memory-right-column .pane-header h2 {
+    font-size: 0.98rem;
+  }
+
+  .memory-right-column .pane-meta {
+    font-size: 0.8rem;
+    margin-left: auto;
+  }
+
+  .memory-right-column .usage-block {
+    gap: 0.45rem;
+  }
+
+  .memory-right-column .usage-list li {
+    font-size: 0.86rem;
   }
 }
 
