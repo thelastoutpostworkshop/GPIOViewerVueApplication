@@ -407,7 +407,7 @@ onMounted(async () => {
           icon="mdi-lightbulb-on-outline"
         >
           <span>
-            Unused flash detected. Reclaim space by adjusting partitions—see the
+            Unused flash detected. Reclaim wasted space—see the
             <a :href="partitionTutorialUrl" target="_blank" rel="noopener" class="reclaim-link">partition tutorial</a>.
           </span>
         </v-alert>
