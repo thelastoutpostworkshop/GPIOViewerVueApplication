@@ -50,6 +50,19 @@ const actions: AboutAction[] = [
   }
 ];
 
+const leftActions: AboutAction[] = [
+  {
+    icon: 'mdi-star-circle-outline',
+    title: 'Stars & Shout-outs',
+    summary:
+      'Drop a star, share GPIOViewer with your lab mates, or open issues whenever you spot rough edges.',
+    url: 'https://github.com/thelastoutpostworkshop/gpio_viewer',
+    color: 'primary',
+    buttonLabel: 'Visit the repository',
+    chip: 'Contribute'
+  }
+];
+
 const highlights = [
   'Visualize GPIO pin states and transitions instantly from any browser.',
   'Inspect flash, heap, and PSRAM usage without reflashing your ESP32.'
@@ -111,26 +124,41 @@ function openExternal(url: string) {
           </div>
         </v-card>
 
-        <v-card class="about-footer-card about-footer-card--inline" elevation="0" variant="tonal">
-          <div class="about-footer-card__content">
-            <div>
-              <h3 class="about-footer-card__title">Stars & shout-outs keep the project healthy</h3>
-              <p class="about-footer-card__subtitle">
-                Drop a star on GitHub, share GPIOViewer with your lab mates, or open issues when you spot rough edges.
-              </p>
-            </div>
+        <div class="about-actions-column">
+          <v-card
+            v-for="action in leftActions"
+            :key="`left-${action.title}`"
+            class="about-action-card"
+            elevation="8"
+          >
+            <v-card-item>
+              <div class="about-action-card__header">
+                <div class="about-action-card__icon" :class="`about-action-card__icon--${action.color}`">
+                  <v-icon :icon="action.icon" size="30" />
+                </div>
+                <div>
+                  <div class="about-action-card__chip">{{ action.chip }}</div>
+                  <h2 class="about-action-card__title">{{ action.title }}</h2>
+                </div>
+              </div>
+            </v-card-item>
+            <v-card-text class="about-action-card__body">
+              {{ action.summary }}
+            </v-card-text>
             <v-card-actions>
               <v-btn
-                color="primary"
-                variant="flat"
-                @click="openExternal('https://github.com/thelastoutpostworkshop/gpio_viewer')"
+                :color="action.color"
+                variant="tonal"
+                block
+                :style="buttonStyle(action.color)"
+                @click="openExternal(action.url)"
               >
-                Visit the repository
-                <v-icon icon="mdi-github" end />
+                {{ action.buttonLabel }}
+                <v-icon icon="mdi-open-in-new" end size="18" />
               </v-btn>
             </v-card-actions>
-          </div>
-        </v-card>
+          </v-card>
+        </div>
       </div>
 
       <div class="about-actions-column">
@@ -192,48 +220,24 @@ function openExternal(url: string) {
   gap: 1.5rem;
 }
 
+.about-actions-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  align-self: stretch;
+}
+
 .about-hero {
   padding: 2.25rem 2.5rem;
   border-radius: 24px;
   background: linear-gradient(135deg, rgba(57, 73, 171, 0.1), rgba(92, 107, 192, 0.16));
   box-shadow: 0 12px 36px rgba(15, 23, 42, 0.12);
   position: relative;
-  overflow: hidden;
-  height: 100%;
 }
 
 .about-hero--dark {
   background: linear-gradient(135deg, rgba(38, 50, 79, 0.85), rgba(56, 78, 128, 0.68));
   box-shadow: 0 24px 48px rgba(7, 12, 23, 0.6);
-}
-
-.about-hero--dark .about-hero__badge {
-  background: rgba(148, 163, 184, 0.18);
-  color: #c7d2fe;
-}
-
-.about-hero--dark .about-hero__title {
-  color: #f8fafc;
-}
-
-.about-hero--dark .about-hero__subtitle {
-  color: #d1d9ff;
-}
-
-.about-hero--dark .about-hero__highlights {
-  color: #e2e8f0;
-}
-
-.about-hero--dark .about-hero__bullet {
-  color: #34d399;
-}
-
-.about-hero--dark .about-hero__meta-label {
-  color: #9ca9c6;
-}
-
-.about-hero--dark .about-hero__meta-value {
-  color: #f9fbff;
 }
 
 .about-hero__badge {
@@ -291,6 +295,9 @@ function openExternal(url: string) {
   align-items: center;
   gap: 1.25rem;
   flex-wrap: wrap;
+  padding: 0.85rem 1.1rem;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.06), rgba(57, 73, 171, 0.08));
 }
 
 .about-hero__meta-item {
@@ -303,14 +310,14 @@ function openExternal(url: string) {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: #64748b;
+  color: #4b5c72;
   font-weight: 600;
 }
 
 .about-hero__meta-value {
   font-size: 1.15rem;
   font-weight: 700;
-  color: #1f2933;
+  color: #111827;
 }
 
 .about-hero__divider {
@@ -318,20 +325,12 @@ function openExternal(url: string) {
   opacity: 0.35;
 }
 
-.about-actions-column {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  height: 100%;
-  align-self: stretch;
-}
-
 .about-action-card {
-  height: 100%;
   display: flex;
   flex-direction: column;
   border-radius: 20px;
   padding-bottom: 0.5rem;
+  height: 100%;
 }
 
 .about-action-card__header {
@@ -384,38 +383,45 @@ function openExternal(url: string) {
   font-size: 0.95rem;
   line-height: 1.45;
   margin-bottom: 0.75rem;
-  padding-bottom: 0;
-}
-
-.about-footer-card {
-  border-radius: 20px;
-  padding: 1.5rem 1.75rem;
-  background: rgba(57, 73, 171, 0.12);
-}
-
-.about-footer-card--inline {
-  margin-top: 0.75rem;
-}
-
-.about-footer-card__content {
-  display: flex;
-  flex-direction: column;
-}
-
-.about-footer-card__title {
-  margin: 0;
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #1f2933;
-}
-
-.about-footer-card__subtitle {
-  margin: 0.2rem 0 0;
-  color: #475569;
 }
 
 .about-page--dark {
   color: #e2e8f0;
+}
+
+.about-page--dark .about-hero {
+  background: linear-gradient(135deg, rgba(38, 50, 79, 0.85), rgba(56, 78, 128, 0.68));
+  box-shadow: 0 24px 48px rgba(7, 12, 23, 0.6);
+}
+
+.about-page--dark .about-hero__badge {
+  background: rgba(148, 163, 184, 0.18);
+  color: #c7d2fe;
+}
+
+.about-page--dark .about-hero__title {
+  color: #f8fafc;
+}
+
+.about-page--dark .about-hero__subtitle {
+  color: #d1d9ff;
+}
+
+.about-page--dark .about-hero__highlights {
+  color: #e2e8f0;
+}
+
+.about-page--dark .about-hero__meta {
+  background: rgba(148, 163, 184, 0.12);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.about-page--dark .about-hero__meta-label {
+  color: #d5dcf9;
+}
+
+.about-page--dark .about-hero__meta-value {
+  color: #f9fbff;
 }
 
 .about-page--dark .about-action-card {
@@ -433,19 +439,6 @@ function openExternal(url: string) {
   color: #c7cffb;
 }
 
-.about-page--dark .about-footer-card {
-  background: rgba(37, 49, 83, 0.7);
-  color: #e2e8f0;
-}
-
-.about-page--dark .about-footer-card__title {
-  color: #f8fafc;
-}
-
-.about-page--dark .about-footer-card__subtitle {
-  color: #cbd5f5;
-}
-
 @media (max-width: 960px) {
   .about-hero {
     padding: 1.75rem 1.85rem;
@@ -456,17 +449,11 @@ function openExternal(url: string) {
   }
 
   .about-hero__meta {
-    flex-direction: column;
     align-items: flex-start;
-    gap: 0.85rem;
   }
 
   .about-hero__divider {
     display: none;
-  }
-
-  .about-footer-card__content {
-    align-items: flex-start;
   }
 }
 
