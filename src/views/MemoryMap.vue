@@ -39,6 +39,15 @@ const heapOverview = ref<MemoryUsageOverview | null>(null);
 const psramOverview = ref<MemoryUsageOverview | null>(null);
 const isLoading = ref(true);
 const reclaimableBytes = ref(0);
+const flashSizeSummary = computed(() => {
+  const size = espInfo.value?.flash_chip_size;
+  if (size === undefined || size === null) {
+    return "Unknown";
+  }
+  const formatted = formatBytes(size);
+  const bytesLabel = size.toLocaleString();
+  return `${formatted} • ${bytesLabel} bytes`;
+});
 const partitionTutorialUrl = "https://youtu.be/EuHxodrye6E";
 
 const partitionColorOverrides: Record<string, string> = {
@@ -293,8 +302,11 @@ onMounted(async () => {
       <section class="memory-pane memory-pane--flash-stack">
         <header class="pane-header">
           <h2>Flash Stack Map</h2>
-          <span class="pane-meta">Total {{ formatBytes(espInfo.flash_chip_size) }}</span>
         </header>
+        <div class="flash-total-highlight">
+          <span class="flash-total-label">Flash Size</span>
+          <span class="flash-total-value">{{ flashSizeSummary }}</span>
+        </div>
         <p class="stacked-description">Relative share of flash by partition table entries</p>
 
         <v-alert
@@ -586,6 +598,33 @@ onMounted(async () => {
   font-size: 0.85rem;
 }
 
+.flash-total-highlight {
+  margin: 0.35rem 0 0.85rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(57, 73, 171, 0.1), rgba(76, 175, 80, 0.08));
+  border: 1px solid rgba(57, 73, 171, 0.18);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: baseline;
+}
+
+.flash-total-label {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.76rem;
+  color: #1f2a44;
+}
+
+.flash-total-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2933;
+  font-variant-numeric: tabular-nums;
+}
+
 .stacked-description {
   margin: 0;
   font-size: 0.86rem;
@@ -794,6 +833,19 @@ onMounted(async () => {
 
 :deep(.v-theme--dark) .pane-meta {
   color: #94a3b8;
+}
+
+:deep(.v-theme--dark) .flash-total-highlight {
+  background: linear-gradient(135deg, rgba(148, 163, 184, 0.18), rgba(99, 102, 241, 0.18));
+  border-color: rgba(129, 140, 248, 0.35);
+}
+
+:deep(.v-theme--dark) .flash-total-label {
+  color: #cbd5f5;
+}
+
+:deep(.v-theme--dark) .flash-total-value {
+  color: #f8fafc;
 }
 
 :deep(.v-theme--dark) .stacked-description {
