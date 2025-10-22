@@ -254,13 +254,13 @@ const summaryCards = computed<SummaryCard[]>(() => {
   const cards: SummaryCard[] = [];
 
   cards.push({
-    title: "Uptime",
-    value: formatTime(info.up_time),
-    caption: "Since last reset",
-    icon: "mdi-clock-outline",
-    accent: "#3949ab",
-    tintLight: "rgba(57, 73, 171, 0.12)",
-    tintDark: "linear-gradient(135deg, rgba(96, 125, 255, 0.6), rgba(129, 140, 248, 0.55))"
+    title: "Flash Size",
+    value: formatBytes(info.flash_chip_size),
+    caption: flashMode(info.flash_mode),
+    icon: "mdi-chip",
+    accent: "#26a69a",
+    tintLight: "rgba(38, 166, 154, 0.12)",
+    tintDark: "linear-gradient(135deg, rgba(77, 210, 195, 0.65), rgba(128, 222, 234, 0.55))"
   });
 
   cards.push({
@@ -296,16 +296,6 @@ const summaryCards = computed<SummaryCard[]>(() => {
   });
 
   cards.push({
-    title: "Flash Size",
-    value: formatBytes(info.flash_chip_size),
-    caption: flashMode(info.flash_mode),
-    icon: "mdi-chip",
-    accent: "#26a69a",
-    tintLight: "rgba(38, 166, 154, 0.12)",
-    tintDark: "linear-gradient(135deg, rgba(77, 210, 195, 0.65), rgba(128, 222, 234, 0.55))"
-  });
-
-  cards.push({
     title: "Heap Usage",
     value: `${formatBytes(heapUsed)} used`,
     caption: `${formatBytes(info.heap_size)} total`,
@@ -326,6 +316,16 @@ const summaryCards = computed<SummaryCard[]>(() => {
       tintDark: "linear-gradient(135deg, rgba(153, 162, 255, 0.65), rgba(196, 208, 255, 0.55))"
     });
   }
+
+  cards.push({
+    title: "Uptime",
+    value: formatTime(info.up_time),
+    caption: "Since last reset",
+    icon: "mdi-clock-outline",
+    accent: "#3949ab",
+    tintLight: "rgba(57, 73, 171, 0.12)",
+    tintDark: "linear-gradient(135deg, rgba(96, 125, 255, 0.6), rgba(129, 140, 248, 0.55))"
+  });
 
   return cards;
 });
