@@ -64,6 +64,8 @@ const partitionPalette = ["#5c6bc0", "#26a69a", "#ffa726", "#8d6e63", "#ab47bc",
 
 const MIN_RECLAIMABLE_BYTES = 64 * 1024; // 64 KiB
 const MIN_RECLAIMABLE_PERCENT = 1; // 1% of total flash
+const MIN_STACK_LABEL_PERCENT = 1; // 1% height visibly fits text
+const MIN_STACK_LABEL_BYTES = 8 * 1024; // 8 KiB minimum as textual anchor
 
 function resolvePartitionColor(label: string, index: number): string {
   const normalized = label.toLowerCase();
@@ -117,6 +119,19 @@ function getTextColor(color: string): string {
   const [r, g, b] = rgb.map((component) => component / 255);
   const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
   return luminance > 0.6 ? "#1f2933" : "#ffffff";
+}
+
+function shouldShowStackLabel(segment: FlashStackSegment): boolean {
+  if (segment.percent >= MIN_STACK_LABEL_PERCENT) {
+    return true;
+  }
+  if (segment.bytes >= MIN_STACK_LABEL_BYTES) {
+    return true;
+  }
+  if (flashStackSegments.value.length <= 4) {
+    return true;
+  }
+  return false;
 }
 
 async function fetchESPInformation(): Promise<ESPInfo | null> {
@@ -343,7 +358,7 @@ onMounted(async () => {
                       segment.percent < 6 ? { minHeight: '28px' } : {}
                     ]"
                   >
-                    <span v-if="segment.percent >= 12" class="stacked-column__label">{{ segment.label }}</span>
+                    <span v-if="shouldShowStackLabel(segment)" class="stacked-column__label">{{ segment.label }}</span>
                   </div>
                 </template>
               </v-tooltip>
