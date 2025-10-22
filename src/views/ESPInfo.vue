@@ -32,12 +32,117 @@ const numberFormatter = new Intl.NumberFormat();
 const theme = useTheme();
 const isDarkTheme = computed(() => theme.global.current.value?.dark ?? false);
 
+function coerceNumber(value: unknown): number {
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : 0;
+  }
+  if (typeof value === "string") {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+  return 0;
+}
+
+function coerceString(value: unknown): string {
+  if (value === null || value === undefined) {
+    return "";
+  }
+  return String(value);
+}
+
+function coerceFlashMode(value: unknown): number | string | null {
+  if (value === null || value === undefined) {
+    return null;
+  }
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : null;
+  }
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return null;
+    }
+    const numeric = Number(trimmed);
+    return Number.isFinite(numeric) ? numeric : trimmed;
+  }
+  return null;
+}
+
+function coerceFeatures(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value.map((feature) => String(feature));
+  }
+  return [];
+}
+
+function prettifyWord(word: string): string {
+  if (!word) {
+    return word;
+  }
+  return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+}
+
+function prettifyFeature(feature: string): string {
+  return feature
+    .split(/[_\s]+/)
+    .map(prettifyWord)
+    .join(" ");
+}
+
+function formatChipFeatureList(features: string[]): string {
+  if (!features.length) {
+    return "Unknown";
+  }
+  return features.map(prettifyFeature).join(", ");
+}
+
+function formatSketchHash(hash: string): string {
+  if (!hash) {
+    return "Unknown";
+  }
+  return hash.toUpperCase();
+}
+
 async function fetchESPInformation() {
   isLoading.value = true;
   try {
     const response = await fetch(getAPIUrl("espinfo"));
-    const data: ESPInfo = await response.json();
-    espInfo.value = data;
+    const raw = await response.json() as Record<string, unknown>;
+    const normalized: ESPInfo = {
+      chip_model: coerceString(raw.chip_model),
+      cores_count: coerceNumber(raw.cores_count),
+      chip_revision:
+        typeof raw.chip_revision === "number" || typeof raw.chip_revision === "string"
+          ? raw.chip_revision
+          : "",
+      cpu_frequency: coerceNumber(raw.cpu_frequency),
+      cycle_count: coerceNumber(raw.cycle_count),
+      mac: coerceNumber(raw.mac),
+      flash_mode: coerceFlashMode(raw.flash_mode),
+      flash_chip_size: coerceNumber(raw.flash_chip_size),
+      flash_chip_speed: coerceNumber(raw.flash_chip_speed),
+      heap_size: coerceNumber(raw.heap_size),
+      heap_max_alloc: coerceNumber(raw.heap_max_alloc),
+      psram_size: coerceNumber(raw.psram_size),
+      free_psram: coerceNumber(raw.free_psram),
+      psram_max_alloc: coerceNumber(raw.psram_max_alloc),
+      free_heap: coerceNumber(raw.free_heap),
+      heap_free_8bit: coerceNumber(raw.heap_free_8bit),
+      heap_free_32bit: coerceNumber(raw.heap_free_32bit),
+      heap_largest_free_block: coerceNumber(raw.heap_largest_free_block),
+      up_time: coerceNumber(raw.up_time),
+      uptime_us: coerceNumber(raw.uptime_us),
+      sketch_size: coerceNumber(raw.sketch_size),
+      free_sketch: coerceNumber(raw.free_sketch),
+      arduino_core_version: coerceString(raw.arduino_core_version),
+      sdk_version: coerceString(raw.sdk_version),
+      idf_version: coerceString(raw.idf_version),
+      sketch_md5: coerceString(raw.sketch_md5),
+      chip_features: coerceFeatures(raw.chip_features),
+      reset_reason_code: coerceNumber(raw.reset_reason_code),
+      reset_reason: coerceString(raw.reset_reason)
+    };
+    espInfo.value = normalized;
   } catch (error) {
     console.error("Error fetching esp information", error);
   } finally {
@@ -45,7 +150,7 @@ async function fetchESPInformation() {
   }
 }
 
-function flashMode(mode: number | undefined | null): string {
+function flashMode(mode: number | string | undefined | null): string {
   switch (mode) {
     case 0x00:
       return "Quad I/O";
@@ -60,8 +165,47 @@ function flashMode(mode: number | undefined | null): string {
     case 0x05:
       return "Slow Read";
     default:
-      return "Unknown";
+      break;
   }
+
+  if (mode === null || mode === undefined) {
+    return "Unknown";
+  }
+
+  if (typeof mode === "string") {
+    const trimmed = mode.trim();
+    if (!trimmed) {
+      return "Unknown";
+    }
+    const numeric = Number(trimmed);
+    if (Number.isFinite(numeric)) {
+      return flashMode(numeric);
+    }
+    return trimmed
+      .split(/[_\s]+/)
+      .map(prettifyWord)
+      .join(" ");
+  }
+
+  if (typeof mode === "number") {
+    return `Mode 0x${mode.toString(16)}`;
+  }
+
+  return "Unknown";
+}
+
+function formatMicroseconds(value: number): string {
+  if (value <= 0) {
+    return "Unknown";
+  }
+  return `${numberFormatter.format(value)} µs`;
+}
+
+function formatResetReasonHint(code: number): string | undefined {
+  if (!code) {
+    return undefined;
+  }
+  return `Code ${code}`;
 }
 
 function formatChipRevision(revision: number | string | null | undefined): string {
@@ -150,6 +294,10 @@ const infoSections = computed<InfoSection[]>(() => {
 
   const cycleCount =
     typeof info.cycle_count === "number" ? numberFormatter.format(info.cycle_count) : "Unknown";
+  const chipFeaturesValue = formatChipFeatureList(info.chip_features);
+  const resetReasonValue = info.reset_reason || "Unknown";
+  const resetReasonHint = formatResetReasonHint(info.reset_reason_code);
+  const uptimeMicro = formatMicroseconds(info.uptime_us);
 
   const sections: InfoSection[] = [
     {
@@ -163,18 +311,46 @@ const infoSections = computed<InfoSection[]>(() => {
         {
           label: "Chip Model",
           value: info.chip_model || "Unknown"
-          },
-          {
-            label: "Chip Revision",
-            value: formatChipRevision(info.chip_revision)
-          },
+        },
+        {
+          label: "Chip Revision",
+          value: formatChipRevision(info.chip_revision)
+        },
+        {
+          label: "Chip Features",
+          value: chipFeaturesValue,
+          hint: chipFeaturesValue === "Unknown" ? undefined : "Capabilities reported by the silicon."
+        },
+        {
+          label: "Reset Reason",
+          value: resetReasonValue,
+          hint: resetReasonHint
+        }
+      ]
+    },
+    {
+      title: "Runtime & Timers",
+      icon: "mdi-timer-outline",
+      items: [
+        {
+          label: "Uptime",
+          value: formatTime(info.up_time),
+          hint: "Time since the last device reset."
+        },
+        {
+          label: "Uptime (µs)",
+          value: uptimeMicro,
+          hint: "Microsecond-resolution uptime from the ESP timer."
+        },
         {
           label: "CPU Frequency",
-          value: info.cpu_frequency ? `${info.cpu_frequency} MHz` : "Unknown"
+          value: info.cpu_frequency ? `${info.cpu_frequency} MHz` : "Unknown",
+          hint: "Reported CPU frequency for active core(s)."
         },
         {
           label: "Cycle Count",
-          value: cycleCount
+          value: cycleCount,
+          hint: "Aggregate CPU cycles consumed since boot."
         }
       ]
     },
@@ -201,6 +377,21 @@ const infoSections = computed<InfoSection[]>(() => {
         {
           label: "Free Sketch Space for OTA",
           value: formatBytes(info.free_sketch)
+        },
+        {
+          label: "Sketch MD5",
+          value: formatSketchHash(info.sketch_md5),
+          hint: "MD5 hash of the uploaded sketch image."
+        },
+        {
+          label: "SDK Version",
+          value: info.sdk_version || "Unknown",
+          hint: "ESP-IDF SDK tag bundled with Arduino."
+        },
+        {
+          label: "IDF Version",
+          value: info.idf_version || "Unknown",
+          hint: "Exact ESP-IDF revision compiled into the firmware."
         }
       ]
     },
@@ -217,8 +408,24 @@ const infoSections = computed<InfoSection[]>(() => {
           value: formatBytes(info.free_heap)
         },
         {
-          label: "Heap Max Block",
-          value: formatBytes(info.heap_max_alloc)
+          label: "Free Heap (8-bit)",
+          value: formatBytes(info.heap_free_8bit),
+          hint: "Total bytes available for general-purpose allocations."
+        },
+        {
+          label: "Free Heap (32-bit)",
+          value: formatBytes(info.heap_free_32bit),
+          hint: "Heap accessible for 32-bit aligned allocations (fast internal RAM)."
+        },
+        {
+          label: "Largest Heap Block",
+          value: formatBytes(info.heap_largest_free_block),
+          hint: "Biggest contiguous heap chunk – fragmentation indicator."
+        },
+        {
+          label: "Heap Max Allocation",
+          value: formatBytes(info.heap_max_alloc),
+          hint: "Largest allocation currently permitted by the heap allocator."
         },
         ...(info.psram_size > 0
           ? [
@@ -232,7 +439,8 @@ const infoSections = computed<InfoSection[]>(() => {
               },
               {
                 label: "PSRAM Max Block",
-                value: formatBytes(info.psram_max_alloc)
+                value: formatBytes(info.psram_max_alloc),
+                hint: "Largest contiguous PSRAM allocation possible right now."
               }
             ]
           : [])

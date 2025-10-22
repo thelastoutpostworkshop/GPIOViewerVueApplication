@@ -79,7 +79,7 @@ export type ESPInfo = {
   cpu_frequency: number;
   cycle_count: number;
   mac: number;
-  flash_mode: number;
+  flash_mode: number | string | null;
   flash_chip_size: number;
   flash_chip_speed: number;
   heap_size: number;
@@ -88,10 +88,20 @@ export type ESPInfo = {
   free_psram: number;
   psram_max_alloc: number;
   free_heap: number;
+  heap_free_8bit: number;
+  heap_free_32bit: number;
+  heap_largest_free_block: number;
   up_time: number;
+  uptime_us: number;
   sketch_size: number;
   free_sketch: number;
   arduino_core_version: string;
+  sdk_version: string;
+  idf_version: string;
+  sketch_md5: string;
+  chip_features: string[];
+  reset_reason_code: number;
+  reset_reason: string;
 }
 
 export type ESPPartition = {
