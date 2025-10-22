@@ -366,6 +366,10 @@ const infoSections = computed<InfoSection[]>(() => {
           hint: "Internal sensor reading in Celsius."
         },
         {
+          label: "eFuse MAC Address",
+          value: formatMacAddress(info.mac)
+        },
+        {
           label: "Chip Features",
           value: chipFeaturesValue,
           hint: chipFeaturesValue === "Unknown" ? undefined : "Capabilities reported by the silicon."
@@ -493,16 +497,6 @@ const infoSections = computed<InfoSection[]>(() => {
               }
             ]
           : [])
-      ]
-    },
-    {
-      title: "Identifiers",
-      icon: "mdi-identifier",
-      items: [
-        {
-          label: "eFuse MAC Address",
-          value: formatMacAddress(info.mac)
-        }
       ]
     }
   ];
