@@ -43,6 +43,17 @@ function coerceNumber(value: unknown): number {
   return 0;
 }
 
+function coerceOptionalNumber(value: unknown): number | null {
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : null;
+  }
+  if (typeof value === "string") {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+}
+
 function coerceString(value: unknown): string {
   if (value === null || value === undefined) {
     return "";
@@ -130,6 +141,7 @@ async function fetchESPInformation() {
       heap_free_8bit: coerceNumber(raw.heap_free_8bit),
       heap_free_32bit: coerceNumber(raw.heap_free_32bit),
       heap_largest_free_block: coerceNumber(raw.heap_largest_free_block),
+      temperature_c: coerceOptionalNumber(raw.temperature_c),
       up_time: coerceNumber(raw.up_time),
       uptime_us: coerceNumber(raw.uptime_us),
       sketch_size: coerceNumber(raw.sketch_size),
@@ -208,6 +220,13 @@ function formatResetReasonHint(code: number): string | undefined {
   return `Code ${code}`;
 }
 
+function formatTemperature(value: number | null | undefined): string {
+  if (value === null || value === undefined) {
+    return "Unknown";
+  }
+  return `${value.toFixed(1)} °C`;
+}
+
 function formatChipRevision(revision: number | string | null | undefined): string {
   if (revision === null || revision === undefined) {
     return "Unknown";
@@ -232,44 +251,59 @@ const summaryCards = computed<SummaryCard[]>(() => {
   const heapUsed = Math.max(0, info.heap_size - info.free_heap);
   const psramUsed = Math.max(0, info.psram_size - info.free_psram);
 
-  const cards: SummaryCard[] = [
-    {
-      title: "Uptime",
-      value: formatTime(info.up_time),
-      caption: "Since last reset",
-      icon: "mdi-clock-outline",
-      accent: "#3949ab",
-      tintLight: "rgba(57, 73, 171, 0.12)",
-      tintDark: "linear-gradient(135deg, rgba(96, 125, 255, 0.6), rgba(129, 140, 248, 0.55))"
-    },
-    {
-      title: "CPU Frequency",
-      value: info.cpu_frequency ? `${info.cpu_frequency} MHz` : "Unknown",
-      caption: `${info.cores_count} core${info.cores_count === 1 ? "" : "s"}`,
-      icon: "mdi-speedometer",
-      accent: "#ef6c00",
-      tintLight: "rgba(239, 108, 0, 0.12)",
-      tintDark: "linear-gradient(135deg, rgba(255, 193, 120, 0.7), rgba(255, 214, 153, 0.6))"
-    },
-    {
-      title: "Flash Size",
-      value: formatBytes(info.flash_chip_size),
-      caption: flashMode(info.flash_mode),
-      icon: "mdi-chip",
-      accent: "#26a69a",
-      tintLight: "rgba(38, 166, 154, 0.12)",
-      tintDark: "linear-gradient(135deg, rgba(77, 210, 195, 0.65), rgba(128, 222, 234, 0.55))"
-    },
-    {
-      title: "Heap Usage",
-      value: `${formatBytes(heapUsed)} used`,
-      caption: `${formatBytes(info.heap_size)} total`,
-      icon: "mdi-memory",
-      accent: "#8e24aa",
-      tintLight: "rgba(142, 36, 170, 0.12)",
-      tintDark: "linear-gradient(135deg, rgba(186, 104, 200, 0.65), rgba(224, 176, 255, 0.55))"
-    }
-  ];
+  const cards: SummaryCard[] = [];
+
+  cards.push({
+    title: "Uptime",
+    value: formatTime(info.up_time),
+    caption: "Since last reset",
+    icon: "mdi-clock-outline",
+    accent: "#3949ab",
+    tintLight: "rgba(57, 73, 171, 0.12)",
+    tintDark: "linear-gradient(135deg, rgba(96, 125, 255, 0.6), rgba(129, 140, 248, 0.55))"
+  });
+
+  cards.push({
+    title: "CPU Frequency",
+    value: info.cpu_frequency ? `${info.cpu_frequency} MHz` : "Unknown",
+    caption: `${info.cores_count} core${info.cores_count === 1 ? "" : "s"}`,
+    icon: "mdi-speedometer",
+    accent: "#ef6c00",
+    tintLight: "rgba(239, 108, 0, 0.12)",
+    tintDark: "linear-gradient(135deg, rgba(255, 193, 120, 0.7), rgba(255, 214, 153, 0.6))"
+  });
+
+  if (info.temperature_c !== null) {
+    cards.push({
+      title: "Temperature",
+      value: formatTemperature(info.temperature_c),
+      caption: "Internal sensor",
+      icon: "mdi-thermometer",
+      accent: "#e53935",
+      tintLight: "rgba(229, 57, 53, 0.12)",
+      tintDark: "linear-gradient(135deg, rgba(244, 67, 54, 0.7), rgba(255, 138, 101, 0.6))"
+    });
+  }
+
+  cards.push({
+    title: "Flash Size",
+    value: formatBytes(info.flash_chip_size),
+    caption: flashMode(info.flash_mode),
+    icon: "mdi-chip",
+    accent: "#26a69a",
+    tintLight: "rgba(38, 166, 154, 0.12)",
+    tintDark: "linear-gradient(135deg, rgba(77, 210, 195, 0.65), rgba(128, 222, 234, 0.55))"
+  });
+
+  cards.push({
+    title: "Heap Usage",
+    value: `${formatBytes(heapUsed)} used`,
+    caption: `${formatBytes(info.heap_size)} total`,
+    icon: "mdi-memory",
+    accent: "#8e24aa",
+    tintLight: "rgba(142, 36, 170, 0.12)",
+    tintDark: "linear-gradient(135deg, rgba(186, 104, 200, 0.65), rgba(224, 176, 255, 0.55))"
+  });
 
   if (info.psram_size > 0) {
     cards.push({
@@ -315,6 +349,11 @@ const infoSections = computed<InfoSection[]>(() => {
         {
           label: "Chip Revision",
           value: formatChipRevision(info.chip_revision)
+        },
+        {
+          label: "Temperature",
+          value: formatTemperature(info.temperature_c),
+          hint: "Internal sensor reading in Celsius."
         },
         {
           label: "Chip Features",

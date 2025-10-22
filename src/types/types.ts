@@ -91,6 +91,7 @@ export type ESPInfo = {
   heap_free_8bit: number;
   heap_free_32bit: number;
   heap_largest_free_block: number;
+  temperature_c: number | null;
   up_time: number;
   uptime_us: number;
   sketch_size: number;
