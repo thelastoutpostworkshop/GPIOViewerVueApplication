@@ -729,6 +729,10 @@ onMounted(() => {
   gap: 0.25rem;
 }
 
+.info-list__row dd span {
+  overflow-wrap: anywhere;
+}
+
 .info-list__row dd small {
   color: #64748b;
   font-size: 0.75rem;
