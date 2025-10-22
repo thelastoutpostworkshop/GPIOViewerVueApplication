@@ -38,6 +38,7 @@ const flashStackSegments = ref<FlashStackSegment[]>([]);
 const heapOverview = ref<MemoryUsageOverview | null>(null);
 const psramOverview = ref<MemoryUsageOverview | null>(null);
 const isLoading = ref(true);
+const reclaimableBytes = ref(0);
 const partitionTutorialUrl = "https://youtu.be/EuHxodrye6E";
 
 const partitionColorOverrides: Record<string, string> = {
@@ -51,6 +52,9 @@ const partitionColorOverrides: Record<string, string> = {
 };
 
 const partitionPalette = ["#5c6bc0", "#26a69a", "#ffa726", "#8d6e63", "#ab47bc", "#29b6f6", "#ffca28", "#ec407a"];
+
+const MIN_RECLAIMABLE_BYTES = 64 * 1024; // 64 KiB
+const MIN_RECLAIMABLE_PERCENT = 1; // 1% of total flash
 
 function resolvePartitionColor(label: string, index: number): string {
   const normalized = label.toLowerCase();
@@ -202,6 +206,7 @@ function calculateMetrics(info: ESPInfo, partitions: ESPPartition[]) {
     .reduce((sum, segment) => sum + segment.bytes, 0);
 
   flashStackSegments.value = stackSegments;
+  reclaimableBytes.value = totalFreeBytes;
 
   const sketchPercent = flashCapacity
     ? Math.max(0, Math.round((info.sketch_size / flashCapacity) * 1000) / 10)
@@ -248,9 +253,23 @@ function calculateMetrics(info: ESPInfo, partitions: ESPPartition[]) {
   }
 }
 
-const hasReclaimableFlash = computed(() =>
-  flashStackSegments.value.some((segment) => segment.id.startsWith("free") && segment.bytes > 0)
-);
+const hasReclaimableFlash = computed(() => {
+  if (!espInfo.value || reclaimableBytes.value <= 0) {
+    return false;
+  }
+
+  const flashSize = espInfo.value.flash_chip_size ?? 0;
+  const percent = flashSize > 0 ? (reclaimableBytes.value / flashSize) * 100 : 0;
+
+  const exceedsByteThreshold = reclaimableBytes.value >= MIN_RECLAIMABLE_BYTES;
+  const exceedsPercentThreshold = percent >= MIN_RECLAIMABLE_PERCENT;
+
+  const hasFreeSegment = flashStackSegments.value.some(
+    (segment) => segment.id.startsWith("free") && segment.bytes > 0
+  );
+
+  return hasFreeSegment && (exceedsByteThreshold || exceedsPercentThreshold);
+});
 
 onMounted(async () => {
   try {
