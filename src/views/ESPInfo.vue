@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue';
 import { getAPIUrl, formatBytes, formatHz, formatMacAddress, formatTime } from "@/functions";
 import type { ESPInfo } from "@/types/types";
 import { useTheme } from 'vuetify';
+import { RouterLink } from 'vue-router';
 
 interface SummaryCard {
   title: string;
@@ -12,6 +13,7 @@ interface SummaryCard {
   accent: string;
   tintLight: string;
   tintDark: string;
+  routeName?: string;
 }
 
 interface InfoSectionItem {
@@ -260,7 +262,8 @@ const summaryCards = computed<SummaryCard[]>(() => {
     icon: "mdi-chip",
     accent: "#26a69a",
     tintLight: "rgba(38, 166, 154, 0.12)",
-    tintDark: "linear-gradient(135deg, rgba(77, 210, 195, 0.65), rgba(128, 222, 234, 0.55))"
+    tintDark: "linear-gradient(135deg, rgba(77, 210, 195, 0.65), rgba(128, 222, 234, 0.55))",
+    routeName: "memorymap"
   });
 
   cards.push({
@@ -302,7 +305,8 @@ const summaryCards = computed<SummaryCard[]>(() => {
     icon: "mdi-memory",
     accent: "#8e24aa",
     tintLight: "rgba(142, 36, 170, 0.12)",
-    tintDark: "linear-gradient(135deg, rgba(186, 104, 200, 0.65), rgba(224, 176, 255, 0.55))"
+    tintDark: "linear-gradient(135deg, rgba(186, 104, 200, 0.65), rgba(224, 176, 255, 0.55))",
+    routeName: "memorymap"
   });
 
   if (info.psram_size > 0) {
@@ -313,7 +317,8 @@ const summaryCards = computed<SummaryCard[]>(() => {
       icon: "mdi-server",
       accent: "#5c6bc0",
       tintLight: "rgba(92, 107, 192, 0.12)",
-      tintDark: "linear-gradient(135deg, rgba(153, 162, 255, 0.65), rgba(196, 208, 255, 0.55))"
+      tintDark: "linear-gradient(135deg, rgba(153, 162, 255, 0.65), rgba(196, 208, 255, 0.55))",
+      routeName: "memorymap"
     });
   }
 
@@ -521,27 +526,37 @@ onMounted(() => {
     <section class="content-grid">
       <div class="content-grid__left">
         <section v-if="summaryCards.length" class="summary-grid">
-      <v-card
-        v-for="card in summaryCards"
-        :key="card.title"
-        flat
-        :class="['summary-card', { 'summary-card--dark': isDarkTheme }]"
-        :style="{
-          borderColor: card.accent,
-          background: isDarkTheme ? card.tintDark : card.tintLight
-        }"
-      >
-            <div class="summary-card__content">
-              <div class="summary-card__icon" :style="{ color: card.accent }">
-                <v-icon :icon="card.icon" size="28"></v-icon>
+          <component
+            v-for="card in summaryCards"
+            :key="card.title"
+            :is="card.routeName ? RouterLink : 'div'"
+            class="summary-card-link"
+            :class="{ 'summary-card-link--interactive': Boolean(card.routeName) }"
+            v-bind="card.routeName ? { to: { name: card.routeName } } : {}"
+          >
+            <v-card
+              flat
+              :class="[
+                'summary-card',
+                { 'summary-card--dark': isDarkTheme, 'summary-card--interactive': Boolean(card.routeName) }
+              ]"
+              :style="{
+                borderColor: card.accent,
+                background: isDarkTheme ? card.tintDark : card.tintLight
+              }"
+            >
+              <div class="summary-card__content">
+                <div class="summary-card__icon" :style="{ color: card.accent }">
+                  <v-icon :icon="card.icon" size="28"></v-icon>
+                </div>
+                <div class="summary-card__body">
+                  <div class="summary-card__title">{{ card.title }}</div>
+                  <div class="summary-card__value">{{ card.value }}</div>
+                  <div class="summary-card__caption">{{ card.caption }}</div>
+                </div>
               </div>
-              <div class="summary-card__body">
-                <div class="summary-card__title">{{ card.title }}</div>
-                <div class="summary-card__value">{{ card.value }}</div>
-                <div class="summary-card__caption">{{ card.caption }}</div>
-              </div>
-            </div>
-          </v-card>
+            </v-card>
+          </component>
         </section>
       </div>
 
@@ -644,17 +659,37 @@ onMounted(() => {
   gap: 1rem;
 }
 
+.summary-card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.summary-card-link--interactive {
+  outline: none;
+}
+
 .summary-card {
   border-radius: 14px;
   border-left: 4px solid;
   padding: 1rem 1.1rem;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+  cursor: default;
 }
 
 .summary-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
+}
+
+.summary-card--interactive {
+  cursor: pointer;
+}
+
+.summary-card-link--interactive:focus-visible .summary-card {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.55);
+  transform: translateY(-1px);
 }
 
 .summary-card__content {
