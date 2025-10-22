@@ -64,6 +64,21 @@ function flashMode(mode: number | undefined | null): string {
   }
 }
 
+function formatChipRevision(revision: number | string | null | undefined): string {
+  if (revision === null || revision === undefined) {
+    return "Unknown";
+  }
+  if (typeof revision === "number") {
+    return Number.isFinite(revision) ? `Rev ${revision}` : "Unknown";
+  }
+  const numeric = Number(revision);
+  if (!Number.isNaN(numeric)) {
+    return `Rev ${numeric}`;
+  }
+  const trimmed = String(revision).trim();
+  return trimmed.length ? trimmed : "Unknown";
+}
+
 const summaryCards = computed<SummaryCard[]>(() => {
   const info = espInfo.value;
   if (!info) {
@@ -148,11 +163,11 @@ const infoSections = computed<InfoSection[]>(() => {
         {
           label: "Chip Model",
           value: info.chip_model || "Unknown"
-        },
-        {
-          label: "Chip Revision",
-          value: typeof info.chip_revision === "number" ? `Rev ${info.chip_revision}` : "Unknown"
-        },
+          },
+          {
+            label: "Chip Revision",
+            value: formatChipRevision(info.chip_revision)
+          },
         {
           label: "CPU Frequency",
           value: info.cpu_frequency ? `${info.cpu_frequency} MHz` : "Unknown"

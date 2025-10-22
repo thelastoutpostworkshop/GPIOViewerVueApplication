@@ -75,7 +75,7 @@ export type SamplingInterval = {
 export type ESPInfo = {
   chip_model: string;
   cores_count: number;
-  chip_revision: number;
+  chip_revision: number | string;
   cpu_frequency: number;
   cycle_count: number;
   mac: number;
