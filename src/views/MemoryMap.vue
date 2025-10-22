@@ -6,13 +6,6 @@ import { getAPIUrl, formatBytes } from "@/functions";
 const spiffs = "spiffs";
 const ffat = "ffat";
 
-interface PartitionCard extends ESPPartition {
-  color: string;
-  percentOfFlash: number;
-  formattedSize: string;
-  formattedAddress: string;
-}
-
 interface FlashOverview {
   totalBytes: number;
   sketchPercent: number;
@@ -40,7 +33,6 @@ interface MemoryUsageOverview {
 }
 
 const espInfo = ref<ESPInfo>();
-const partitionCards = ref<PartitionCard[]>([]);
 const flashOverview = ref<FlashOverview | null>(null);
 const flashStackSegments = ref<FlashStackSegment[]>([]);
 const heapOverview = ref<MemoryUsageOverview | null>(null);
@@ -68,6 +60,52 @@ function resolvePartitionColor(label: string, index: number): string {
   return partitionPalette[index % partitionPalette.length];
 }
 
+function hexToRgb(color: string): [number, number, number] | null {
+  const normalized = color.replace("#", "");
+  if (normalized.length !== 6) {
+    return null;
+  }
+  const bigint = parseInt(normalized, 16);
+  if (Number.isNaN(bigint)) {
+    return null;
+  }
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  return [r, g, b];
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max);
+}
+
+function adjustColor(color: string, amount: number): string {
+  const rgb = hexToRgb(color);
+  if (!rgb) {
+    return color;
+  }
+  const [r, g, b] = rgb.map((component) =>
+    clamp(Math.round(component + component * amount), 0, 255)
+  );
+  return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+}
+
+function createGradient(color: string): string {
+  const lighter = adjustColor(color, 0.18);
+  const darker = adjustColor(color, -0.12);
+  return `linear-gradient(180deg, ${lighter}, ${darker})`;
+}
+
+function getTextColor(color: string): string {
+  const rgb = hexToRgb(color);
+  if (!rgb) {
+    return "#ffffff";
+  }
+  const [r, g, b] = rgb.map((component) => component / 255);
+  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  return luminance > 0.6 ? "#1f2933" : "#ffffff";
+}
+
 async function fetchESPInformation(): Promise<ESPInfo | null> {
   try {
     const response = await fetch(getAPIUrl("espinfo"));
@@ -93,36 +131,77 @@ async function fetchESPPartition(): Promise<ESPPartition[] | null> {
 
 function calculateMetrics(info: ESPInfo, partitions: ESPPartition[]) {
   const flashCapacity = info.flash_chip_size;
-  let colorIndex = 0;
   let fsPartition: ESPPartition | undefined;
 
-  const cards: PartitionCard[] = partitions.reduce<PartitionCard[]>((acc, partition) => {
+  const stackSegments: FlashStackSegment[] = [];
+  let colorIndex = 0;
+  let previousEnd: number | null = null;
+
+  partitions.forEach((partition, index) => {
     const normalizedLabel = partition.label.toLowerCase();
     if (normalizedLabel === spiffs || normalizedLabel === ffat) {
       if (!fsPartition) {
         fsPartition = partition;
       }
-      return acc;
+    }
+
+    const parsedStart = parseInt(partition.address, 16);
+    const startAddress = Number.isNaN(parsedStart) ? previousEnd ?? 0 : parsedStart;
+
+    if (
+      previousEnd !== null &&
+      flashCapacity &&
+      startAddress > previousEnd
+    ) {
+      const gapBytes = startAddress - previousEnd;
+      if (gapBytes > 0) {
+        const gapPercent = Math.max(0, Math.round((gapBytes / flashCapacity) * 1000) / 10);
+        stackSegments.push({
+          id: `free-gap-${index}`,
+          label: "Free",
+          percent: gapPercent,
+          bytes: gapBytes,
+          background: "linear-gradient(180deg, #e0e7ec, #f5f7fa)",
+          textColor: "#1f2933"
+        });
+      }
     }
 
     const percent = flashCapacity
       ? Math.max(0, Math.round((partition.size / flashCapacity) * 1000) / 10)
       : 0;
 
-    const card: PartitionCard = {
-      ...partition,
-      color: resolvePartitionColor(partition.label, colorIndex),
-      percentOfFlash: percent,
-      formattedSize: formatBytes(partition.size),
-      formattedAddress: partition.address.startsWith("0x") ? partition.address : `0x${partition.address}`
-    };
-
+    const baseColor = resolvePartitionColor(partition.label, colorIndex);
+    stackSegments.push({
+      id: `partition-${index}`,
+      label: partition.label,
+      percent,
+      bytes: partition.size,
+      background: createGradient(baseColor),
+      textColor: getTextColor(baseColor)
+    });
     colorIndex += 1;
-    acc.push(card);
-    return acc;
-  }, []);
+    previousEnd = startAddress + partition.size;
+  });
 
-  partitionCards.value = cards;
+  if (flashCapacity && previousEnd !== null && flashCapacity > previousEnd) {
+    const freeBytes = flashCapacity - previousEnd;
+    const freePercent = Math.max(0, Math.round((freeBytes / flashCapacity) * 1000) / 10);
+    stackSegments.push({
+      id: "free",
+      label: "Unused",
+      percent: freePercent,
+      bytes: freeBytes,
+      background: "linear-gradient(180deg, #e0e7ec, #f5f7fa)",
+      textColor: "#1f2933"
+    });
+  }
+
+  const totalFreeBytes = stackSegments
+    .filter((segment) => segment.id.startsWith("free"))
+    .reduce((sum, segment) => sum + segment.bytes, 0);
+
+  flashStackSegments.value = stackSegments;
 
   const sketchPercent = flashCapacity
     ? Math.max(0, Math.round((info.sketch_size / flashCapacity) * 1000) / 10)
@@ -132,7 +211,7 @@ function calculateMetrics(info: ESPInfo, partitions: ESPPartition[]) {
     ? Math.max(0, Math.round((fsPartition.size / flashCapacity) * 1000) / 10)
     : 0;
 
-  const freeBytes = Math.max(0, flashCapacity - info.sketch_size - (fsPartition?.size ?? 0));
+  const freeBytes = Math.max(0, totalFreeBytes);
   const freePercent = flashCapacity
     ? Math.max(0, Math.round((freeBytes / flashCapacity) * 1000) / 10)
     : 0;
@@ -147,42 +226,6 @@ function calculateMetrics(info: ESPInfo, partitions: ESPPartition[]) {
     freePercent,
     freeBytes
   };
-
-  const stackSegments: FlashStackSegment[] = [];
-  if (sketchPercent > 0) {
-    stackSegments.push({
-      id: "sketch",
-      label: "Sketch",
-      percent: sketchPercent,
-      bytes: info.sketch_size,
-      background: "linear-gradient(180deg, #3949ab, #5c6bc0)",
-      textColor: "#ffffff"
-    });
-  }
-
-  if (fsPercent > 0) {
-    stackSegments.push({
-      id: "filesystem",
-      label: fsPartition?.label ? fsPartition.label.toUpperCase() : "FILESYSTEM",
-      percent: fsPercent,
-      bytes: fsPartition?.size ?? 0,
-      background: "linear-gradient(180deg, #00897b, #26a69a)",
-      textColor: "#ffffff"
-    });
-  }
-
-  if (freePercent > 0) {
-    stackSegments.push({
-      id: "free",
-      label: "Free",
-      percent: freePercent,
-      bytes: freeBytes,
-      background: "linear-gradient(180deg, #e0e7ec, #f5f7fa)",
-      textColor: "#1f2933"
-    });
-  }
-
-  flashStackSegments.value = stackSegments;
 
   const heapUsedBytes = Math.max(0, info.heap_size - info.free_heap);
   heapOverview.value = {
@@ -206,7 +249,7 @@ function calculateMetrics(info: ESPInfo, partitions: ESPPartition[]) {
 }
 
 const hasReclaimableFlash = computed(() =>
-  flashStackSegments.value.some((segment) => segment.id === "free" && segment.bytes > 0)
+  flashStackSegments.value.some((segment) => segment.id.startsWith("free") && segment.bytes > 0)
 );
 
 onMounted(async () => {
@@ -228,43 +271,65 @@ onMounted(async () => {
 <template>
   <div v-if="!isLoading && espInfo" class="memory-dashboard">
     <div class="memory-grid">
-      <section class="memory-pane memory-pane--flash-layout">
+      <section class="memory-pane memory-pane--flash-stack">
         <header class="pane-header">
-          <h2>Flash Layout</h2>
+          <h2>Flash Stack Map</h2>
           <span class="pane-meta">Total {{ formatBytes(espInfo.flash_chip_size) }}</span>
         </header>
+        <p class="stacked-description">Relative share of flash by partition table entries</p>
 
-        <div v-if="partitionCards.length" class="partition-list">
-          <v-tooltip
-            v-for="partition in partitionCards"
-            :key="partition.address"
-            :text="`${partition.label.toUpperCase()} - ${partition.formattedSize} - Offset ${partition.formattedAddress}`"
-            location="bottom"
-          >
-            <template #activator="{ props }">
-              <div class="partition-card" v-bind="props">
-                <div class="partition-card__header">
-                  <div class="partition-chip" :style="{ backgroundColor: partition.color }"></div>
-                  <div class="partition-title">{{ partition.label }}</div>
-                  <div class="partition-size">{{ partition.formattedSize }}</div>
-                </div>
-                <v-progress-linear
-                  :model-value="partition.percentOfFlash"
-                  :color="partition.color"
-                  height="12"
-                  rounded
-                  class="partition-progress"
-                ></v-progress-linear>
-                <div class="partition-meta">
-                  <span>{{ partition.percentOfFlash }}% of flash</span>
-                  <span>Start {{ partition.formattedAddress }}</span>
-                </div>
-              </div>
-            </template>
-          </v-tooltip>
-        </div>
+        <v-alert
+          v-if="flashStackSegments.length && hasReclaimableFlash"
+          color="orange-darken-2"
+          variant="tonal"
+          border="start"
+          class="reclaim-hint reclaim-hint--inline"
+          density="compact"
+          icon="mdi-lightbulb-on-outline"
+        >
+          <span>
+            Unused flash detected.
+            <span class="reclaim-highlight">Reclaim wasted space</span> - see the
+            <a :href="partitionTutorialUrl" target="_blank" rel="noopener" class="reclaim-link">partition tutorial</a>.
+          </span>
+        </v-alert>
+
+        <template v-if="flashStackSegments.length">
+          <div class="stacked-column-wrapper">
+            <div class="stacked-column">
+              <v-tooltip
+                v-for="segment in flashStackSegments"
+                :key="segment.id"
+                :text="`${segment.label}: ${segment.percent}% - ${formatBytes(segment.bytes)}`"
+                location="right"
+              >
+                <template #activator="{ props }">
+                  <div
+                    class="stacked-column__segment"
+                    v-bind="props"
+                    :style="[
+                      { height: segment.percent + '%', background: segment.background, color: segment.textColor },
+                      segment.percent < 6 ? { minHeight: '28px' } : {}
+                    ]"
+                  >
+                    <span v-if="segment.percent >= 12" class="stacked-column__label">{{ segment.label }}</span>
+                  </div>
+                </template>
+              </v-tooltip>
+            </div>
+
+            <ul class="stacked-legend">
+              <li v-for="segment in flashStackSegments" :key="`${segment.id}-legend`">
+                <span class="stacked-legend__color" :style="{ background: segment.background }"></span>
+                <span class="stacked-legend__text">{{ segment.label }}</span>
+                <span class="stacked-legend__value">{{ segment.percent }}% - {{ formatBytes(segment.bytes) }}</span>
+              </li>
+            </ul>
+          </div>
+
+        </template>
         <div v-else class="empty-state">
-          No additional partitions detected.
+          Flash usage data unavailable.
         </div>
       </section>
 
@@ -390,67 +455,6 @@ onMounted(async () => {
           </div>
         </section>
       </div>
-
-      <section class="memory-pane memory-pane--flash-stack">
-        <header class="pane-header">
-          <h2>Flash Stack Map</h2>
-          <span class="pane-meta">Relative share of flash by usage</span>
-        </header>
-
-        <v-alert
-          v-if="flashStackSegments.length && hasReclaimableFlash"
-          color="orange-darken-2"
-          variant="tonal"
-          border="start"
-          class="reclaim-hint reclaim-hint--inline"
-          density="compact"
-          icon="mdi-lightbulb-on-outline"
-        >
-          <span>
-            Unused flash detected.
-            <span class="reclaim-highlight">Reclaim wasted space</span> - see the
-            <a :href="partitionTutorialUrl" target="_blank" rel="noopener" class="reclaim-link">partition tutorial</a>.
-          </span>
-        </v-alert>
-
-        <template v-if="flashStackSegments.length">
-          <div class="stacked-column-wrapper">
-            <div class="stacked-column">
-              <v-tooltip
-                v-for="segment in flashStackSegments"
-                :key="segment.id"
-                :text="`${segment.label}: ${segment.percent}% - ${formatBytes(segment.bytes)}`"
-                location="right"
-              >
-                <template #activator="{ props }">
-                  <div
-                    class="stacked-column__segment"
-                    v-bind="props"
-                    :style="[
-                      { height: segment.percent + '%', background: segment.background, color: segment.textColor },
-                      segment.percent < 6 ? { minHeight: '28px' } : {}
-                    ]"
-                  >
-                    <span v-if="segment.percent >= 12" class="stacked-column__label">{{ segment.label }}</span>
-                  </div>
-                </template>
-              </v-tooltip>
-            </div>
-
-            <ul class="stacked-legend">
-              <li v-for="segment in flashStackSegments" :key="`${segment.id}-legend`">
-                <span class="stacked-legend__color" :style="{ background: segment.background }"></span>
-                <span class="stacked-legend__text">{{ segment.label }}</span>
-                <span class="stacked-legend__value">{{ segment.percent }}% - {{ formatBytes(segment.bytes) }}</span>
-              </li>
-            </ul>
-          </div>
-
-        </template>
-        <div v-else class="empty-state">
-          Flash usage data unavailable.
-        </div>
-      </section>
     </div>
   </div>
 
@@ -480,39 +484,27 @@ onMounted(async () => {
 
 @media (min-width: 900px) {
   .memory-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-auto-flow: row dense;
-  }
-
-  .memory-pane--flash-layout {
-    grid-column: 1 / -1;
+    grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+    grid-template-areas: "flash-stack right-column";
+    align-items: start;
   }
 
   .memory-right-column {
-    grid-column: 1 / -1;
+    grid-area: right-column;
+    align-self: start;
+  }
+
+  .memory-pane--flash-stack {
+    grid-area: flash-stack;
   }
 }
 
 @media (min-width: 1280px) {
   .memory-grid {
     grid-template-columns: 1.75fr 1fr;
-    grid-template-areas:
-      "flash-layout right-column"
-      "flash-stack right-column";
-    align-items: start;
-  }
-
-  .memory-pane--flash-layout {
-    grid-area: flash-layout;
-  }
-
-  .memory-pane--flash-stack {
-    grid-area: flash-stack;
   }
 
   .memory-right-column {
-    grid-area: right-column;
-    align-self: start;
     max-width: 400px;
     gap: 1rem;
   }
@@ -575,57 +567,10 @@ onMounted(async () => {
   font-size: 0.85rem;
 }
 
-.partition-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-}
-
-.partition-card {
-  padding: 0.75rem 0.75rem 0.5rem;
-  border-radius: 10px;
-  background-color: #ffffff;
-  box-shadow: inset 0 0 0 1px rgba(99, 110, 123, 0.12);
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.partition-card__header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.partition-chip {
-  width: 14px;
-  height: 14px;
-  border-radius: 4px;
-  flex-shrink: 0;
-}
-
-.partition-title {
-  font-weight: 600;
-  text-transform: uppercase;
-  color: #334155;
-  flex-grow: 1;
-  letter-spacing: 0.03em;
-}
-
-.partition-size {
-  font-size: 0.85rem;
+.stacked-description {
+  margin: 0;
+  font-size: 0.86rem;
   color: #475569;
-}
-
-.partition-progress {
-  background-color: rgba(99, 110, 123, 0.12);
-}
-
-.partition-meta {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.8rem;
-  color: #607086;
 }
 
 .usage-block {
@@ -660,8 +605,6 @@ onMounted(async () => {
   justify-content: center;
   font-size: 0.75rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
   padding: 0.35rem 0.25rem;
   text-align: center;
 }
@@ -691,6 +634,7 @@ onMounted(async () => {
 .stacked-legend__color {
   width: 18px;
   height: 18px;
+  display: inline-block;
   border-radius: 5px;
   box-shadow: inset 0 0 0 1px rgba(31, 41, 51, 0.08);
   flex-shrink: 0;
@@ -699,8 +643,6 @@ onMounted(async () => {
 .stacked-legend__text {
   font-weight: 600;
   color: #1f2933;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 
 .stacked-legend__value {
@@ -835,18 +777,8 @@ onMounted(async () => {
   color: #94a3b8;
 }
 
-:deep(.v-theme--dark) .partition-card {
-  background-color: rgba(24, 35, 52, 0.9);
-  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.1);
-}
-
-:deep(.v-theme--dark) .partition-title {
-  color: #f8fafc;
-}
-
-:deep(.v-theme--dark) .partition-size,
-:deep(.v-theme--dark) .partition-meta {
-  color: #cbd5f5;
+:deep(.v-theme--dark) .stacked-description {
+  color: #94a3b8;
 }
 
 :deep(.v-theme--dark) .stacked-column {
