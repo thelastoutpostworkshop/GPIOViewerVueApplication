@@ -100,6 +100,7 @@ export type ESPPartition = {
   address: string;
   size: number;
   calcPour: number;
+  type?: number;
 }
 
 // PinMode set in the code

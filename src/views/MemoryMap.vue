@@ -24,6 +24,7 @@ interface FlashStackSegment {
   bytes: number;
   background: string;
   textColor: string;
+  usageKind: "App" | "Data" | "Unused" | "Unknown";
 }
 
 interface MemoryUsageOverview {
@@ -121,6 +122,39 @@ function getTextColor(color: string): string {
   return luminance > 0.6 ? "#1f2933" : "#ffffff";
 }
 
+function resolvePartitionUsageKind(partition: ESPPartition): "App" | "Data" | "Unknown" {
+  const partitionType = (partition as { type?: number }).type;
+  if (typeof partitionType === "number") {
+    if (partitionType === 0x00) {
+      return "App";
+    }
+    if (partitionType === 0x01) {
+      return "Data";
+    }
+  }
+
+  const normalized = partition.label.toLowerCase();
+
+  const dataKeywords = ["nvs", "data", "spiffs", "ffat", "storage", "phy", "fs", "eeprom", "littlefs"];
+  if (dataKeywords.some((keyword) => normalized.includes(keyword))) {
+    return "Data";
+  }
+
+  if (
+    normalized === "factory" ||
+    /^ota[_\d]*$/i.test(partition.label) ||
+    normalized.startsWith("app")
+  ) {
+    return "App";
+  }
+
+  if (partition.subtype >= 0x10 && partition.subtype <= 0x33) {
+    return "App";
+  }
+
+  return "Unknown";
+}
+
 function shouldShowStackLabel(segment: FlashStackSegment): boolean {
   if (segment.percent >= MIN_STACK_LABEL_PERCENT) {
     return true;
@@ -132,6 +166,18 @@ function shouldShowStackLabel(segment: FlashStackSegment): boolean {
     return true;
   }
   return false;
+}
+
+function segmentTypeLabel(segment: FlashStackSegment): string | null {
+  if (segment.usageKind === "Unknown" || segment.usageKind === "Unused") {
+    return null;
+  }
+  return segment.usageKind;
+}
+
+function formatSegmentTooltip(segment: FlashStackSegment): string {
+  const typeSuffix = segment.usageKind === "Unknown" ? "" : ` (${segment.usageKind})`;
+  return `${segment.label}${typeSuffix}: ${segment.percent}% - ${formatBytes(segment.bytes)}`;
 }
 
 async function fetchESPInformation(): Promise<ESPInfo | null> {
@@ -190,7 +236,8 @@ function calculateMetrics(info: ESPInfo, partitions: ESPPartition[]) {
           percent: gapPercent,
           bytes: gapBytes,
           background: "linear-gradient(180deg, #e0e7ec, #f5f7fa)",
-          textColor: "#1f2933"
+          textColor: "#1f2933",
+          usageKind: "Unused"
         });
       }
     }
@@ -206,7 +253,8 @@ function calculateMetrics(info: ESPInfo, partitions: ESPPartition[]) {
       percent,
       bytes: partition.size,
       background: createGradient(baseColor),
-      textColor: getTextColor(baseColor)
+      textColor: getTextColor(baseColor),
+      usageKind: resolvePartitionUsageKind(partition)
     });
     colorIndex += 1;
     previousEnd = startAddress + partition.size;
@@ -221,7 +269,8 @@ function calculateMetrics(info: ESPInfo, partitions: ESPPartition[]) {
       percent: freePercent,
       bytes: freeBytes,
       background: "linear-gradient(180deg, #e0e7ec, #f5f7fa)",
-      textColor: "#1f2933"
+      textColor: "#1f2933",
+      usageKind: "Unused"
     });
   }
 
@@ -346,7 +395,7 @@ onMounted(async () => {
               <v-tooltip
                 v-for="segment in flashStackSegments"
                 :key="segment.id"
-                :text="`${segment.label}: ${segment.percent}% - ${formatBytes(segment.bytes)}`"
+                :text="formatSegmentTooltip(segment)"
                 location="right"
               >
                 <template #activator="{ props }">
@@ -367,7 +416,10 @@ onMounted(async () => {
             <ul class="stacked-legend">
               <li v-for="segment in flashStackSegments" :key="`${segment.id}-legend`">
                 <span class="stacked-legend__color" :style="{ background: segment.background }"></span>
-                <span class="stacked-legend__text">{{ segment.label }}</span>
+                <span class="stacked-legend__text">
+                  {{ segment.label }}
+                  <span v-if="segmentTypeLabel(segment)" class="stacked-legend__type">{{ segmentTypeLabel(segment) }}</span>
+                </span>
                 <span class="stacked-legend__value">{{ segment.percent }}% - {{ formatBytes(segment.bytes) }}</span>
               </li>
             </ul>
@@ -718,6 +770,15 @@ onMounted(async () => {
   color: #1f2933;
 }
 
+.stacked-legend__type {
+  margin-left: 0.4rem;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #5f6b7a;
+  font-weight: 600;
+}
+
 .stacked-legend__value {
   font-variant-numeric: tabular-nums;
   color: #24344b;
@@ -874,6 +935,10 @@ onMounted(async () => {
 
 :deep(.v-theme--dark) .stacked-legend__text {
   color: #f8fafc;
+}
+
+:deep(.v-theme--dark) .stacked-legend__type {
+  color: #cbd5f5;
 }
 
 :deep(.v-theme--dark) .stacked-legend__value {
