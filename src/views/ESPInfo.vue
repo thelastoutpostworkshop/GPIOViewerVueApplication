@@ -199,7 +199,7 @@ const infoSections = computed<InfoSection[]>(() => {
           value: formatBytes(info.sketch_size)
         },
         {
-          label: "Free Sketch Space",
+          label: "Free Sketch Space for OTA",
           value: formatBytes(info.free_sketch)
         }
       ]
