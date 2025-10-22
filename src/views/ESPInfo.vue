@@ -286,6 +286,16 @@ const summaryCards = computed<SummaryCard[]>(() => {
   }
 
   cards.push({
+    title: "MAC Address",
+    value: formatMacAddress(info.mac),
+    caption: "eFuse identifier",
+    icon: "mdi-identifier",
+    accent: "#00838f",
+    tintLight: "rgba(0, 131, 143, 0.12)",
+    tintDark: "linear-gradient(135deg, rgba(0, 172, 193, 0.7), rgba(77, 208, 225, 0.55))"
+  });
+
+  cards.push({
     title: "Flash Size",
     value: formatBytes(info.flash_chip_size),
     caption: flashMode(info.flash_mode),
