@@ -36,6 +36,7 @@ interface MemoryUsageOverview {
 const espInfo = ref<ESPInfo>();
 const flashOverview = ref<FlashOverview | null>(null);
 const flashStackSegments = ref<FlashStackSegment[]>([]);
+const stackedColumnSegments = computed(() => [...flashStackSegments.value].reverse());
 const heapOverview = ref<MemoryUsageOverview | null>(null);
 const psramOverview = ref<MemoryUsageOverview | null>(null);
 const isLoading = ref(true);
@@ -62,6 +63,7 @@ const partitionColorOverrides: Record<string, string> = {
 };
 
 const partitionPalette: string[] = ["#5c6bc0", "#26a69a", "#ffa726", "#8d6e63", "#ab47bc", "#29b6f6", "#ffca28", "#ec407a"];
+const FREE_SEGMENT_BACKGROUND = "repeating-linear-gradient(135deg, #d9e2f3 0px, #d9e2f3 10px, #eef2f8 10px, #eef2f8 20px)";
 
 const MIN_RECLAIMABLE_BYTES = 64 * 1024; // 64 KiB
 const MIN_RECLAIMABLE_PERCENT = 1; // 1% of total flash
@@ -162,6 +164,9 @@ function resolvePartitionUsageKind(partition: ESPPartition): "App" | "Data" | "U
 }
 
 function shouldShowStackLabel(segment: FlashStackSegment): boolean {
+  if (segment.usageKind === "Unused") {
+    return true;
+  }
   if (segment.percent >= MIN_STACK_LABEL_PERCENT) {
     return true;
   }
@@ -241,7 +246,7 @@ function calculateMetrics(info: ESPInfo, partitions: ESPPartition[]) {
           label: "Free",
           percent: gapPercent,
           bytes: gapBytes,
-          background: "linear-gradient(180deg, #e0e7ec, #f5f7fa)",
+          background: FREE_SEGMENT_BACKGROUND,
           textColor: "#1f2933",
           usageKind: "Unused"
         });
@@ -274,7 +279,7 @@ function calculateMetrics(info: ESPInfo, partitions: ESPPartition[]) {
       label: "Unused",
       percent: freePercent,
       bytes: freeBytes,
-      background: "linear-gradient(180deg, #e0e7ec, #f5f7fa)",
+      background: FREE_SEGMENT_BACKGROUND,
       textColor: "#1f2933",
       usageKind: "Unused"
     });
@@ -399,14 +404,14 @@ onMounted(async () => {
           <div class="stacked-column-wrapper">
             <div class="stacked-column">
               <v-tooltip
-                v-for="segment in flashStackSegments"
+                v-for="segment in stackedColumnSegments"
                 :key="segment.id"
                 :text="formatSegmentTooltip(segment)"
                 location="right"
               >
                 <template #activator="{ props }">
                   <div
-                    class="stacked-column__segment"
+                    :class="['stacked-column__segment', { 'stacked-column__segment--free': segment.usageKind === 'Unused' }]"
                     v-bind="props"
                     :style="[
                       { height: segment.percent + '%', background: segment.background, color: segment.textColor },
@@ -724,7 +729,7 @@ onMounted(async () => {
   border-radius: 12px;
   overflow: hidden;
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
   box-shadow: inset 0 0 0 1px rgba(99, 110, 123, 0.1);
   background: #edf1f7;
 }
@@ -738,6 +743,10 @@ onMounted(async () => {
   font-weight: 600;
   padding: 0.35rem 0.25rem;
   text-align: center;
+}
+
+.stacked-column__segment--free {
+  box-shadow: inset 0 0 0 1px rgba(31, 41, 51, 0.12);
 }
 
 .stacked-column__label {
@@ -937,6 +946,12 @@ onMounted(async () => {
 :deep(.v-theme--dark) .stacked-column {
   background: rgba(15, 23, 42, 0.92);
   box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.18);
+}
+
+:deep(.v-theme--dark) .stacked-column__segment--free {
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.35);
+  background: repeating-linear-gradient(135deg, rgba(148, 163, 184, 0.45) 0px, rgba(148, 163, 184, 0.45) 12px, rgba(71, 85, 105, 0.45) 12px, rgba(71, 85, 105, 0.45) 24px) !important;
+  color: #e2e8f0 !important;
 }
 
 :deep(.v-theme--dark) .stacked-legend__text {
