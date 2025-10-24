@@ -124,7 +124,7 @@ const getValueForPin = (pinState: PinState): string => {
 const getColorForPin = (pinState: PinState): string => {
     const value = Math.max(0, Math.min(pinState.s, 255));
     const index = Math.floor((value / 255) * (PinColors.length - 1));
-    return PinColors[index];
+    return PinColors[index] ?? PinColors[0] ?? '#000000';
 };
 
 const getBarValue = (pinState: PinState): number => {

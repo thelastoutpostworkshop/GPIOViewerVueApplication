@@ -61,7 +61,7 @@ const partitionColorOverrides: Record<string, string> = {
   otadata: "#42a5f5"
 };
 
-const partitionPalette = ["#5c6bc0", "#26a69a", "#ffa726", "#8d6e63", "#ab47bc", "#29b6f6", "#ffca28", "#ec407a"];
+const partitionPalette: string[] = ["#5c6bc0", "#26a69a", "#ffa726", "#8d6e63", "#ab47bc", "#29b6f6", "#ffca28", "#ec407a"];
 
 const MIN_RECLAIMABLE_BYTES = 64 * 1024; // 64 KiB
 const MIN_RECLAIMABLE_PERCENT = 1; // 1% of total flash
@@ -73,7 +73,11 @@ function resolvePartitionColor(label: string, index: number): string {
   if (partitionColorOverrides[normalized]) {
     return partitionColorOverrides[normalized];
   }
-  return partitionPalette[index % partitionPalette.length];
+  const paletteLength = partitionPalette.length;
+  if (paletteLength === 0) {
+    return "#5c6bc0";
+  }
+  return partitionPalette[index % paletteLength]!;
 }
 
 function hexToRgb(color: string): [number, number, number] | null {
@@ -100,9 +104,10 @@ function adjustColor(color: string, amount: number): string {
   if (!rgb) {
     return color;
   }
-  const [r, g, b] = rgb.map((component) =>
+  const mapped = rgb.map((component) =>
     clamp(Math.round(component + component * amount), 0, 255)
-  );
+  ) as [number, number, number];
+  const [r, g, b] = mapped;
   return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
 }
 
@@ -117,7 +122,8 @@ function getTextColor(color: string): string {
   if (!rgb) {
     return "#ffffff";
   }
-  const [r, g, b] = rgb.map((component) => component / 255);
+  const mapped = rgb.map((component) => component / 255) as [number, number, number];
+  const [r, g, b] = mapped;
   const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
   return luminance > 0.6 ? "#1f2933" : "#ffffff";
 }

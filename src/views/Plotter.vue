@@ -163,17 +163,24 @@ function updatePinStates(states: PinStateMap | null) {
 }
 
 function addDataToDatasetByLabel(chart: ChartData, gpio: number, digitalPin: boolean) {
+      if (!chart.datasets) {
+            return;
+      }
       const datasetIndex = chart.datasets.findIndex(dataset => dataset.label === gpio.toString());
 
       if (datasetIndex !== -1) {
             let pinEntry = store.lastPinValues.find(p => p.gpio === gpio);
             if (pinEntry) {
+                  const dataset = chart.datasets[datasetIndex];
+                  if (!dataset) {
+                        return;
+                  }
                   if (pinEntry.values) {
-                        chart.datasets[datasetIndex].data = [...pinEntry.values];
+                        dataset.data = [...pinEntry.values];
                         chart.labels = new Array(pinEntry.values.length).fill(store.SamplingInterval.toString());
 
                   } else {
-                        chart.datasets[datasetIndex].data = [];
+                        dataset.data = [];
                         chart.labels = [];
                   }
                   cle.value += 1;

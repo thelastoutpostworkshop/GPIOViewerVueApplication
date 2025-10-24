@@ -4,8 +4,10 @@ import { gpioStore } from '@/stores/gpiostore'
 
 const store = gpioStore();
 
-const pinShowStates = [
-    { id: 0, name: "Pin Numbers" },
+const fallbackPinShowState = { id: 0, name: "Pin Numbers" };
+
+const pinShowStates: Array<{ id: number; name: string }> = [
+    fallbackPinShowState,
     { id: 1, name: "Pin Type" },
     { id: 2, name: "Pin Mode" }
 ];
@@ -14,7 +16,16 @@ function nextState() {
     store.pinTypeDisplay = (store.pinTypeDisplay + 1) % pinShowStates.length;
 }
 
-const currentPinShowState = computed(() => pinShowStates[store.pinTypeDisplay]);
+const currentPinShowState = computed((): { id: number; name: string } => {
+    if (pinShowStates.length === 0) {
+        return fallbackPinShowState;
+    }
+    const resolved = pinShowStates[store.pinTypeDisplay % pinShowStates.length];
+    if (resolved) {
+        return resolved;
+    }
+    return fallbackPinShowState;
+});
 
 function increaseSize() {
     store.magnifyImage += 2;

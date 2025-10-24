@@ -16,8 +16,9 @@ const props = defineProps({
 });
 // Function to set the first board as current if currentBoard is not set
 const selectFirstBoardIfNoneSelected = () => {
-    if (props.boards.length > 0 && !store.currentBoard) {
-        store.currentBoard = props.boards[0];
+    const firstBoard = props.boards[0];
+    if (firstBoard && !store.currentBoard) {
+        store.currentBoard = firstBoard;
     }
 };
 
