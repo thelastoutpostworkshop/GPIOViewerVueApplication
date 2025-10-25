@@ -51,7 +51,8 @@ const partitionColorOverrides: Record<string, string> = {
 };
 
 const partitionPalette: string[] = ["#5c6bc0", "#26a69a", "#ffa726", "#8d6e63", "#ab47bc", "#29b6f6", "#ffca28", "#ec407a"];
-const FREE_SEGMENT_BACKGROUND = "repeating-linear-gradient(135deg, #d9e2f3 0px, #d9e2f3 10px, #eef2f8 10px, #eef2f8 20px)";
+const FREE_SEGMENT_BACKGROUND =
+  "repeating-linear-gradient(135deg, rgba(248, 113, 113, 0.88) 0px, rgba(248, 113, 113, 0.88) 10px, rgba(220, 38, 38, 0.92) 10px, rgba(220, 38, 38, 0.92) 20px)";
 
 const MIN_RECLAIMABLE_BYTES = 64 * 1024; // 64 KiB
 const MIN_RECLAIMABLE_PERCENT = 1; // 1% of total flash
@@ -235,7 +236,7 @@ function calculateMetrics(info: ESPInfo, partitions: ESPPartition[]) {
           percent: gapPercent,
           bytes: gapBytes,
           background: FREE_SEGMENT_BACKGROUND,
-          textColor: "#1f2933",
+          textColor: "#ffffff",
           usageKind: "Unused"
         });
       }
@@ -268,7 +269,7 @@ function calculateMetrics(info: ESPInfo, partitions: ESPPartition[]) {
       percent: freePercent,
       bytes: freeBytes,
       background: FREE_SEGMENT_BACKGROUND,
-      textColor: "#1f2933",
+      textColor: "#ffffff",
       usageKind: "Unused"
     });
   }
@@ -656,7 +657,8 @@ onMounted(async () => {
 }
 
 .stacked-column__segment--free {
-  box-shadow: inset 0 0 0 1px rgba(31, 41, 51, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(185, 28, 28, 0.35);
+  color: #ffffff;
 }
 
 .stacked-column__label {
@@ -810,9 +812,9 @@ onMounted(async () => {
 }
 
 :deep(.v-theme--dark) .stacked-column__segment--free {
-  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.35);
-  background: repeating-linear-gradient(135deg, rgba(148, 163, 184, 0.45) 0px, rgba(148, 163, 184, 0.45) 12px, rgba(71, 85, 105, 0.45) 12px, rgba(71, 85, 105, 0.45) 24px) !important;
-  color: #e2e8f0 !important;
+  box-shadow: inset 0 0 0 1px rgba(248, 113, 113, 0.55);
+  background: repeating-linear-gradient(135deg, rgba(248, 113, 113, 0.65) 0px, rgba(248, 113, 113, 0.65) 12px, rgba(220, 38, 38, 0.65) 12px, rgba(220, 38, 38, 0.65) 24px) !important;
+  color: #ffffff !important;
 }
 
 :deep(.v-theme--dark) .stacked-legend__text {
