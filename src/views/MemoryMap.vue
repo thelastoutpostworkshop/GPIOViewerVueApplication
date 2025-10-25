@@ -369,8 +369,11 @@ onMounted(async () => {
         >
           <span>
             Unused flash detected - about <span class="reclaim-highlight">{{ reclaimableFlashSummary }}</span> is reclaimable.
+            <br />
             See the
-            <a :href="partitionTutorialUrl" target="_blank" rel="noopener" class="reclaim-link">partition tutorial</a>.
+            <a :href="partitionTutorialUrl" target="_blank" rel="noopener" class="reclaim-link">partition tutorial</a>
+            or try the
+            <a href="https://thelastoutpostworkshop.github.io/microcontroller_devkit/esp32partitionbuilder/" target="_blank" rel="noopener" class="reclaim-link">ESP32 partition builder</a>.
           </span>
         </v-alert>
 
