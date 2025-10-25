@@ -635,14 +635,30 @@ onMounted(async () => {
 }
 
 .stacked-column {
-  flex: 0 0 120px;
-  height: 260px;
+  flex: 0 0 auto;
+  width: 100%;
+  min-height: 340px;
   border-radius: 12px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   box-shadow: inset 0 0 0 1px rgba(99, 110, 123, 0.1);
   background: #edf1f7;
+}
+
+@media (max-width: 600px) {
+  .stacked-column {
+    min-height: 420px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .stacked-column {
+    flex: 0 0 120px;
+    width: 120px;
+    height: 320px;
+    min-height: 0;
+  }
 }
 
 .stacked-column__segment {
