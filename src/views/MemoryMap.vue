@@ -347,7 +347,10 @@ onMounted(async () => {
 
 <template>
   <div v-if="!isLoading && espInfo" class="memory-dashboard">
-    <div class="memory-grid">
+    <div
+      class="memory-grid"
+      :class="{ 'memory-grid--two-column': heapOverview || psramOverview }"
+    >
       <section class="memory-pane memory-pane--flash-stack">
         <header class="pane-header">
           <h2>Flash Stack Map</h2>
@@ -417,9 +420,11 @@ onMounted(async () => {
         <div v-else class="empty-state">
           Flash usage data unavailable.
         </div>
+      </section>
 
-        <div v-if="heapOverview" class="flash-stack-heap">
-          <header class="pane-header flash-stack-heap__header">
+      <div v-if="heapOverview || psramOverview" class="memory-right-column">
+        <section v-if="heapOverview" class="memory-pane memory-pane--heap">
+          <header class="pane-header">
             <h2>Heap Usage</h2>
             <span class="pane-meta">Total {{ formatBytes(heapOverview.totalBytes) }}</span>
           </header>
@@ -443,35 +448,35 @@ onMounted(async () => {
               {{ heapOverview.percent }}% used ({{ formatBytes(heapOverview.usedBytes) }})
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section v-if="psramOverview" class="memory-pane memory-pane--psram">
-        <header class="pane-header">
-          <h2>PSRAM Usage</h2>
-          <span class="pane-meta">Total {{ formatBytes(psramOverview.totalBytes) }}</span>
-        </header>
+        <section v-if="psramOverview" class="memory-pane memory-pane--psram">
+          <header class="pane-header">
+            <h2>PSRAM Usage</h2>
+            <span class="pane-meta">Total {{ formatBytes(psramOverview.totalBytes) }}</span>
+          </header>
 
-        <div class="usage-block">
-          <v-tooltip
-            :text="`Used: ${psramOverview.percent}% - ${formatBytes(psramOverview.usedBytes)}`"
-            location="bottom"
-          >
-            <template #activator="{ props }">
-              <v-progress-linear
-                v-bind="props"
-                :model-value="psramOverview.percent"
-                color="#8e24aa"
-                height="14"
-                rounded
-              ></v-progress-linear>
-            </template>
-          </v-tooltip>
-          <div class="usage-footer">
-            {{ psramOverview.percent }}% used ({{ formatBytes(psramOverview.usedBytes) }})
+          <div class="usage-block">
+            <v-tooltip
+              :text="`Used: ${psramOverview.percent}% - ${formatBytes(psramOverview.usedBytes)}`"
+              location="bottom"
+            >
+              <template #activator="{ props }">
+                <v-progress-linear
+                  v-bind="props"
+                  :model-value="psramOverview.percent"
+                  color="#8e24aa"
+                  height="14"
+                  rounded
+                ></v-progress-linear>
+              </template>
+            </v-tooltip>
+            <div class="usage-footer">
+              {{ psramOverview.percent }}% used ({{ formatBytes(psramOverview.usedBytes) }})
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
     </div>
   </div>
 
@@ -618,22 +623,6 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-}
-
-.flash-stack-heap {
-  border-top: 1px solid rgba(71, 85, 105, 0.14);
-  padding-top: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.flash-stack-heap__header {
-  gap: 0.35rem;
-}
-
-.flash-stack-heap__header h2 {
-  font-size: 1rem;
 }
 
 .stacked-column-wrapper {
@@ -853,10 +842,6 @@ onMounted(async () => {
 
 :deep(.v-theme--dark) .stacked-legend__value {
   color: #cbd5f5;
-}
-
-:deep(.v-theme--dark) .flash-stack-heap {
-  border-top: 1px solid rgba(148, 163, 184, 0.28);
 }
 
 :deep(.v-theme--dark) .usage-footer {
