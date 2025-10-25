@@ -103,7 +103,7 @@ function openExternal(url: string) {
           <div class="about-hero__badge">Open Source | ESP32</div>
           <h1 class="about-hero__title">GPIOViewer for ESP32</h1>
           <p class="about-hero__subtitle">
-            Troubleshoot microcontrollers faster with live pin telemetry, memory dashboards, and a workflow designed for the lab and the field.
+            Troubleshoot microcontrollers faster with live pin telemetry, memory dashboards, and ESP32 information.
           </p>
           <ul class="about-hero__highlights">
             <li v-for="point in highlights" :key="point">
@@ -113,7 +113,7 @@ function openExternal(url: string) {
           </ul>
           <div class="about-hero__meta">
             <div class="about-hero__meta-item">
-              <span class="about-hero__meta-label">Firmware release</span>
+              <span class="about-hero__meta-label">Library version</span>
               <span class="about-hero__meta-value">v{{ store.GPIOViewerRelease }}</span>
             </div>
             <v-divider vertical class="about-hero__divider" />
