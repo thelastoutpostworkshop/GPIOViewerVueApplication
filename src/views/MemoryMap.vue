@@ -6,17 +6,6 @@ import { getAPIUrl, formatBytes } from "@/functions";
 const spiffs = "spiffs";
 const ffat = "ffat";
 
-interface FlashOverview {
-  totalBytes: number;
-  sketchPercent: number;
-  sketchBytes: number;
-  fsPercent: number;
-  fsBytes: number;
-  fsLabel: string;
-  freePercent: number;
-  freeBytes: number;
-}
-
 interface FlashStackSegment {
   id: string;
   label: string;
@@ -34,7 +23,6 @@ interface MemoryUsageOverview {
 }
 
 const espInfo = ref<ESPInfo>();
-const flashOverview = ref<FlashOverview | null>(null);
 const flashStackSegments = ref<FlashStackSegment[]>([]);
 const stackedColumnSegments = computed(() => [...flashStackSegments.value].reverse());
 const heapOverview = ref<MemoryUsageOverview | null>(null);
@@ -292,30 +280,6 @@ function calculateMetrics(info: ESPInfo, partitions: ESPPartition[]) {
   flashStackSegments.value = stackSegments;
   reclaimableBytes.value = totalFreeBytes;
 
-  const sketchPercent = flashCapacity
-    ? Math.max(0, Math.round((info.sketch_size / flashCapacity) * 1000) / 10)
-    : 0;
-
-  const fsPercent = flashCapacity && fsPartition
-    ? Math.max(0, Math.round((fsPartition.size / flashCapacity) * 1000) / 10)
-    : 0;
-
-  const freeBytes = Math.max(0, totalFreeBytes);
-  const freePercent = flashCapacity
-    ? Math.max(0, Math.round((freeBytes / flashCapacity) * 1000) / 10)
-    : 0;
-
-  flashOverview.value = {
-    totalBytes: flashCapacity,
-    sketchPercent,
-    sketchBytes: info.sketch_size,
-    fsPercent,
-    fsBytes: fsPartition?.size ?? 0,
-    fsLabel: fsPartition?.label ?? "",
-    freePercent,
-    freeBytes
-  };
-
   const heapUsedBytes = Math.max(0, info.heap_size - info.free_heap);
   heapOverview.value = {
     totalBytes: info.heap_size,
@@ -373,7 +337,7 @@ onMounted(async () => {
 
 <template>
   <div v-if="!isLoading && espInfo" class="memory-dashboard">
-    <div class="memory-grid">
+    <div class="memory-grid" :class="{ 'memory-grid--two-column': psramOverview }">
       <section class="memory-pane memory-pane--flash-stack">
         <header class="pane-header">
           <h2>Flash Stack Map</h2>
@@ -440,83 +404,14 @@ onMounted(async () => {
         <div v-else class="empty-state">
           Flash usage data unavailable.
         </div>
-      </section>
 
-      <div class="memory-right-column">
-        <section class="memory-pane memory-pane--flash-usage">
-          <header class="pane-header">
-            <h2>Flash Usage</h2>
-            <span class="pane-meta">Overview of sketch and filesystem usage</span>
-          </header>
-
-          <div v-if="flashOverview" class="usage-block">
-            <div class="stacked-bar" v-if="flashOverview.totalBytes">
-              <v-tooltip
-                :text="`Sketch: ${flashOverview.sketchPercent}% - ${formatBytes(flashOverview.sketchBytes)}`"
-                location="bottom"
-              >
-                <template #activator="{ props }">
-                  <div
-                    class="stacked-segment stacked-segment--sketch"
-                    v-bind="props"
-                    :style="{ width: flashOverview.sketchPercent + '%' }"
-                  ></div>
-                </template>
-              </v-tooltip>
-
-              <v-tooltip
-                v-if="flashOverview.fsPercent > 0"
-                :text="`${flashOverview.fsLabel.toUpperCase()}: ${flashOverview.fsPercent}% - ${formatBytes(flashOverview.fsBytes)}`"
-                location="bottom"
-              >
-                <template #activator="{ props }">
-                  <div
-                    class="stacked-segment stacked-segment--fs"
-                    v-bind="props"
-                    :style="{ width: flashOverview.fsPercent + '%' }"
-                  ></div>
-                </template>
-              </v-tooltip>
-
-              <v-tooltip
-                v-if="flashOverview.freePercent > 0"
-                :text="`Free: ${flashOverview.freePercent}% - ${formatBytes(flashOverview.freeBytes)}`"
-                location="bottom"
-              >
-                <template #activator="{ props }">
-                  <div
-                    class="stacked-segment stacked-segment--free"
-                    v-bind="props"
-                    :style="{ width: flashOverview.freePercent + '%' }"
-                  ></div>
-                </template>
-              </v-tooltip>
-            </div>
-
-            <ul class="usage-list">
-              <li>
-                <span class="usage-label">Sketch</span>
-                <span class="usage-value">{{ flashOverview.sketchPercent }}% - {{ formatBytes(flashOverview.sketchBytes) }}</span>
-              </li>
-              <li v-if="flashOverview.fsPercent > 0">
-                <span class="usage-label">{{ flashOverview.fsLabel }}</span>
-                <span class="usage-value">{{ flashOverview.fsPercent }}% - {{ formatBytes(flashOverview.fsBytes) }}</span>
-              </li>
-              <li>
-                <span class="usage-label">Free</span>
-                <span class="usage-value">{{ flashOverview.freePercent }}% - {{ formatBytes(flashOverview.freeBytes) }}</span>
-              </li>
-            </ul>
-          </div>
-        </section>
-
-        <section class="memory-pane memory-pane--heap">
-          <header class="pane-header">
+        <div v-if="heapOverview" class="flash-stack-heap">
+          <header class="pane-header flash-stack-heap__header">
             <h2>Heap Usage</h2>
-            <span class="pane-meta">Total {{ formatBytes(heapOverview?.totalBytes ?? 0) }}</span>
+            <span class="pane-meta">Total {{ formatBytes(heapOverview.totalBytes) }}</span>
           </header>
 
-          <div v-if="heapOverview" class="usage-block">
+          <div class="usage-block">
             <v-tooltip
               :text="`Used: ${heapOverview.percent}% - ${formatBytes(heapOverview.usedBytes)}`"
               location="bottom"
@@ -535,9 +430,11 @@ onMounted(async () => {
               {{ heapOverview.percent }}% used ({{ formatBytes(heapOverview.usedBytes) }})
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section v-if="psramOverview" class="memory-pane memory-pane--psram">
+      <div v-if="psramOverview" class="memory-right-column">
+        <section class="memory-pane memory-pane--psram">
           <header class="pane-header">
             <h2>PSRAM Usage</h2>
             <span class="pane-meta">Total {{ formatBytes(psramOverview.totalBytes) }}</span>
@@ -592,24 +489,24 @@ onMounted(async () => {
 }
 
 @media (min-width: 900px) {
-  .memory-grid {
+  .memory-grid--two-column {
     grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
     grid-template-areas: "flash-stack right-column";
     align-items: start;
   }
 
-  .memory-right-column {
+  .memory-grid--two-column .memory-right-column {
     grid-area: right-column;
     align-self: start;
   }
 
-  .memory-pane--flash-stack {
+  .memory-grid--two-column .memory-pane--flash-stack {
     grid-area: flash-stack;
   }
 }
 
 @media (min-width: 1280px) {
-  .memory-grid {
+  .memory-grid--two-column {
     grid-template-columns: 1.75fr 1fr;
   }
 
@@ -643,9 +540,6 @@ onMounted(async () => {
     gap: 0.45rem;
   }
 
-  .memory-right-column .usage-list li {
-    font-size: 0.86rem;
-  }
 }
 
 .memory-pane {
@@ -713,6 +607,22 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+}
+
+.flash-stack-heap {
+  border-top: 1px solid rgba(71, 85, 105, 0.14);
+  padding-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.flash-stack-heap__header {
+  gap: 0.35rem;
+}
+
+.flash-stack-heap__header h2 {
+  font-size: 1rem;
 }
 
 .stacked-column-wrapper {
@@ -838,55 +748,6 @@ onMounted(async () => {
   text-decoration: none;
 }
 
-.stacked-bar {
-  display: flex;
-  height: 18px;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: inset 0 0 0 1px rgba(99, 110, 123, 0.1);
-}
-
-.stacked-segment {
-  height: 100%;
-}
-
-.stacked-segment--sketch {
-  background: linear-gradient(90deg, #3949ab, #5c6bc0);
-}
-
-.stacked-segment--fs {
-  background: linear-gradient(90deg, #00897b, #26a69a);
-}
-
-.stacked-segment--free {
-  background: linear-gradient(90deg, #cfd8dc, #eceff1);
-}
-
-.usage-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.usage-list li {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.9rem;
-  color: #475569;
-}
-
-.usage-label {
-  font-weight: 600;
-  color: #334155;
-}
-
-.usage-value {
-  font-variant-numeric: tabular-nums;
-}
-
 .usage-footer {
   font-size: 0.85rem;
   color: #475569;
@@ -966,13 +827,12 @@ onMounted(async () => {
   color: #cbd5f5;
 }
 
-:deep(.v-theme--dark) .usage-list li,
-:deep(.v-theme--dark) .usage-footer {
-  color: #cbd5f5;
+:deep(.v-theme--dark) .flash-stack-heap {
+  border-top: 1px solid rgba(148, 163, 184, 0.28);
 }
 
-:deep(.v-theme--dark) .usage-label {
-  color: #f8fafc;
+:deep(.v-theme--dark) .usage-footer {
+  color: #cbd5f5;
 }
 
 :deep(.v-theme--dark) .reclaim-hint {
