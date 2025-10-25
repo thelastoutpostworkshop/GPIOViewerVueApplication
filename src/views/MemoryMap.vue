@@ -338,7 +338,7 @@ onMounted(async () => {
 
 <template>
   <div v-if="!isLoading && espInfo" class="memory-dashboard">
-    <div class="memory-grid" :class="{ 'memory-grid--two-column': psramOverview }">
+    <div class="memory-grid">
       <section class="memory-pane memory-pane--flash-stack">
         <header class="pane-header">
           <h2>Flash Stack Map</h2>
@@ -434,34 +434,32 @@ onMounted(async () => {
         </div>
       </section>
 
-      <div v-if="psramOverview" class="memory-right-column">
-        <section class="memory-pane memory-pane--psram">
-          <header class="pane-header">
-            <h2>PSRAM Usage</h2>
-            <span class="pane-meta">Total {{ formatBytes(psramOverview.totalBytes) }}</span>
-          </header>
+      <section v-if="psramOverview" class="memory-pane memory-pane--psram">
+        <header class="pane-header">
+          <h2>PSRAM Usage</h2>
+          <span class="pane-meta">Total {{ formatBytes(psramOverview.totalBytes) }}</span>
+        </header>
 
-          <div class="usage-block">
-            <v-tooltip
-              :text="`Used: ${psramOverview.percent}% - ${formatBytes(psramOverview.usedBytes)}`"
-              location="bottom"
-            >
-              <template #activator="{ props }">
-                <v-progress-linear
-                  v-bind="props"
-                  :model-value="psramOverview.percent"
-                  color="#8e24aa"
-                  height="14"
-                  rounded
-                ></v-progress-linear>
-              </template>
-            </v-tooltip>
-            <div class="usage-footer">
-              {{ psramOverview.percent }}% used ({{ formatBytes(psramOverview.usedBytes) }})
-            </div>
+        <div class="usage-block">
+          <v-tooltip
+            :text="`Used: ${psramOverview.percent}% - ${formatBytes(psramOverview.usedBytes)}`"
+            location="bottom"
+          >
+            <template #activator="{ props }">
+              <v-progress-linear
+                v-bind="props"
+                :model-value="psramOverview.percent"
+                color="#8e24aa"
+                height="14"
+                rounded
+              ></v-progress-linear>
+            </template>
+          </v-tooltip>
+          <div class="usage-footer">
+            {{ psramOverview.percent }}% used ({{ formatBytes(psramOverview.usedBytes) }})
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </div>
   </div>
 
