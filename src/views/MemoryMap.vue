@@ -320,6 +320,15 @@ const hasReclaimableFlash = computed(() => {
   return hasFreeSegment && (exceedsByteThreshold || exceedsPercentThreshold);
 });
 
+const reclaimableFlashSummary = computed(() => {
+  if (reclaimableBytes.value <= 0) {
+    return "";
+  }
+  const formatted = formatBytes(reclaimableBytes.value);
+  const bytesLabel = reclaimableBytes.value.toLocaleString();
+  return `${formatted} (${bytesLabel} bytes)`;
+});
+
 onMounted(async () => {
   try {
     const [espInfoData, espPartitionData] = await Promise.all([fetchESPInformation(), fetchESPPartition()]);
@@ -359,8 +368,8 @@ onMounted(async () => {
           icon="mdi-lightbulb-on-outline"
         >
           <span>
-            Unused flash detected.
-            <span class="reclaim-highlight">Reclaim wasted space</span> - see the
+            Unused flash detected - about <span class="reclaim-highlight">{{ reclaimableFlashSummary }}</span> is reclaimable.
+            See the
             <a :href="partitionTutorialUrl" target="_blank" rel="noopener" class="reclaim-link">partition tutorial</a>.
           </span>
         </v-alert>
