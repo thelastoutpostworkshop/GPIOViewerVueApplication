@@ -15,7 +15,7 @@ const maxLastPinValuesStored = 100;
 const router = useRouter()
 const theme = useTheme();
 
-store.WebApplicationRelease = "2.2.3";
+store.WebApplicationRelease = "2.2.4";
 
 declare var window: any;
 function getTheme() {
