@@ -41,16 +41,38 @@ const flashSizeSummary = computed(() => {
 const partitionTutorialUrl = "https://youtu.be/EuHxodrye6E";
 
 const partitionColorOverrides: Record<string, string> = {
-  boot: "#3949ab",
-  factory: "#8d6e63",
-  ota_0: "#ff7043",
-  ota_1: "#ffa726",
-  nvs: "#26a69a",
-  phy_init: "#ab47bc",
-  otadata: "#42a5f5"
+  factory: "#f8b26a",
+  ota_0: "#7cc576",
+  ota_1: "#58a55b",
+  ota_2: "#499550",
+  ota: "#8d6be6",
+  otadata: "#8d6be6",
+  nvs: "#4dd0e1",
+  fat: "#7986cb",
+  ffat: "#7986cb",
+  spiffs: "#64b5f6",
+  littlefs: "#81d4fa",
+  coredump: "#ef9a9a",
+  phy: "#aed581",
+  phy_init: "#aed581",
+  test: "#f48fb1"
 };
 
-const partitionPalette: string[] = ["#5c6bc0", "#26a69a", "#ffa726", "#8d6e63", "#ab47bc", "#29b6f6", "#ffca28", "#ec407a"];
+const partitionTypeColors: Record<number, string> = {
+  0x00: "#4caf50",
+  0x01: "#2196f3"
+};
+
+const partitionPalette: string[] = [
+  "#ffadad",
+  "#ffd6a5",
+  "#fdffb6",
+  "#caffbf",
+  "#9bf6ff",
+  "#a0c4ff",
+  "#bdb2ff",
+  "#ffc6ff"
+];
 const FREE_SEGMENT_BACKGROUND =
   "repeating-linear-gradient(135deg, rgba(248, 113, 113, 0.88) 0px, rgba(248, 113, 113, 0.88) 10px, rgba(220, 38, 38, 0.92) 10px, rgba(220, 38, 38, 0.92) 20px)";
 
@@ -59,16 +81,48 @@ const MIN_RECLAIMABLE_PERCENT = 1; // 1% of total flash
 const MIN_STACK_LABEL_PERCENT = 1; // 1% height visibly fits text
 const MIN_STACK_LABEL_BYTES = 8 * 1024; // 8 KiB minimum as textual anchor
 
-function resolvePartitionColor(label: string, index: number): string {
-  const normalized = label.toLowerCase();
-  if (partitionColorOverrides[normalized]) {
-    return partitionColorOverrides[normalized];
+function resolvePartitionColor(partition: ESPPartition, index: number): string {
+  const normalizedLabel = partition.label.trim().toLowerCase();
+
+  const overrideColor = partitionColorOverrides[normalizedLabel];
+  if (overrideColor) {
+    return overrideColor;
   }
+
+  const otaMatch = normalizedLabel.match(/^ota_(\d+)$/);
+  if (otaMatch) {
+    const key = `ota_${otaMatch[1]}`;
+    const otaOverride = partitionColorOverrides[key];
+    if (otaOverride) {
+      return otaOverride;
+    }
+  }
+
+  if (normalizedLabel === "ota data" || normalizedLabel === "ota-data") {
+    return partitionColorOverrides["ota"] ?? "#8d6be6";
+  }
+
+  const partitionType = (partition as { type?: number }).type;
+  if (typeof partitionType === "number") {
+    const typeColor = partitionTypeColors[partitionType];
+    if (typeColor) {
+      return typeColor;
+    }
+  }
+
+  const usageKind = resolvePartitionUsageKind(partition);
+  if (usageKind === "App") {
+    return partitionTypeColors[0x00] ?? "#4caf50";
+  }
+  if (usageKind === "Data") {
+    return partitionTypeColors[0x01] ?? "#2196f3";
+  }
+
   const paletteLength = partitionPalette.length;
   if (paletteLength === 0) {
-    return "#5c6bc0";
+    return "#4caf50";
   }
-  return partitionPalette[index % paletteLength]!;
+  return partitionPalette[index % paletteLength] ?? partitionPalette[0] ?? "#ffadad";
 }
 
 function hexToRgb(color: string): [number, number, number] | null {
@@ -246,7 +300,7 @@ function calculateMetrics(info: ESPInfo, partitions: ESPPartition[]) {
       ? Math.max(0, Math.round((partition.size / flashCapacity) * 1000) / 10)
       : 0;
 
-    const baseColor = resolvePartitionColor(partition.label, colorIndex);
+    const baseColor = resolvePartitionColor(partition, colorIndex);
     stackSegments.push({
       id: `partition-${index}`,
       label: partition.label,
