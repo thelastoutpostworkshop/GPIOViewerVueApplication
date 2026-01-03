@@ -1,0 +1,277 @@
+[
+    {
+        "name": "Generic View",
+        "image": "devboards_images/generic.png",
+        "pins": "indicators/generic.json"
+    },
+    {
+        "name": "AZ Delivery NodeMCU ESP32",
+        "image": "devboards_images/AZ-Delivery-NodeMCU-ESP32.png",
+        "pins": "indicators/AZ-Delivery-NodeMCU-ESP32.json"
+    },
+    {
+        "name": "Cheap Yellow Display (ESP32-2432S028)",
+        "image": "devboards_images/ESP32-2432S028.png",
+        "pins": "indicators/ESP32-2432S028.json"
+    },
+    {
+        "name": "DFROBOT Beetle ESP32-C6",
+        "image": "devboards_images/DFROBOT_Beetle_ESP32-C6.png",
+        "pins": "indicators/DFROBOT_Beetle_ESP32-C6.json"
+    },
+    {
+        "name": "ESP32-CAM",
+        "image": "devboards_images/ESP32-CAM.png",
+        "pins": "indicators/ESP32-CAM.json"
+    },
+    {
+        "name": "ESP32-D1-R32",
+        "image": "devboards_images/ESP32_D1_R32.png",
+        "pins": "indicators/esp32_d1_r32.json"
+    },
+    {
+        "name": "ESP32 DEVKIT V1 (36 pins)",
+        "image": "devboards_images/ESP32-DEVKITV1-36pins.png",
+        "pins": "indicators/ESP32-DEVKITV1-36pins.json"
+    },
+    {
+        "name": "ESP32 C5 DEVKIT V1",
+        "image": "devboards_images/ESP32-C5-DevKitC-1.png",
+        "pins": "indicators/eps32c5v1.json"
+    },
+    {
+        "name": "ESP32 NodeMCU 32S",
+        "image": "devboards_images/ESP32-NodeMCU-32S.png",
+        "pins": "indicators/ESP32-NodeMCU-32S.json"
+    },
+    {
+        "name": "ESP32-VROOM-32D (38 pins)",
+        "image": "devboards_images/ESP32-VROOM-32D.png",
+        "pins": "indicators/ESP32-VROOM-32D.json"
+    },
+    {
+        "name": "ESP32-VROOM-32D (30 pins)",
+        "image": "devboards_images/ESP32-VROOM-32D-30pins.png",
+        "pins": "indicators/ESP32-VROOM-32D-30pins.json"
+    },
+    {
+        "name": "ESP32-S3-DevKitM-1-N8",
+        "image": "devboards_images/ESP32-S3-DevKitM-1-N8.png",
+        "pins": "indicators/ESP32-S3-DevKitM-1-N8.json"
+    },
+    {
+        "name": "ESP32-S3-Pico",
+        "image": "devboards_images/ESP32-S3-Pico.png",
+        "pins": "indicators/ESP32-S3-Pico.json"
+    },
+    {
+        "name": "ESP32-S3-Wroom-1",
+        "image": "devboards_images/esp32-s3-wroom-1.png",
+        "pins": "indicators/esp32-s3-wroom-1.json"
+    },
+    {
+        "name": "ESP32-C3 Mini",
+        "image": "devboards_images/ESP32-C3-Mini.png",
+        "pins": "indicators/ESP32-C3-Mini.json"
+    },
+    {
+        "name": "ESP32-C3 Mini-1",
+        "image": "devboards_images/ESP32-C3-Mini-1.png",
+        "pins": "indicators/esp32-C3-mini-1.json"
+    },
+    {
+        "name": "ESP32-C3 Super Mini",
+        "image": "devboards_images/ESP32-C3-Super-Mini.png",
+        "pins": "indicators/ESP32-C3-Super-Mini.json"
+    },
+    {
+        "name": "ESP32-C3-Wroom-02",
+        "image": "devboards_images/esp32-C3-Wroom-02.png",
+        "pins": "indicators/esp32-C3-Wroom-02.json"
+    },
+    {
+        "name": "ESP32 Wroom-32UE",
+        "image": "devboards_images/esp32-Wroom-32UE.png",
+        "pins": "indicators/esp32-Wroom-32UE.json"
+    },
+    {
+        "name": "Adafruit HUZZAH32",
+        "image": "devboards_images/adafruit_HUZZAH32.png",
+        "pins": "indicators/adafruit_HUZZAH32.json"
+    },
+    {
+        "name": "ESP32 EVB",
+        "image": "devboards_images/ESP32-EVB.png",
+        "pins": "indicators/ESP32-EVB.json"
+    },
+    {
+        "name": "ESP32 S2 Mini V1.0.0",
+        "image": "devboards_images/Esp32 S2 Mini V1.0.0.png",
+        "pins": "indicators/Esp32 S2 Mini V1.0.0.json"
+    },
+    {
+        "name": "ESP32 POE",
+        "image": "devboards_images/ESP32-POE.png",
+        "pins": "indicators/ESP32-POE.json"
+    },
+    {
+        "name": "ESP32-C3 Zero",
+        "image": "devboards_images/ESP32-C3-Zero.png",
+        "pins": "indicators/ESP32-C3-Zero.json"
+    },
+    {
+        "name": "ESP32-C6 Zero",
+        "image": "devboards_images/ESP32-C6-Zero.png",
+        "pins": "indicators/ESP32-C6-Zero.json"
+    },
+    {
+        "name": "ESP32 Pico Kit v4.1",
+        "image": "devboards_images/esp32-pico-kit-v4.1.png",
+        "pins": "indicators/esp32-pico-kit-v4.1.json"
+    },
+    {
+        "name": "Freenove ESP32-s3",
+        "image": "devboards_images/Freenove-esp32-s3.png",
+        "pins": "indicators/Freenove-esp32-s3.json"
+    },
+    {
+        "name": "Freenove ESP32-Wroom",
+        "image": "devboards_images/Freenove-esp32-wroom.png",
+        "pins": "indicators/Freenove-esp32-wroom.json"
+    },
+    {
+        "name": "Heltec HT-WB32_V3",
+        "image": "devboards_images/Heltec HT-WB32_V3.png",
+        "pins": "indicators/Heltec HT-WB32_V3.json"
+    },
+    {
+        "name": "Leaf S3",
+        "image": "devboards_images/Leaf-S3.png",
+        "pins": "indicators/Leaf-S3.json"
+    },
+    {
+        "name": "Lilygo T-Display ESP32-S3",
+        "image": "devboards_images/lilygo_t_display_esp32S3.png",
+        "pins": "indicators/lilygo_t_display_esp32S3.json"
+    },
+    {
+        "name": "Lilygo-T SIM A7670x",
+        "image": "devboards_images/Lilygo-T-SIM-A7670x.png",
+        "pins": "indicators/Lilygo-T-SIM-A7670x.json"
+    },
+    {
+        "name": "Lilygo T7 Mini32 v1.5",
+        "image": "devboards_images/Lilygo-T7-Mini32-v1.5.png",
+        "pins": "indicators/Lilygo-T7-Mini32-v1.5.json"
+    },
+    {
+        "name": "Lolin D32",
+        "image": "devboards_images/Lolin-D32.png",
+        "pins": "indicators/Lolin-D32.json"
+    },
+    {
+        "name": "Nano ESP32",
+        "image": "devboards_images/Nano-ESP32.png",
+        "pins": "indicators/Nano-ESP32.json"
+    },
+    {
+        "name": "Nano ESP32-C6",
+        "image": "devboards_images/nanoESP32-C6.png",
+        "pins": "indicators/nanoESP32-C6.json"
+    },
+    {
+        "name": "Olimex ESP32-P4",
+        "image": "devboards_images/Olimex-ESP32-P4.png",
+        "pins": "indicators/Olimex-ESP32-P4.json"
+    },
+    {
+        "name": "ESP32-S3 Zero",
+        "image": "devboards_images/ESP32-S3-Zero-S3FH4R2.png",
+        "pins": "indicators/ESP32-S3-Zero-S3FH4R2.json"
+    },
+    {
+        "name": "Sailor Hat ESP32",
+        "image": "devboards_images/Sailor-Hat-ESP32.png",
+        "pins": "indicators/Sailor-Hat-ESP32.json"
+    },
+    {
+        "name": "Sparkleiot ESP32-C3F",
+        "image": "devboards_images/Sparkleiot-ESP32-C3F.png",
+        "pins": "indicators/Sparkleiot-ESP32-C3F.json"
+    },
+    {
+        "name": "StickLite V3 ESP32S3",
+        "image": "devboards_images/StickLite-V3-ESP32S3.png",
+        "pins": "indicators/StickLite-V3-ESP32S3.json"
+    },
+    {
+        "name": "SOC ESP32 WROOM 32",
+        "image": "devboards_images/SOC-ESP32-WROOM-32.png",
+        "pins": "indicators/SOC-ESP32-WROOM-32.json"
+    },
+    {
+        "name": "T-Display S3 AMOLED",
+        "image": "devboards_images/T-Display-S3-AMOLED.png",
+        "pins": "indicators/T-Display-S3-AMOLED.json"
+    },
+    {
+        "name": "TinyPICO Nano",
+        "image": "devboards_images/TinyPICO-Nano.png",
+        "pins": "indicators/TinyPICO-Nano.json"
+    },
+    {
+        "name": "TinyPico V3",
+        "image": "devboards_images/TinyPico-V3.png",
+        "pins": "indicators/TinyPico-V3.json"
+    },
+    {
+        "name": "TTGO Display V1.1",
+        "image": "devboards_images/TTGO-Display-V1.1.png",
+        "pins": "indicators/TTGO-Display-V1.1.json"
+    },
+    {
+        "name": "Wemos Lolin32 Lite V1",
+        "image": "devboards_images/Wemos-Lolin32-Lite-V1.png",
+        "pins": "indicators/Wemos-Lolin32-Lite-V1.json"
+    },
+    {
+        "name": "Wemos Lolin S3 Mini",
+        "image": "devboards_images/Wemos-Lolin-S3-Mini.png",
+        "pins": "indicators/Wemos-Lolin-S3-Mini.json"
+    },
+    {
+        "name": "Wemos D1 Mini ESP32",
+        "image": "devboards_images/Wemos-D1-Mini-ESP32.png",
+        "pins": "indicators/Wemos-D1-Mini-ESP32.json"
+    },
+    {
+        "name": "Wemos D1 Mini ESP8266",
+        "image": "devboards_images/Wemos-D1-Mini-ESP8266.png",
+        "pins": "indicators/Wemos-D1-Mini-ESP8266.json"
+    },
+    {
+        "name": "WT32-S1",
+        "image": "devboards_images/WT32-S1.png",
+        "pins": "indicators/WT32-S1.json"
+    },
+    {
+        "name": "NodeMcu ESP8266",
+        "image": "devboards_images/NodeMcu-ESP8266.png",
+        "pins": "indicators/NodeMcu-ESP8266.json"
+    },
+    {
+        "name": "XIAO ESP32 C3",
+        "image": "devboards_images/XIAO-ESP32-C3.png",
+        "pins": "indicators/XIAO-ESP32-C3.json"
+    },
+    {
+        "name": "XIAO ESP32 C6",
+        "image": "devboards_images/XIAO-ESP32-C6.png",
+        "pins": "indicators/XIAO-ESP32-C6.json"
+    },
+    {
+        "name": "XIAO ESP32 S3",
+        "image": "devboards_images/XIAO-ESP32-S3.png",
+        "pins": "indicators/XIAO-ESP32-S3.json"
+    }
+]
