@@ -444,37 +444,43 @@ function getValueFillClass(pin: Pins): string {
 }
 
 .value--high {
+    color: #ffffff;
+    background: #dc2626;
+    border-color: #991b1b;
+}
+
+.value--high .value-bar {
+    background: #b91c1c;
+}
+
+.value--low {
     color: #052e16;
     background: #86efac;
     border-color: #16a34a;
 }
 
-.value--high .value-bar {
+.value--low .value-bar {
     background: #22c55e;
 }
 
-.value--low {
-    color: #475569;
-    background: color-mix(in srgb, rgb(var(--v-theme-on-surface)) 7%, rgb(var(--v-theme-surface)));
-}
-
-.value--low .value-bar {
-    background: color-mix(in srgb, rgb(var(--v-theme-on-surface)) 14%, transparent);
-}
-
 :deep(.v-theme--GPIOViewerThemeDark) .value--high {
+    color: #fef2f2;
+    background: #991b1b;
+    border-color: #f87171;
+}
+
+:deep(.v-theme--GPIOViewerThemeDark) .value--high .value-bar {
+    background: #dc2626;
+}
+
+:deep(.v-theme--GPIOViewerThemeDark) .value--low {
     color: #ecfdf5;
     background: #047857;
     border-color: #34d399;
 }
 
-:deep(.v-theme--GPIOViewerThemeDark) .value--high .value-bar {
+:deep(.v-theme--GPIOViewerThemeDark) .value--low .value-bar {
     background: #059669;
-}
-
-:deep(.v-theme--GPIOViewerThemeDark) .value--low {
-    color: #cbd5e1;
-    background: #475569;
 }
 
 .value--active .value-bar,
