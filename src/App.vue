@@ -12,7 +12,7 @@ const store = gpioStore();
 const drawerOpen = ref(false);
 const maxLastPinValuesStored = 100;
 const router = useRouter()
-const { isDarkTheme, loadSavedTheme, toggleTheme } = useAppTheme();
+const { currentThemeName, isDarkTheme, loadSavedTheme, toggleTheme } = useAppTheme();
 
 store.WebApplicationRelease = "2.2.7";
 
@@ -30,7 +30,18 @@ onMounted(() => {
 });
 
 function goToTutorial() {
+  drawerOpen.value = false;
   window.open('https://youtu.be/JJzRXcQrl3I', '_blank');
+}
+
+function navigateToRoute(routeName: string) {
+  drawerOpen.value = false;
+  router.push({ name: routeName });
+}
+
+function handleThemeToggle() {
+  toggleTheme();
+  drawerOpen.value = false;
 }
 
 function addLastPinValues(states: PinStateMap) {
@@ -207,7 +218,7 @@ async function fetchSamplingInterval() {
 </script>
 
 <template>
-  <v-layout>
+  <v-layout :theme="currentThemeName">
     <div v-if="localNetworkAdressKnown">
 
       <v-app-bar color="primary" rounded elevated density="compact">
@@ -216,23 +227,31 @@ async function fetchSamplingInterval() {
           <v-app-bar-nav-icon @click="drawerOpen = !drawerOpen"></v-app-bar-nav-icon>
         </template>
         <RouterView name="AppBar" />
+        <v-spacer></v-spacer>
+        <v-tooltip location="bottom">
+          <template #activator="{ props }">
+            <v-btn
+              v-bind="props"
+              icon
+              :aria-label="isDarkTheme ? 'Switch to light theme' : 'Switch to dark theme'"
+              @click="handleThemeToggle"
+            >
+              <v-icon :icon="isDarkTheme ? 'mdi-weather-night' : 'mdi-white-balance-sunny'"></v-icon>
+            </v-btn>
+          </template>
+          <span>{{ isDarkTheme ? 'Dark Theme' : 'Light Theme' }}</span>
+        </v-tooltip>
 
       </v-app-bar>
 
       <v-navigation-drawer color="primary" v-model="drawerOpen" temporary>
         <v-list-item title="GPIOViewer" :subtitle="'v' + store.GPIOViewerRelease"></v-list-item>
         <v-divider></v-divider>
-        <v-list-item link title="About" @click="router.push({ name: 'about' })"></v-list-item>
-        <v-list-item link title="GPIOViewer" @click="router.push({ name: 'gpioview' })"></v-list-item>
-        <v-list-item link title="ESP32 Information" @click="router.push({ name: 'espinfo' })"></v-list-item>
-        <v-list-item link title="Memory Map" @click="router.push({ name: 'memorymap' })"></v-list-item>
-        <v-list-item link title="Pin Data Graph" @click="router.push({ name: 'pinplotter' })"></v-list-item>
-        <v-list-item
-          link
-          :title="isDarkTheme ? 'Light Theme' : 'Dark Theme'"
-          :prepend-icon="isDarkTheme ? 'mdi-white-balance-sunny' : 'mdi-weather-night'"
-          @click="toggleTheme"
-        ></v-list-item>
+        <v-list-item link title="About" @click="navigateToRoute('about')"></v-list-item>
+        <v-list-item link title="GPIOViewer" @click="navigateToRoute('gpioview')"></v-list-item>
+        <v-list-item link title="ESP32 Information" @click="navigateToRoute('espinfo')"></v-list-item>
+        <v-list-item link title="Memory Map" @click="navigateToRoute('memorymap')"></v-list-item>
+        <v-list-item link title="Pin Data Graph" @click="navigateToRoute('pinplotter')"></v-list-item>
         <v-divider></v-divider>
         <v-list-item link title="Tutorial" @click="goToTutorial()" append-icon="mdi-open-in-new"></v-list-item>
         <template v-slot:append>
@@ -243,7 +262,7 @@ async function fetchSamplingInterval() {
         </template>
       </v-navigation-drawer>
 
-      <v-main class="main">
+      <v-main class="main" :theme="currentThemeName" :class="`v-theme--${currentThemeName}`">
         <RouterView />
       </v-main>
       <v-bottom-navigation bg-color="secondary">

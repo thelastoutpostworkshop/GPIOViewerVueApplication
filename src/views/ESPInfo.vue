@@ -10,7 +10,6 @@ interface SummaryCard {
   caption: string;
   icon: string;
   accent: string;
-  tintLight: string;
   routeName?: string;
 }
 
@@ -257,7 +256,6 @@ const summaryCards = computed<SummaryCard[]>(() => {
     caption: flashMode(info.flash_mode),
     icon: "mdi-chip",
     accent: "#26a69a",
-    tintLight: "rgba(38, 166, 154, 0.12)",
     routeName: "memorymap"
   });
 
@@ -266,8 +264,7 @@ const summaryCards = computed<SummaryCard[]>(() => {
     value: info.cpu_frequency ? `${info.cpu_frequency} MHz` : "Unknown",
     caption: `${info.cores_count} core${info.cores_count === 1 ? "" : "s"}`,
     icon: "mdi-speedometer",
-    accent: "#ef6c00",
-    tintLight: "rgba(239, 108, 0, 0.12)"
+    accent: "#ef6c00"
   });
 
   if (info.temperature_c !== null) {
@@ -276,8 +273,7 @@ const summaryCards = computed<SummaryCard[]>(() => {
       value: formatTemperature(info.temperature_c),
       caption: "Internal sensor",
       icon: "mdi-thermometer",
-      accent: "#e53935",
-      tintLight: "rgba(229, 57, 53, 0.12)"
+      accent: "#e53935"
     });
   }
 
@@ -286,8 +282,7 @@ const summaryCards = computed<SummaryCard[]>(() => {
     value: formatMacAddress(info.mac),
     caption: "eFuse identifier",
     icon: "mdi-wifi",
-    accent: "#00838f",
-    tintLight: "rgba(0, 131, 143, 0.12)"
+    accent: "#00838f"
   });
 
   cards.push({
@@ -296,7 +291,6 @@ const summaryCards = computed<SummaryCard[]>(() => {
     caption: `${formatBytes(info.heap_size)} total`,
     icon: "mdi-memory",
     accent: "#8e24aa",
-    tintLight: "rgba(142, 36, 170, 0.12)",
     routeName: "memorymap"
   });
 
@@ -307,7 +301,6 @@ const summaryCards = computed<SummaryCard[]>(() => {
       caption: `${formatBytes(info.psram_size)} total`,
       icon: "mdi-server",
       accent: "#5c6bc0",
-      tintLight: "rgba(92, 107, 192, 0.12)",
       routeName: "memorymap"
     });
   }
@@ -317,8 +310,7 @@ const summaryCards = computed<SummaryCard[]>(() => {
     value: formatTime(info.up_time),
     caption: "Since last reset",
     icon: "mdi-clock-outline",
-    accent: "#3949ab",
-    tintLight: "rgba(57, 73, 171, 0.12)"
+    accent: "#3949ab"
   });
 
   return cards;
@@ -531,7 +523,7 @@ onMounted(() => {
               ]"
               :style="{
                 borderColor: card.accent,
-                background: card.tintLight
+                '--summary-card-accent': card.accent
               }"
             >
               <div class="summary-card__content">
@@ -650,17 +642,18 @@ onMounted(() => {
 }
 
 .summary-card {
+  background: color-mix(in srgb, var(--summary-card-accent) 10%, rgb(var(--v-theme-surface)));
   border-radius: 14px;
   border-left: 4px solid;
   padding: 1rem 1.1rem;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 1px 4px color-mix(in srgb, rgb(var(--v-theme-on-surface)) 8%, transparent);
   cursor: default;
 }
 
 .summary-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 6px 18px color-mix(in srgb, rgb(var(--v-theme-on-surface)) 12%, transparent);
 }
 
 .summary-card--interactive {
@@ -685,7 +678,7 @@ onMounted(() => {
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background-color: color-mix(in srgb, rgb(var(--v-theme-surface)) 72%, transparent);
+  background-color: color-mix(in srgb, var(--summary-card-accent) 12%, rgb(var(--v-theme-surface)));
 }
 
 .summary-card__body {

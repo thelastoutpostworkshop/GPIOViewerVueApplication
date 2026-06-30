@@ -215,8 +215,9 @@ test.describe('GPIOViewer mocked ESP32 smoke test', () => {
     await expect(page.locator('.value_right').filter({ hasText: 'High' })).toBeVisible()
     await expect(page.getByText('Free Heap:74 KB')).toBeVisible()
 
-    await clickDrawerItem(page, 'Dark Theme')
+    await page.getByRole('button', { name: 'Switch to dark theme' }).click()
     await expect(page.locator('.v-theme--GPIOViewerThemeDark').first()).toBeVisible()
+    await expect(page.locator('.main')).toHaveClass(/v-theme--GPIOViewerThemeDark/)
     await expect.poll(() => page.evaluate(() => localStorage.getItem('gpioviewer-theme'))).toBe('GPIOViewerThemeDark')
 
     await clickDrawerItem(page, 'ESP32 Information')
