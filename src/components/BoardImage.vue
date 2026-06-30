@@ -25,6 +25,8 @@ const wifiClass = computed(() => {
 });
 
 const pinsConf = ref<PinsConfiguration | undefined>();
+const activatingPins = ref<Set<number>>(new Set());
+const activationTimers = new Map<number, ReturnType<typeof setTimeout>>();
 const activeValuePins = computed(() => pinsConf.value?.pins.filter((pin) => Boolean(pin.displayValue)) ?? []);
 async function loadIndicators(): Promise<PinsConfiguration | undefined> {
     try {
@@ -78,19 +80,48 @@ function restorePinsState(newPinsConf: PinsConfiguration) {
 }
 onUnmounted(() => {
     store.pinsPreserved = pinsConf?.value ?? null;
+    clearActivationTimers();
 });
 
 function updatePinStates(newStates: PinStateMap, pinsConfiguration: PinsConfiguration) {
     Object.entries(newStates).forEach(([gpioId, pinState]) => {
         const pin = pinsConfiguration?.pins.find((position: Pins) => position.gpioid === parseInt(gpioId));
         if (pin) {
+            const hadActivity = Boolean(pin.displayValue);
+            const displayValue = getValueForPin(pinState);
             pin.color = getColorForPin(pinState);
-            pin.displayValue = getValueForPin(pinState);
+            pin.displayValue = displayValue;
             pin.displayBarValue = getBarValue(pinState);
             pin.displayType = getPinType(pinState);
             pin.type = pinState.t;
+            if (!hadActivity && displayValue) {
+                triggerPinActivation(pin.gpioid);
+            }
         }
     });
+}
+
+function triggerPinActivation(gpioid: number) {
+    const existingTimer = activationTimers.get(gpioid);
+    if (existingTimer) {
+        clearTimeout(existingTimer);
+    }
+
+    const nextActivatingPins = new Set(activatingPins.value);
+    nextActivatingPins.add(gpioid);
+    activatingPins.value = nextActivatingPins;
+
+    activationTimers.set(gpioid, setTimeout(() => {
+        const remainingActivatingPins = new Set(activatingPins.value);
+        remainingActivatingPins.delete(gpioid);
+        activatingPins.value = remainingActivatingPins;
+        activationTimers.delete(gpioid);
+    }, 700));
+}
+
+function clearActivationTimers() {
+    activationTimers.forEach((timer) => clearTimeout(timer));
+    activationTimers.clear();
 }
 
 watch(
@@ -217,6 +248,10 @@ function getValueFillClass(pin: Pins): string {
     return 'value--fill-from-left';
 }
 
+function isPinActivating(gpioid: number): boolean {
+    return activatingPins.value.has(gpioid);
+}
+
 
 </script>
 
@@ -224,7 +259,8 @@ function getValueFillClass(pin: Pins): string {
     <div v-if="board" class="board-container">
         <img v-if="board.image" :src="board.image" class="board-image"
             :style="{ 'max-width': store.magnifyImage + 'vw', 'max-height': store.magnifyImage + 'vh' }" />
-        <div v-if="pinsConf" v-for="pin in pinsConf.pins" :key="pin.gpioid" class="indicator"
+        <div v-if="pinsConf" v-for="pin in pinsConf.pins" :key="pin.gpioid"
+            :class="['indicator', { 'indicator--activating': isPinActivating(pin.gpioid) }]"
             :style="{ top: pin.top + '%', left: pin.left + '%', width: pinsConf.settings.pinWidth + '%', height: pinsConf.settings.pinHeight + '%', backgroundColor: pin.color }"
             :id="`gpio${pin.gpioid}`" @click="showPinInfo(pin)">
             <div v-if="store.pinTypeDisplay === 0" class="non-clickable"
@@ -245,7 +281,8 @@ function getValueFillClass(pin: Pins): string {
             'value value_right': pin.valueJustify === -1,
             'value_vertical': pin.valueJustify === -2,
             [getValueStateClass(pin)]: true,
-            [getValueFillClass(pin)]: true
+            [getValueFillClass(pin)]: true,
+            'value--activating': isPinActivating(pin.gpioid)
         }" :style="{
             top: getTopPosition(pin) + '%',
             left: getLeftPosition(pin) + '%',
@@ -356,6 +393,14 @@ function getValueFillClass(pin: Pins): string {
     line-height: 1;
 }
 
+.indicator--activating {
+    animation: pin-activation-pulse 700ms ease-out;
+}
+
+.indicator--activating .non-clickable {
+    animation: pin-identification-activation 700ms ease-out;
+}
+
 :deep(.v-theme--GPIOViewerThemeDark) .indicator {
     color: #111827;
     border-color: color-mix(in srgb, rgb(var(--v-theme-surface)) 72%, transparent);
@@ -423,6 +468,10 @@ function getValueFillClass(pin: Pins): string {
 .value__label {
     position: relative;
     z-index: 1;
+}
+
+.value--activating {
+    animation: value-activation-pulse 700ms ease-out;
 }
 
 .value .value-bar,
@@ -519,5 +568,59 @@ function getValueFillClass(pin: Pins): string {
     height: var(--vertical-bar-height, 10%);
     width: var(--vertical-bar-width, 10%);
     /* Default height if not set by Vue */
+}
+
+@keyframes pin-activation-pulse {
+    0% {
+        transform: translate(-50%, -50%) scale(0.82);
+        box-shadow:
+            0 0 0 0 rgba(96, 165, 250, 0.64),
+            0 2px 6px rgba(15, 23, 42, 0.38),
+            inset 0 0 0 1px rgba(255, 255, 255, 0.42);
+    }
+
+    45% {
+        transform: translate(-50%, -50%) scale(1.2);
+        box-shadow:
+            0 0 0 8px rgba(96, 165, 250, 0.2),
+            0 4px 12px rgba(15, 23, 42, 0.34),
+            inset 0 0 0 1px rgba(255, 255, 255, 0.42);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        box-shadow:
+            0 0 0 14px rgba(96, 165, 250, 0),
+            0 2px 6px rgba(15, 23, 42, 0.38),
+            inset 0 0 0 1px rgba(255, 255, 255, 0.42);
+    }
+}
+
+@keyframes pin-identification-activation {
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    35% {
+        opacity: 0.62;
+    }
+}
+
+@keyframes value-activation-pulse {
+    0% {
+        filter: brightness(1.18);
+        outline: 0 solid rgba(96, 165, 250, 0.52);
+    }
+
+    45% {
+        filter: brightness(1.08);
+        outline: 4px solid rgba(96, 165, 250, 0.22);
+    }
+
+    100% {
+        filter: brightness(1);
+        outline: 0 solid rgba(96, 165, 250, 0);
+    }
 }
 </style>

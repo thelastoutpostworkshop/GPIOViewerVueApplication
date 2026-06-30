@@ -157,10 +157,12 @@ describe('BoardImage', () => {
 
     const pinElements = wrapper.findAll('.indicator')
     expect(pinElements[0].element.style.backgroundColor).toBe('rgb(255, 0, 0)')
+    expect(pinElements[0].classes()).toContain('indicator--activating')
     expect(pinElements[1].element.style.backgroundColor).not.toBe('')
 
     const horizontalValue = wrapper.find('.value')
     expect(horizontalValue.text()).toContain(DigitalValuesDisplay.High)
+    expect(horizontalValue.classes()).toContain('value--activating')
     expect(horizontalValue.classes()).toContain('value--high')
     expect(horizontalValue.classes()).toContain('value--fill-from-left')
     expect(horizontalValue.find('.value-bar').attributes('style')).toContain('width: 100%')
