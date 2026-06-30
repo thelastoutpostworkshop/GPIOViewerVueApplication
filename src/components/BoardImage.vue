@@ -196,6 +196,26 @@ function getValueBarStyle(pin: Pins) {
     }
 }
 
+function getValueStateClass(pin: Pins): string {
+    if (pin.displayValue === DigitalValuesDisplay.High) {
+        return 'value--high';
+    }
+    if (pin.displayValue === DigitalValuesDisplay.Low) {
+        return 'value--low';
+    }
+    return pin.displayValue ? 'value--active' : 'value--idle';
+}
+
+function getValueFillClass(pin: Pins): string {
+    if (pin.valueJustify === -2) {
+        return 'value--fill-vertical';
+    }
+    if (pin.valueJustify === -1) {
+        return 'value--fill-from-right';
+    }
+    return 'value--fill-from-left';
+}
+
 
 </script>
 
@@ -222,11 +242,12 @@ function getValueBarStyle(pin: Pins) {
         <div v-if="pinsConf" v-for="pin in pinsConf.pins" :key="pin.gpioid" :class="{
             'value': pin.valueJustify !== -1 && pin.valueJustify !== -2,
             'value value_right': pin.valueJustify === -1,
-            'value_vertical': pin.valueJustify === -2
+            'value_vertical': pin.valueJustify === -2,
+            [getValueStateClass(pin)]: true,
+            [getValueFillClass(pin)]: true
         }" :style="{
             top: getTopPosition(pin) + '%',
             left: getLeftPosition(pin) + '%',
-            backgroundColor: pinsConf.settings.valueBackGroundColor,
             '--pin-height': pinsConf.settings.pinHeight - 0.25 + '%',
             '--min-width': pinsConf.settings.valueMinWidth + '%',
             '--bar-height': pin.displayBarValue,
@@ -235,7 +256,7 @@ function getValueBarStyle(pin: Pins) {
             fontSize: pinsConf.settings.valueFontSize + 'dvb'
 
         }" :id="`gpio${pin.gpioid}`">
-            <div>{{ pin.displayValue }}</div>
+            <div class="value__label">{{ pin.displayValue }}</div>
             <div class="value-bar" :style="getValueBarStyle(pin)"></div>
         </div>
         <div v-if="pinsConf && pinsConf.stats" class="stats"
@@ -294,17 +315,24 @@ function getValueBarStyle(pin: Pins) {
 
 .stats {
     position: absolute;
-    background-color: rgba(8, 246, 24, 0.9);
+    background: color-mix(in srgb, rgb(var(--v-theme-surface)) 88%, transparent);
     font-family: "Lucida Console", monospace;
     font-weight: bold;
-    color: rgb(7, 7, 247);
+    color: rgb(var(--v-theme-on-surface));
     display: flex;
     align-items: center;
+    padding: 0.18em 0.45em;
+    border: 1px solid color-mix(in srgb, rgb(var(--v-theme-success)) 45%, transparent);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px color-mix(in srgb, rgb(var(--v-theme-on-background)) 14%, transparent);
+    line-height: 1.15;
+    white-space: nowrap;
 }
 
 .board-image {
     max-width: 80vw;
     max-height: 80vh;
+    display: block;
 }
 
 .indicator {
@@ -319,6 +347,13 @@ function getValueBarStyle(pin: Pins) {
     background-color: gray;
     font-family: "Lucida Console", monospace;
     font-weight: bold;
+    color: #ffffff;
+    border: 1px solid color-mix(in srgb, rgb(var(--v-theme-surface)) 72%, transparent);
+    box-shadow:
+        0 2px 5px color-mix(in srgb, rgb(var(--v-theme-on-background)) 20%, transparent),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.28);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.72);
+    line-height: 1;
 }
 
 .board-container {
@@ -330,12 +365,24 @@ function getValueBarStyle(pin: Pins) {
 .value,
 .value_right,
 .value_vertical {
+    --value-track-color: color-mix(in srgb, rgb(var(--v-theme-surface)) 70%, rgb(var(--v-theme-background)));
+    --value-fill-color: color-mix(in srgb, rgb(var(--v-theme-primary)) 82%, rgb(var(--v-theme-info)));
     position: absolute;
     font-family: "Lucida Console", monospace;
     font-weight: bold;
-    color: rgb(6, 23, 175);
+    color: rgb(var(--v-theme-on-primary));
     display: flex;
     align-items: center;
+    overflow: hidden;
+    background: var(--value-track-color);
+    border: 1px solid color-mix(in srgb, rgb(var(--v-theme-on-surface)) 12%, transparent);
+    border-radius: 999px;
+    box-shadow:
+        0 3px 10px color-mix(in srgb, rgb(var(--v-theme-on-background)) 18%, transparent),
+        inset 0 0 0 1px color-mix(in srgb, rgb(var(--v-theme-background)) 32%, transparent);
+    line-height: 1;
+    white-space: nowrap;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
 }
 
 .value,
@@ -346,6 +393,7 @@ function getValueBarStyle(pin: Pins) {
     /* Dynamically adjust based on settings */
     height: var(--pin-height);
     /* Dynamically adjust based on settings */
+    padding: 0 0.42em;
 }
 
 .value_right {
@@ -353,21 +401,64 @@ function getValueBarStyle(pin: Pins) {
     /* Align text to the right */
 }
 
+.value__label {
+    position: relative;
+    z-index: 1;
+}
+
 .value .value-bar,
 .value_right .value-bar {
     position: absolute;
     bottom: 0;
     height: 100%;
-    background-color: rgba(0, 0, 255, 0.25);
+    background: var(--value-fill-color);
+    border-radius: inherit;
     transition: width 0.5s ease;
     /* Smooth transition for width changes */
+}
+
+.value--fill-from-left .value-bar {
+    left: 0;
+}
+
+.value--fill-from-right .value-bar {
+    right: 0;
+}
+
+.value--high {
+    color: #052e16;
+    background: color-mix(in srgb, rgb(var(--v-theme-success)) 28%, rgb(var(--v-theme-surface)));
+    border-color: color-mix(in srgb, rgb(var(--v-theme-success)) 72%, transparent);
+}
+
+.value--high .value-bar {
+    background: color-mix(in srgb, rgb(var(--v-theme-success)) 38%, transparent);
+}
+
+.value--low {
+    color: color-mix(in srgb, rgb(var(--v-theme-on-surface)) 66%, transparent);
+    background: color-mix(in srgb, rgb(var(--v-theme-on-surface)) 7%, rgb(var(--v-theme-surface)));
+    text-shadow: none;
+}
+
+.value--low .value-bar {
+    background: color-mix(in srgb, rgb(var(--v-theme-on-surface)) 14%, transparent);
+}
+
+.value--active .value-bar,
+.value_vertical.value--active .value-bar {
+    background: var(--value-fill-color);
+}
+
+.value--idle {
+    opacity: 0.38;
 }
 
 .value_vertical {
     flex-direction: column;
     /* Stack children vertically */
-    justify-content: flex-start;
-    /* Align content to the top */
+    justify-content: flex-end;
+    padding: 0.2em 0.12em;
 }
 
 .value_vertical .value-bar {
@@ -376,7 +467,11 @@ function getValueBarStyle(pin: Pins) {
     height: var(--bar-height);
     /* Controlled by JavaScript */
     transition: height 0.5s ease;
-    background-color: rgba(0, 0, 255, 0.25);
+    background: var(--value-fill-color);
+    border-radius: inherit;
+    position: absolute;
+    left: 0;
+    bottom: 0;
 
     /* Smooth transition for height changes */
 }

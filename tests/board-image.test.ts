@@ -42,6 +42,18 @@ const indicators: PinsConfiguration = {
       displayBarValue: 0,
       displayType: '',
       type: PinType.Analog
+    },
+    {
+      gpioid: 7,
+      top: 50,
+      left: 20,
+      color: '',
+      valueJustify: -1,
+      valueFontSize: 1.2,
+      displayValue: '',
+      displayBarValue: 0,
+      displayType: '',
+      type: PinType.Analog
     }
   ],
   settings: {
@@ -136,7 +148,8 @@ describe('BoardImage', () => {
 
     store.currentStates = {
       5: { s: 255, t: PinType.Digital, v: 1 },
-      6: { s: 128, t: PinType.Analog, v: 512 }
+      6: { s: 128, t: PinType.Analog, v: 512 },
+      7: { s: 64, t: PinType.Analog, v: 251 }
     }
 
     await nextTick()
@@ -147,10 +160,19 @@ describe('BoardImage', () => {
 
     const horizontalValue = wrapper.find('.value')
     expect(horizontalValue.text()).toContain(DigitalValuesDisplay.High)
+    expect(horizontalValue.classes()).toContain('value--high')
+    expect(horizontalValue.classes()).toContain('value--fill-from-left')
     expect(horizontalValue.find('.value-bar').attributes('style')).toContain('width: 100%')
+
+    const leftSideValue = wrapper.find('.value_right')
+    expect(leftSideValue.text()).toContain('251')
+    expect(leftSideValue.classes()).toContain('value--fill-from-right')
+    expect(leftSideValue.find('.value-bar').attributes('style')).toContain('width: 25.098039215686274%')
 
     const verticalValue = wrapper.find('.value_vertical')
     expect(verticalValue.text()).toContain('512')
+    expect(verticalValue.classes()).toContain('value--active')
+    expect(verticalValue.classes()).toContain('value--fill-vertical')
     expect(verticalValue.find('.value-bar').attributes('style')).toContain('height: 50.19607843137255%')
   })
 
