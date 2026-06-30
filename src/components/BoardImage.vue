@@ -347,13 +347,20 @@ function getValueFillClass(pin: Pins): string {
     background-color: gray;
     font-family: "Lucida Console", monospace;
     font-weight: bold;
-    color: #ffffff;
-    border: 1px solid color-mix(in srgb, rgb(var(--v-theme-surface)) 72%, transparent);
+    color: #111827;
+    border: 1px solid rgba(15, 23, 42, 0.22);
+    box-shadow:
+        0 2px 6px rgba(15, 23, 42, 0.38),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.42);
+    line-height: 1;
+}
+
+:deep(.v-theme--GPIOViewerThemeDark) .indicator {
+    color: #111827;
+    border-color: color-mix(in srgb, rgb(var(--v-theme-surface)) 72%, transparent);
     box-shadow:
         0 2px 5px color-mix(in srgb, rgb(var(--v-theme-on-background)) 20%, transparent),
         inset 0 0 0 1px rgba(255, 255, 255, 0.28);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.72);
-    line-height: 1;
 }
 
 .board-container {
@@ -365,24 +372,35 @@ function getValueFillClass(pin: Pins): string {
 .value,
 .value_right,
 .value_vertical {
-    --value-track-color: color-mix(in srgb, rgb(var(--v-theme-surface)) 70%, rgb(var(--v-theme-background)));
-    --value-fill-color: color-mix(in srgb, rgb(var(--v-theme-primary)) 82%, rgb(var(--v-theme-info)));
+    --value-track-color: rgba(255, 255, 255, 0.9);
+    --value-fill-color: #bfdbfe;
     position: absolute;
     font-family: "Lucida Console", monospace;
     font-weight: bold;
-    color: rgb(var(--v-theme-on-primary));
+    color: #111827;
     display: flex;
     align-items: center;
     overflow: hidden;
     background: var(--value-track-color);
-    border: 1px solid color-mix(in srgb, rgb(var(--v-theme-on-surface)) 12%, transparent);
+    border: 1px solid rgba(15, 23, 42, 0.16);
     border-radius: 999px;
+    box-shadow:
+        0 3px 10px rgba(15, 23, 42, 0.18),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.75);
+    line-height: 1;
+    white-space: nowrap;
+}
+
+:deep(.v-theme--GPIOViewerThemeDark) .value,
+:deep(.v-theme--GPIOViewerThemeDark) .value_right,
+:deep(.v-theme--GPIOViewerThemeDark) .value_vertical {
+    --value-track-color: #64748b;
+    --value-fill-color: #2563eb;
+    color: #f8fafc;
+    border-color: color-mix(in srgb, rgb(var(--v-theme-on-surface)) 12%, transparent);
     box-shadow:
         0 3px 10px color-mix(in srgb, rgb(var(--v-theme-on-background)) 18%, transparent),
         inset 0 0 0 1px color-mix(in srgb, rgb(var(--v-theme-background)) 32%, transparent);
-    line-height: 1;
-    white-space: nowrap;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
 }
 
 .value,
@@ -427,22 +445,36 @@ function getValueFillClass(pin: Pins): string {
 
 .value--high {
     color: #052e16;
-    background: color-mix(in srgb, rgb(var(--v-theme-success)) 28%, rgb(var(--v-theme-surface)));
-    border-color: color-mix(in srgb, rgb(var(--v-theme-success)) 72%, transparent);
+    background: #86efac;
+    border-color: #16a34a;
 }
 
 .value--high .value-bar {
-    background: color-mix(in srgb, rgb(var(--v-theme-success)) 38%, transparent);
+    background: #22c55e;
 }
 
 .value--low {
-    color: color-mix(in srgb, rgb(var(--v-theme-on-surface)) 66%, transparent);
+    color: #475569;
     background: color-mix(in srgb, rgb(var(--v-theme-on-surface)) 7%, rgb(var(--v-theme-surface)));
-    text-shadow: none;
 }
 
 .value--low .value-bar {
     background: color-mix(in srgb, rgb(var(--v-theme-on-surface)) 14%, transparent);
+}
+
+:deep(.v-theme--GPIOViewerThemeDark) .value--high {
+    color: #ecfdf5;
+    background: #047857;
+    border-color: #34d399;
+}
+
+:deep(.v-theme--GPIOViewerThemeDark) .value--high .value-bar {
+    background: #059669;
+}
+
+:deep(.v-theme--GPIOViewerThemeDark) .value--low {
+    color: #cbd5e1;
+    background: #475569;
 }
 
 .value--active .value-bar,
