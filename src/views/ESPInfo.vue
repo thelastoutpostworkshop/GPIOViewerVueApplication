@@ -2,7 +2,6 @@
 import { ref, computed, onMounted } from 'vue';
 import { getAPIUrl, formatBytes, formatHz, formatMacAddress, formatTime } from "@/functions";
 import type { ESPInfo } from "@/types/types";
-import { useTheme } from 'vuetify';
 import { RouterLink } from 'vue-router';
 
 interface SummaryCard {
@@ -12,7 +11,6 @@ interface SummaryCard {
   icon: string;
   accent: string;
   tintLight: string;
-  tintDark: string;
   routeName?: string;
 }
 
@@ -31,8 +29,6 @@ interface InfoSection {
 const espInfo = ref<ESPInfo>();
 const isLoading = ref(true);
 const numberFormatter = new Intl.NumberFormat();
-const theme = useTheme();
-const isDarkTheme = computed(() => theme.global.current.value?.dark ?? false);
 
 function coerceNumber(value: unknown): number {
   if (typeof value === "number") {
@@ -262,7 +258,6 @@ const summaryCards = computed<SummaryCard[]>(() => {
     icon: "mdi-chip",
     accent: "#26a69a",
     tintLight: "rgba(38, 166, 154, 0.12)",
-    tintDark: "linear-gradient(135deg, rgba(77, 210, 195, 0.65), rgba(128, 222, 234, 0.55))",
     routeName: "memorymap"
   });
 
@@ -272,8 +267,7 @@ const summaryCards = computed<SummaryCard[]>(() => {
     caption: `${info.cores_count} core${info.cores_count === 1 ? "" : "s"}`,
     icon: "mdi-speedometer",
     accent: "#ef6c00",
-    tintLight: "rgba(239, 108, 0, 0.12)",
-    tintDark: "linear-gradient(135deg, rgba(255, 193, 120, 0.7), rgba(255, 214, 153, 0.6))"
+    tintLight: "rgba(239, 108, 0, 0.12)"
   });
 
   if (info.temperature_c !== null) {
@@ -283,8 +277,7 @@ const summaryCards = computed<SummaryCard[]>(() => {
       caption: "Internal sensor",
       icon: "mdi-thermometer",
       accent: "#e53935",
-      tintLight: "rgba(229, 57, 53, 0.12)",
-      tintDark: "linear-gradient(135deg, rgba(244, 67, 54, 0.7), rgba(255, 138, 101, 0.6))"
+      tintLight: "rgba(229, 57, 53, 0.12)"
     });
   }
 
@@ -294,8 +287,7 @@ const summaryCards = computed<SummaryCard[]>(() => {
     caption: "eFuse identifier",
     icon: "mdi-wifi",
     accent: "#00838f",
-    tintLight: "rgba(0, 131, 143, 0.12)",
-    tintDark: "linear-gradient(135deg, rgba(0, 172, 193, 0.7), rgba(77, 208, 225, 0.55))"
+    tintLight: "rgba(0, 131, 143, 0.12)"
   });
 
   cards.push({
@@ -305,7 +297,6 @@ const summaryCards = computed<SummaryCard[]>(() => {
     icon: "mdi-memory",
     accent: "#8e24aa",
     tintLight: "rgba(142, 36, 170, 0.12)",
-    tintDark: "linear-gradient(135deg, rgba(186, 104, 200, 0.65), rgba(224, 176, 255, 0.55))",
     routeName: "memorymap"
   });
 
@@ -317,7 +308,6 @@ const summaryCards = computed<SummaryCard[]>(() => {
       icon: "mdi-server",
       accent: "#5c6bc0",
       tintLight: "rgba(92, 107, 192, 0.12)",
-      tintDark: "linear-gradient(135deg, rgba(153, 162, 255, 0.65), rgba(196, 208, 255, 0.55))",
       routeName: "memorymap"
     });
   }
@@ -328,8 +318,7 @@ const summaryCards = computed<SummaryCard[]>(() => {
     caption: "Since last reset",
     icon: "mdi-clock-outline",
     accent: "#3949ab",
-    tintLight: "rgba(57, 73, 171, 0.12)",
-    tintDark: "linear-gradient(135deg, rgba(96, 125, 255, 0.6), rgba(129, 140, 248, 0.55))"
+    tintLight: "rgba(57, 73, 171, 0.12)"
   });
 
   return cards;
@@ -516,7 +505,7 @@ onMounted(() => {
 
 <template>
   <div v-if="!isLoading && espInfo" class="esp-info-dashboard">
-    <section :class="['hero', { 'hero--dark': isDarkTheme }]">
+    <section class="hero">
       <div class="hero__title">ESP32 Runtime Overview</div>
       <div class="hero__subtitle">
         Live diagnostics for the board running GPIOViewer.
@@ -538,11 +527,11 @@ onMounted(() => {
               flat
               :class="[
                 'summary-card',
-                { 'summary-card--dark': isDarkTheme, 'summary-card--interactive': Boolean(card.routeName) }
+                { 'summary-card--interactive': Boolean(card.routeName) }
               ]"
               :style="{
                 borderColor: card.accent,
-                background: isDarkTheme ? card.tintDark : card.tintLight
+                background: card.tintLight
               }"
             >
               <div class="summary-card__content">
@@ -608,36 +597,27 @@ onMounted(() => {
 }
 
 .hero {
-  background: linear-gradient(120deg, rgba(57, 73, 171, 0.12), rgba(92, 107, 192, 0.18));
+  background: linear-gradient(
+    120deg,
+    color-mix(in srgb, rgb(var(--v-theme-primary)) 14%, rgb(var(--v-theme-surface))),
+    color-mix(in srgb, rgb(var(--v-theme-info)) 12%, rgb(var(--v-theme-surface)))
+  );
   border-radius: 16px;
   padding: 1.5rem 1.75rem;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  box-shadow: inset 0 0 0 1px rgba(57, 73, 171, 0.15);
-}
-
-.hero--dark {
-  background: linear-gradient(135deg, rgba(79, 129, 255, 0.65), rgba(63, 81, 181, 0.45));
-  box-shadow: inset 0 0 0 1px rgba(129, 140, 248, 0.55);
-}
-
-.hero--dark .hero__title {
-  color: #f1f5f9 !important;
-}
-
-.hero--dark .hero__subtitle {
-  color: #cbd5f5 !important;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, rgb(var(--v-theme-primary)) 16%, transparent);
 }
 
 .hero__title {
   font-size: 1.3rem;
   font-weight: 600;
-  color: #1f2933;
+  color: rgb(var(--v-theme-on-surface));
 }
 
 .hero__subtitle {
-  color: #4a5568;
+  color: color-mix(in srgb, rgb(var(--v-theme-on-surface)) 72%, transparent);
   font-size: 0.95rem;
 }
 
@@ -705,7 +685,7 @@ onMounted(() => {
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background-color: rgba(255, 255, 255, 0.65);
+  background-color: color-mix(in srgb, rgb(var(--v-theme-surface)) 72%, transparent);
 }
 
 .summary-card__body {
@@ -717,7 +697,7 @@ onMounted(() => {
 .summary-card__title {
   font-size: 0.85rem;
   font-weight: 600;
-  color: #4a5568;
+  color: color-mix(in srgb, rgb(var(--v-theme-on-surface)) 72%, transparent);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -725,29 +705,12 @@ onMounted(() => {
 .summary-card__value {
   font-size: 1.2rem;
   font-weight: 600;
-  color: #1f2933;
+  color: rgb(var(--v-theme-on-surface));
 }
 
 .summary-card__caption {
   font-size: 0.8rem;
-  color: #5f6b7a;
-}
-
-.summary-card--dark {
-  color: #f8fafc;
-}
-
-.summary-card--dark .summary-card__title,
-.summary-card--dark .summary-card__value {
-  color: #ffffff;
-}
-
-.summary-card--dark .summary-card__caption {
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.summary-card--dark .summary-card__icon {
-  background-color: rgba(15, 23, 42, 0.35);
+  color: color-mix(in srgb, rgb(var(--v-theme-on-surface)) 68%, transparent);
 }
 
 .info-sections {
@@ -757,10 +720,11 @@ onMounted(() => {
 }
 
 .info-section {
-  background-color: #f8f9fd;
+  background-color: rgb(var(--v-theme-surface));
   border-radius: 16px;
   padding: 1.25rem 1.35rem;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 8px 24px color-mix(in srgb, rgb(var(--v-theme-on-surface)) 10%, transparent);
+  color: rgb(var(--v-theme-on-surface));
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -771,7 +735,7 @@ onMounted(() => {
   align-items: center;
   gap: 0.55rem;
   font-weight: 600;
-  color: #27364b;
+  color: rgb(var(--v-theme-on-surface));
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -793,7 +757,7 @@ onMounted(() => {
 .info-list__row dt {
   font-size: 0.85rem;
   font-weight: 600;
-  color: #475569;
+  color: color-mix(in srgb, rgb(var(--v-theme-on-surface)) 70%, transparent);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -801,7 +765,7 @@ onMounted(() => {
 .info-list__row dd {
   margin: 0;
   font-size: 0.95rem;
-  color: #1f2933;
+  color: rgb(var(--v-theme-on-surface));
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -812,7 +776,7 @@ onMounted(() => {
 }
 
 .info-list__row dd small {
-  color: #64748b;
+  color: color-mix(in srgb, rgb(var(--v-theme-on-surface)) 62%, transparent);
   font-size: 0.75rem;
 }
 
@@ -827,69 +791,12 @@ onMounted(() => {
 .error-state__title {
   font-size: 1.05rem;
   font-weight: 600;
-  color: #1f2933;
+  color: rgb(var(--v-theme-on-surface));
 }
 
 .error-state__caption {
-  color: #5f6b7a;
+  color: color-mix(in srgb, rgb(var(--v-theme-on-surface)) 68%, transparent);
   font-size: 0.9rem;
-}
-
-:deep(.v-theme--dark) .esp-info-dashboard {
-  color: #e2e8f0;
-}
-
-:deep(.v-theme--dark) .summary-card {
-  background: rgba(30, 41, 59, 0.85);
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.55);
-}
-
-:deep(.v-theme--dark) .summary-card__title {
-  color: #ffffff !important;
-}
-
-:deep(.v-theme--dark) .summary-card__value {
-  color: #f8fafc !important;
-}
-
-:deep(.v-theme--dark) .summary-card__caption {
-  color: #f8fafc !important;
-  opacity: 0.92;
-}
-
-:deep(.v-theme--dark) .summary-card__body {
-  color: #ffffff;
-  text-shadow: 0 1px 2px rgba(10, 19, 38, 0.45);
-}
-
-:deep(.v-theme--dark) .summary-card__icon {
-  background-color: rgba(241, 245, 249, 0.22);
-}
-
-:deep(.v-theme--dark) .info-section {
-  background-color: rgba(36, 48, 74, 0.78);
-  box-shadow: 0 16px 36px rgba(8, 13, 23, 0.6);
-  border: 1px solid rgba(148, 163, 184, 0.18);
-}
-
-:deep(.v-theme--dark) .info-section__header {
-  color: #e2e8f0 !important;
-}
-
-:deep(.v-theme--dark) .info-list__row dt {
-  color: #d1d9ff;
-}
-
-:deep(.v-theme--dark) .info-list__row dd {
-  color: #f9fbff;
-}
-
-:deep(.v-theme--dark) .info-list__row dd small {
-  color: #c7cffb;
-}
-
-:deep(.v-theme--dark) .error-state__title {
-  color: #e2e8f0;
 }
 
 @media (max-width: 640px) {

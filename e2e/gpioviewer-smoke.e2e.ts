@@ -172,6 +172,25 @@ async function emitGpioState(page: Page, value: number) {
   }, value)
 }
 
+async function clickDrawerItem(page: Page, label: string) {
+  const item = page.getByText(label, { exact: true })
+  const box = await item.boundingBox().catch(() => null)
+  const viewport = page.viewportSize()
+  const isInViewport = Boolean(
+    box &&
+    viewport &&
+    box.x < viewport.width &&
+    box.x + box.width > 0 &&
+    box.y < viewport.height &&
+    box.y + box.height > 0
+  )
+
+  if (!isInViewport) {
+    await page.locator('.v-app-bar .v-btn').first().click()
+  }
+  await item.dispatchEvent('click')
+}
+
 test.describe('GPIOViewer mocked ESP32 smoke test', () => {
   test('boots, connects to mocked events, renders GPIO activity, and navigates', async ({ page }) => {
     const consoleErrors: string[] = []
@@ -196,17 +215,20 @@ test.describe('GPIOViewer mocked ESP32 smoke test', () => {
     await expect(page.locator('.value_right').filter({ hasText: 'High' })).toBeVisible()
     await expect(page.getByText('Free Heap:74 KB')).toBeVisible()
 
-    await page.locator('.v-app-bar .v-btn').first().click()
-    await page.getByText('Dark Theme', { exact: true }).click()
+    await clickDrawerItem(page, 'Dark Theme')
     await expect(page.locator('.v-theme--GPIOViewerThemeDark').first()).toBeVisible()
     await expect.poll(() => page.evaluate(() => localStorage.getItem('gpioviewer-theme'))).toBe('GPIOViewerThemeDark')
 
-    await page.getByText('About', { exact: true }).click()
+    await clickDrawerItem(page, 'ESP32 Information')
+    await expect(page.getByText('ESP32 Runtime Overview')).toBeVisible()
+    await expect(page.locator('.info-section').first()).toHaveCSS('background-color', 'rgb(30, 41, 59)')
+
+    await clickDrawerItem(page, 'About')
     await expect(page.getByText('Web application v2.2.7')).toBeVisible()
 
-    await page.locator('.v-app-bar .v-btn').first().click()
-    await page.getByText('Memory Map', { exact: true }).click()
+    await clickDrawerItem(page, 'Memory Map')
     await expect(page.getByText('app0', { exact: true })).toBeVisible()
+    await expect(page.locator('.memory-pane').first()).toHaveCSS('background-color', 'rgb(30, 41, 59)')
 
     expect(consoleErrors).toEqual([])
     expect(pageErrors).toEqual([])
