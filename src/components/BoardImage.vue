@@ -373,8 +373,8 @@ function getValueFillClass(pin: Pins): string {
 .value,
 .value_right,
 .value_vertical {
-    --value-track-color: rgba(255, 255, 255, 0.9);
-    --value-fill-color: #bfdbfe;
+    --value-track-color: rgba(248, 250, 252, 0.94);
+    --value-fill-color: #60a5fa;
     position: absolute;
     font-family: "Lucida Console", monospace;
     font-weight: bold;
