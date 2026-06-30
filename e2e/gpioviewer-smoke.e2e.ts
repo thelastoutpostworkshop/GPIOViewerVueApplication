@@ -197,6 +197,10 @@ test.describe('GPIOViewer mocked ESP32 smoke test', () => {
     await expect(page.getByText('Free Heap:74 KB')).toBeVisible()
 
     await page.locator('.v-app-bar .v-btn').first().click()
+    await page.getByText('Dark Theme', { exact: true }).click()
+    await expect(page.locator('.v-theme--GPIOViewerThemeDark').first()).toBeVisible()
+    await expect.poll(() => page.evaluate(() => localStorage.getItem('gpioviewer-theme'))).toBe('GPIOViewerThemeDark')
+
     await page.getByText('About', { exact: true }).click()
     await expect(page.getByText('Web application v2.2.7')).toBeVisible()
 

@@ -1,38 +1,31 @@
 <script setup lang="ts">
-import { RouterLink, RouterView, useRouter } from 'vue-router'
+import { RouterView, useRouter } from 'vue-router'
 import { ref, computed, onMounted } from 'vue';
 import ParamsError from '@/components/ParamsError.vue';
 import type { Memory, PinStateMap, GPIOViewerRelease, SamplingInterval, PinMode, BoardPinsFunction } from "@/types/types";
 import type { BoardData } from "@/types/types";
 import { gpioStore } from '@/stores/gpiostore'
-import { getAPIUrl, getCookie, setCookie, themeCookie } from "@/functions";
-import { useTheme } from 'vuetify'
-import { darkThemeGPIO, lightThemeGPIO } from './main';
+import { getAPIUrl } from "@/functions";
+import { useAppTheme } from '@/composables/useAppTheme';
 
 const store = gpioStore();
 const drawerOpen = ref(false);
 const maxLastPinValuesStored = 100;
 const router = useRouter()
-const theme = useTheme();
+const { isDarkTheme, loadSavedTheme, toggleTheme } = useAppTheme();
 
 store.WebApplicationRelease = "2.2.7";
 
 declare var window: any;
-function getTheme() {
-  const theme_name = getCookie(themeCookie);
-  if(theme_name) {
-    theme.change(theme_name);
-  }
-}
 
 onMounted(() => {
+  loadSavedTheme();
   if (window.gpio_settings) {
     store.ipAddress = window.gpio_settings.ip;
     store.httpPort = window.gpio_settings.port;
     store.freeSketch = window.gpio_settings.freeSketchRam;
     console.log(window.gpio_settings);
     initEventSource();
-    getTheme();
   }
 });
 
@@ -211,12 +204,6 @@ async function fetchSamplingInterval() {
     console.error("Error fetching sampling interval:", error);
   }
 }
-function toggleTheme() {
-  const currentName = theme.global.name.value;
-  const nextTheme = currentName === darkThemeGPIO ? lightThemeGPIO : darkThemeGPIO;
-  theme.change(nextTheme);
-  setCookie(themeCookie,nextTheme);
-}
 </script>
 
 <template>
@@ -240,7 +227,12 @@ function toggleTheme() {
         <v-list-item link title="ESP32 Information" @click="router.push({ name: 'espinfo' })"></v-list-item>
         <v-list-item link title="Memory Map" @click="router.push({ name: 'memorymap' })"></v-list-item>
         <v-list-item link title="Pin Data Graph" @click="router.push({ name: 'pinplotter' })"></v-list-item>
-        <v-list-item link title="Toggle Theme" @click="toggleTheme"></v-list-item>
+        <v-list-item
+          link
+          :title="isDarkTheme ? 'Light Theme' : 'Dark Theme'"
+          :prepend-icon="isDarkTheme ? 'mdi-white-balance-sunny' : 'mdi-weather-night'"
+          @click="toggleTheme"
+        ></v-list-item>
         <v-divider></v-divider>
         <v-list-item link title="Tutorial" @click="goToTutorial()" append-icon="mdi-open-in-new"></v-list-item>
         <template v-slot:append>
@@ -269,5 +261,7 @@ function toggleTheme() {
   align-items: flex-start;
   justify-content: center;
   overflow: hidden;
+  background: rgb(var(--v-theme-background));
+  color: rgb(var(--v-theme-on-background));
 }
 </style>
