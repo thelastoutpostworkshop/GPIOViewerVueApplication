@@ -177,6 +177,7 @@ const pinDisplayValue = computed(() => props.pin?.displayValue || "No activity")
     background: rgb(var(--v-theme-surface));
     color: rgb(var(--v-theme-on-surface));
     overflow: hidden;
+    animation: pin-detail-enter 180ms ease-out;
 }
 
 .pin-detail__header {
@@ -186,6 +187,7 @@ const pinDisplayValue = computed(() => props.pin?.displayValue || "No activity")
     align-items: center;
     padding: 1rem 1rem 0.85rem;
     border-bottom: 1px solid color-mix(in srgb, rgb(var(--v-theme-on-surface)) 12%, transparent);
+    animation: pin-detail-content-enter 260ms ease-out both;
 }
 
 .pin-detail__logo {
@@ -235,6 +237,7 @@ const pinDisplayValue = computed(() => props.pin?.displayValue || "No activity")
     grid-template-columns: 92px minmax(0, 1fr);
     gap: 1rem;
     align-items: center;
+    animation: pin-detail-content-enter 320ms ease-out 70ms both;
 }
 
 .pin-type-visual {
@@ -271,6 +274,15 @@ const pinDisplayValue = computed(() => props.pin?.displayValue || "No activity")
     display: flex;
     flex-direction: column;
     gap: 0.55rem;
+    animation: pin-detail-content-enter 320ms ease-out both;
+}
+
+.pin-detail__section:nth-of-type(2) {
+    animation-delay: 130ms;
+}
+
+.pin-detail__section:nth-of-type(3) {
+    animation-delay: 190ms;
 }
 
 .function-list {
@@ -299,6 +311,30 @@ const pinDisplayValue = computed(() => props.pin?.displayValue || "No activity")
 @media (max-width: 460px) {
     .pin-detail__summary {
         grid-template-columns: 1fr;
+    }
+}
+
+@keyframes pin-detail-enter {
+    0% {
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes pin-detail-content-enter {
+    0% {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 </style>
