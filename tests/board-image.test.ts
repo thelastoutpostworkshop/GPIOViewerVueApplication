@@ -197,6 +197,17 @@ describe('BoardImage', () => {
     expect(pinElements[1].text()).toBe(PinDisplayTypeShort.Analog)
   })
 
+  it('opens pin details when a pin is clicked', async () => {
+    mockIndicatorFetch()
+    const { wrapper } = await mountBoardImage()
+
+    await wrapper.find('.indicator').trigger('click')
+    await nextTick()
+
+    const pinInfo = wrapper.findComponent({ name: 'PinInfo' })
+    expect(pinInfo.props('showPinInfo')).toBe(true)
+  })
+
   it('switches the connection feedback image from disconnected to connected', async () => {
     mockIndicatorFetch()
     const { wrapper, store } = await mountBoardImage()
