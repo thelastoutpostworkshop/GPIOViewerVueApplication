@@ -140,6 +140,7 @@ describe('BoardImage', () => {
     expect(pinElements[0].attributes('style')).toContain('width: 4%;')
     expect(pinElements[0].attributes('style')).toContain('height: 3%;')
     expect(pinElements[0].text()).toBe('5')
+    expect(wrapper.findAll('.value, .value_right, .value_vertical')).toHaveLength(0)
   })
 
   it('updates pin display values, colors, and value bars from store state', async () => {

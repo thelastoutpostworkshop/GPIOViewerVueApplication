@@ -25,6 +25,7 @@ const wifiClass = computed(() => {
 });
 
 const pinsConf = ref<PinsConfiguration | undefined>();
+const activeValuePins = computed(() => pinsConf.value?.pins.filter((pin) => Boolean(pin.displayValue)) ?? []);
 async function loadIndicators(): Promise<PinsConfiguration | undefined> {
     try {
         if (props.board) {
@@ -239,7 +240,7 @@ function getValueFillClass(pin: Pins): string {
                 {{ pinBroadMode(pin.type, pin.gpioid) }}
             </div>
         </div>
-        <div v-if="pinsConf" v-for="pin in pinsConf.pins" :key="pin.gpioid" :class="{
+        <div v-if="pinsConf" v-for="pin in activeValuePins" :key="pin.gpioid" :class="{
             'value': pin.valueJustify !== -1 && pin.valueJustify !== -2,
             'value value_right': pin.valueJustify === -1,
             'value_vertical': pin.valueJustify === -2,
