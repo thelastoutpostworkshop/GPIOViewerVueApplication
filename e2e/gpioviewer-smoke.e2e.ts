@@ -39,6 +39,11 @@ async function mockEsp32(page: Page) {
         this.readyState = FakeEventSource.CLOSED
       }
 
+      fail() {
+        this.readyState = FakeEventSource.CLOSED
+        this.dispatch('error', new Event('error'))
+      }
+
       dispatch(type: string, event: MessageEvent | Event) {
         Object.defineProperty(event, 'target', {
           value: this,
@@ -54,6 +59,11 @@ async function mockEsp32(page: Page) {
     window.__emitGpioEvent = (type: string, data?: string) => {
       for (const source of window.__gpioEventSources) {
         source.dispatch(type, new MessageEvent(type, { data }))
+      }
+    }
+    window.__disconnectGpioEvents = () => {
+      for (const source of window.__gpioEventSources) {
+        source.fail()
       }
     }
     window.EventSource = FakeEventSource as unknown as typeof EventSource
@@ -140,9 +150,26 @@ declare global {
   interface Window {
     __gpioEventSources: Array<{
       dispatch(type: string, event: MessageEvent | Event): void
+      fail(): void
     }>
     __emitGpioEvent(type: string, data?: string): void
+    __disconnectGpioEvents(): void
   }
+}
+
+async function bootMockedApp(page: Page) {
+  await mockEsp32(page)
+  await page.goto('/')
+
+  await expect(page.getByRole('img').first()).toBeVisible()
+  await expect(page.getByText('@250ms')).toBeVisible()
+  await expect.poll(() => page.evaluate(() => window.__gpioEventSources.length)).toBe(1)
+}
+
+async function emitGpioState(page: Page, value: number) {
+  await page.evaluate((gpioValue) => {
+    window.__emitGpioEvent('gpio-state', JSON.stringify({ 0: { s: gpioValue ? 255 : 0, t: 0, v: gpioValue } }))
+  }, value)
 }
 
 test.describe('GPIOViewer mocked ESP32 smoke test', () => {
@@ -159,12 +186,7 @@ test.describe('GPIOViewer mocked ESP32 smoke test', () => {
       pageErrors.push(error.message)
     })
 
-    await mockEsp32(page)
-    await page.goto('/')
-
-    await expect(page.getByRole('img').first()).toBeVisible()
-    await expect(page.getByText('@250ms')).toBeVisible()
-    await expect.poll(() => page.evaluate(() => window.__gpioEventSources.length)).toBe(1)
+    await bootMockedApp(page)
 
     await page.evaluate(() => {
       window.__emitGpioEvent('gpio-state', JSON.stringify({ 0: { s: 255, t: 0, v: 1 } }))
@@ -184,5 +206,50 @@ test.describe('GPIOViewer mocked ESP32 smoke test', () => {
 
     expect(consoleErrors).toEqual([])
     expect(pageErrors).toEqual([])
+  })
+
+  test('handles repeated GPIO updates and freeze state', async ({ page }) => {
+    await bootMockedApp(page)
+
+    await emitGpioState(page, 1)
+    await expect(page.locator('.value_right').filter({ hasText: 'High' })).toBeVisible()
+
+    await emitGpioState(page, 0)
+    await expect(page.locator('.value_right').filter({ hasText: 'Low' })).toBeVisible()
+
+    await emitGpioState(page, 1)
+    await page.getByRole('button', { name: /Freeze/ }).click()
+    await emitGpioState(page, 0)
+
+    await expect(page.locator('.value_right').filter({ hasText: 'High' })).toBeVisible()
+    await expect(page.locator('.value_right').filter({ hasText: 'Low' })).toHaveCount(0)
+
+    await page.getByRole('button', { name: /Freeze/ }).click()
+    await emitGpioState(page, 0)
+    await expect(page.locator('.value_right').filter({ hasText: 'Low' })).toBeVisible()
+  })
+
+  test('updates stats, disconnect feedback, and plotter history from events', async ({ page }) => {
+    await bootMockedApp(page)
+
+    await page.evaluate(() => {
+      window.__emitGpioEvent('gpio-state', JSON.stringify({ 0: { s: 255, t: 0, v: 1 } }))
+      window.__emitGpioEvent('gpio-state', JSON.stringify({ 0: { s: 0, t: 0, v: 0 } }))
+      window.__emitGpioEvent('free_heap', '73 KB')
+    })
+
+    await expect(page.getByText('Free Heap:73 KB')).toBeVisible()
+    await expect(page.locator('img.wifi-icon-light')).toHaveAttribute('src', /wifiicon/)
+
+    await page.evaluate(() => window.__disconnectGpioEvents())
+    await expect(page.locator('img.wifi-icon-light')).toHaveAttribute('src', /noconnection/)
+
+    await page.locator('.v-app-bar .v-btn').first().click()
+    await page.getByText('Pin Data Graph', { exact: true }).click()
+    await expect(page.getByText('Select any active GPIO pins')).toBeVisible()
+    await expect(page.locator('.v-chip').filter({ hasText: /^0$/ })).toBeVisible()
+
+    await page.getByRole('button', { name: 'Digital' }).click()
+    await expect(page.locator('canvas')).toBeVisible()
   })
 })
