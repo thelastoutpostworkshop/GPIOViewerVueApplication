@@ -474,6 +474,14 @@ function isPinActivating(gpioid: number): boolean {
     animation: value-activation-pulse 700ms ease-out;
 }
 
+.value--activating .value-bar {
+    animation: value-bar-activation-horizontal 700ms ease-out;
+}
+
+.value_vertical.value--activating .value-bar {
+    animation-name: value-bar-activation-vertical;
+}
+
 .value .value-bar,
 .value_right .value-bar {
     position: absolute;
@@ -487,10 +495,12 @@ function isPinActivating(gpioid: number): boolean {
 
 .value--fill-from-left .value-bar {
     left: 0;
+    transform-origin: left center;
 }
 
 .value--fill-from-right .value-bar {
     right: 0;
+    transform-origin: right center;
 }
 
 .value--high {
@@ -560,6 +570,7 @@ function isPinActivating(gpioid: number): boolean {
     position: absolute;
     left: 0;
     bottom: 0;
+    transform-origin: center bottom;
 
     /* Smooth transition for height changes */
 }
@@ -621,6 +632,34 @@ function isPinActivating(gpioid: number): boolean {
     100% {
         filter: brightness(1);
         outline: 0 solid rgba(96, 165, 250, 0);
+    }
+}
+
+@keyframes value-bar-activation-horizontal {
+    0% {
+        transform: scaleX(0);
+    }
+
+    70% {
+        transform: scaleX(1.04);
+    }
+
+    100% {
+        transform: scaleX(1);
+    }
+}
+
+@keyframes value-bar-activation-vertical {
+    0% {
+        transform: scaleY(0);
+    }
+
+    70% {
+        transform: scaleY(1.04);
+    }
+
+    100% {
+        transform: scaleY(1);
     }
 }
 </style>
