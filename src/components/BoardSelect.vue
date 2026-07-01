@@ -1,7 +1,6 @@
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
-import { VSelect } from 'vuetify/components';
+import { watch, onMounted } from 'vue';
 import { gpioStore } from '@/stores/gpiostore'
 
 import type { BoardData } from "../types/types";
@@ -23,7 +22,7 @@ const selectFirstBoardIfNoneSelected = () => {
 };
 
 // Watch for changes in boards and update currentBoard if necessary
-watch(() => store.currentBoard, (newBoard, oldBoard) => {
+watch(() => store.currentBoard, (newBoard) => {
     if (newBoard) {
         setCookie('selectedBoard', newBoard.name, 7); // Save for 7 days
     }
@@ -45,7 +44,14 @@ onMounted(() => {
 
 </script>
 <template>
-    <v-autocomplete bg-color="secondary" auto-select-first density="compact" hide-details  clearable :items="$props.boards"
+    <v-autocomplete class="board-select" bg-color="secondary" auto-select-first density="compact" hide-details clearable :items="$props.boards"
         item-title="name" v-model="store.currentBoard" return-object></v-autocomplete>
 </template>
+
+<style scoped>
+.board-select {
+    width: 100%;
+    min-width: 0;
+}
+</style>
   

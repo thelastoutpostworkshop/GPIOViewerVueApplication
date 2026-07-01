@@ -249,8 +249,9 @@ async function fetchSamplingInterval() {
             @click="drawerOpen = !drawerOpen"
           ></v-app-bar-nav-icon>
         </template>
-        <RouterView name="AppBar" />
-        <v-spacer></v-spacer>
+        <div class="app-bar-route">
+          <RouterView name="AppBar" />
+        </div>
         <v-tooltip location="bottom">
           <template #activator="{ props }">
             <v-btn
@@ -326,6 +327,14 @@ async function fetchSamplingInterval() {
 .app-bar--with-sidebar {
   margin-left: 256px;
   width: calc(100% - 256px) !important;
+}
+
+.app-bar-route {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-right: 8px;
 }
 
 .sidebar--full-height {
