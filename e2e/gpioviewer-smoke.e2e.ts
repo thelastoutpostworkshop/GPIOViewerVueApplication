@@ -233,6 +233,10 @@ test.describe('GPIOViewer mocked ESP32 smoke test', () => {
     await clickDrawerItem(page, 'Memory Map')
     await expect(page.getByText('app0', { exact: true })).toBeVisible()
     await expect(page.locator('.memory-pane').first()).toHaveCSS('background-color', 'rgb(30, 41, 59)')
+    const partitionBuilderLink = page.getByRole('link', { name: 'ESP32 partition builder' })
+    await expect(partitionBuilderLink).toHaveAttribute('href', /ESP32PartitionBuilder/)
+    await expect(partitionBuilderLink).toHaveAttribute('href', /flash=4/)
+    await expect(partitionBuilderLink).toHaveAttribute('href', /partitions=base64%3A/)
 
     expect(consoleErrors).toEqual([])
     expect(pageErrors).toEqual([])

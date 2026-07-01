@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from 'vue';
 import type { ESPInfo, ESPPartition } from "@/types/types";
 import { getAPIUrl, formatBytes } from "@/functions";
+import { buildPartitionBuilderUrl } from "@/partitionBuilder";
 
 const spiffs = "spiffs";
 const ffat = "ffat";
@@ -23,6 +24,7 @@ interface MemoryUsageOverview {
 }
 
 const espInfo = ref<ESPInfo>();
+const espPartitions = ref<ESPPartition[]>([]);
 const flashStackSegments = ref<FlashStackSegment[]>([]);
 const stackedColumnSegments = computed(() => [...flashStackSegments.value].reverse());
 const heapOverview = ref<MemoryUsageOverview | null>(null);
@@ -39,6 +41,9 @@ const flashSizeSummary = computed(() => {
   return `${formatted} • ${bytesLabel} bytes`;
 });
 const partitionTutorialUrl = "https://youtu.be/EuHxodrye6E";
+const partitionBuilderUrl = computed(() =>
+  buildPartitionBuilderUrl(espPartitions.value, espInfo.value?.flash_chip_size)
+);
 
 const partitionColorOverrides: Record<string, string> = {
   factory: "#f8b26a",
@@ -389,6 +394,7 @@ onMounted(async () => {
 
     if (espInfoData && espPartitionData) {
       espInfo.value = espInfoData;
+      espPartitions.value = espPartitionData;
       calculateMetrics(espInfoData, espPartitionData);
     }
   } catch (error) {
@@ -433,7 +439,7 @@ onMounted(async () => {
             See the
             <a :href="partitionTutorialUrl" target="_blank" rel="noopener" class="reclaim-link">partition tutorial</a>
             or try the
-            <a href="https://thelastoutpostworkshop.github.io/microcontroller_devkit/esp32partitionbuilder/" target="_blank" rel="noopener" class="reclaim-link">ESP32 partition builder</a>.
+            <a :href="partitionBuilderUrl" target="_blank" rel="noopener" class="reclaim-link">ESP32 partition builder</a>.
           </span>
         </v-alert>
 
