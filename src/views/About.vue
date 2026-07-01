@@ -99,7 +99,11 @@ function openExternal(url: string) {
   <v-container :class="['about-page', { 'about-page--dark': isDarkTheme }]" fluid>
     <div class="about-main">
       <div class="about-main__left">
-        <v-card :class="['about-hero', { 'about-hero--dark': isDarkTheme }]" elevation="12">
+        <v-card
+          :class="['about-hero', { 'about-hero--dark': isDarkTheme }]"
+          elevation="12"
+          :style="{ '--entry-index': 0 }"
+        >
           <div class="about-hero__badge">Open Source | ESP32</div>
           <h1 class="about-hero__title">GPIOViewer for ESP32</h1>
           <p class="about-hero__subtitle">
@@ -126,10 +130,11 @@ function openExternal(url: string) {
 
         <div class="about-actions-column">
           <v-card
-            v-for="action in leftActions"
+            v-for="(action, actionIndex) in leftActions"
             :key="`left-${action.title}`"
             class="about-action-card"
             elevation="8"
+            :style="{ '--entry-index': actionIndex + 1 }"
           >
             <v-card-item>
               <div class="about-action-card__header">
@@ -163,10 +168,11 @@ function openExternal(url: string) {
 
       <div class="about-actions-column">
         <v-card
-          v-for="action in actions"
+          v-for="(action, actionIndex) in actions"
           :key="action.title"
           class="about-action-card"
           elevation="8"
+          :style="{ '--entry-index': leftActions.length + actionIndex + 1 }"
         >
           <v-card-item>
             <div class="about-action-card__header">
@@ -233,6 +239,9 @@ function openExternal(url: string) {
   background: linear-gradient(135deg, rgba(57, 73, 171, 0.1), rgba(92, 107, 192, 0.16));
   box-shadow: 0 12px 36px rgba(15, 23, 42, 0.12);
   position: relative;
+  opacity: 0;
+  animation: about-card-enter 0.38s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--entry-index) * 55ms);
 }
 
 .about-hero--dark {
@@ -331,6 +340,21 @@ function openExternal(url: string) {
   border-radius: 20px;
   padding-bottom: 0.5rem;
   height: 100%;
+  opacity: 0;
+  animation: about-card-enter 0.38s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--entry-index) * 55ms);
+}
+
+@keyframes about-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .about-action-card__header {
@@ -471,6 +495,14 @@ function openExternal(url: string) {
   .about-main {
     grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
     align-items: stretch;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-hero,
+  .about-action-card {
+    opacity: 1;
+    animation: none;
   }
 }
 </style>
