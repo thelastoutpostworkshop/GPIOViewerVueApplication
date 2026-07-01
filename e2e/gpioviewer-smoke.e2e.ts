@@ -288,9 +288,12 @@ test.describe('GPIOViewer mocked ESP32 smoke test', () => {
     await expect(page.locator('.v-chip').filter({ hasText: /GPIO 0/ })).toBeVisible()
 
     await page.getByRole('button', { name: 'Digital' }).click()
-    await expect(page.locator('canvas')).toBeVisible()
+    await expect(page.getByRole('img', { name: 'Digital logic lanes' })).toBeVisible()
     await expect(page.getByText('Live')).toBeVisible()
     await expect(page.getByText('2 / 100 samples')).toBeVisible()
+
+    await page.getByRole('button', { name: 'Line chart' }).click()
+    await expect(page.locator('canvas')).toBeVisible()
 
     await page.getByRole('button', { name: 'Pause graph' }).click()
     await expect(page.getByText('Paused')).toBeVisible()
