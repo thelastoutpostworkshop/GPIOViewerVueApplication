@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { RouterView, useRouter } from 'vue-router'
+import { RouterView, useRoute, useRouter } from 'vue-router'
 import { ref, computed, onMounted, watch } from 'vue';
 import ParamsError from '@/components/ParamsError.vue';
 import type { Memory, PinStateMap, GPIOViewerRelease, SamplingInterval, PinMode, BoardPinsFunction } from "@/types/types";
@@ -26,6 +26,7 @@ const drawerOpen = computed({
 });
 const maxLastPinValuesStored = 100;
 const router = useRouter()
+const route = useRoute()
 const { currentThemeName, isDarkTheme, loadSavedTheme, toggleTheme } = useAppTheme();
 
 const resourceLinks = [
@@ -303,55 +304,93 @@ async function fetchSamplingInterval() {
 
       <v-navigation-drawer
         :key="lgAndUp ? 'desktop-drawer' : 'mobile-drawer'"
+        :class="['sidebar', { 'sidebar--full-height': lgAndUp && drawerOpen }]"
         color="surface"
         v-model="drawerOpen"
         :temporary="!lgAndUp"
         :permanent="lgAndUp"
-        :class="{ 'sidebar--full-height': lgAndUp && drawerOpen }"
       >
-        <v-list-item title="GPIOViewer" :subtitle="'v' + store.WebApplicationRelease">
-          <template v-if="lgAndUp" #prepend>
-            <v-btn
-              icon="mdi-menu"
-              variant="text"
-              size="small"
-              aria-label="Collapse sidebar"
-              @click="drawerOpen = false"
-            ></v-btn>
-          </template>
-        </v-list-item>
-        <v-divider></v-divider>
-        <v-list-item link title="GPIOViewer" @click="navigateToRoute('gpioview')"></v-list-item>
-        <v-list-item link title="ESP32 Information" @click="navigateToRoute('espinfo')"></v-list-item>
-        <v-list-item link title="Memory Map" @click="navigateToRoute('memorymap')"></v-list-item>
-        <v-list-item link title="Pin Data Graph" @click="navigateToRoute('pinplotter')"></v-list-item>
-        <v-divider></v-divider>
-        <v-list-subheader>Resources</v-list-subheader>
-        <v-list-item
-          v-for="item in resourceLinks"
-          :key="item.title"
-          link
-          :title="item.title"
-          :prepend-icon="item.icon"
-          append-icon="mdi-open-in-new"
-          @click="openExternalResource(item.url)"
-        ></v-list-item>
-        <v-list-item
-          link
-          title="About"
-          prepend-icon="mdi-information-outline"
-          @click="navigateToRoute('about')"
-        ></v-list-item>
-        <v-list-item
-          link
-          title="Maker Tools"
-          prepend-icon="mdi-tools"
-          @click="navigateToRoute('makertools')"
-        ></v-list-item>
+        <div class="sidebar-brand">
+          <div class="sidebar-brand__mark" aria-hidden="true">
+            <v-icon icon="mdi-chip"></v-icon>
+          </div>
+          <div class="sidebar-brand__copy">
+            <div class="sidebar-brand__title">GPIOViewer</div>
+            <div class="sidebar-brand__version">App v{{ store.WebApplicationRelease }}</div>
+          </div>
+          <v-btn
+            :icon="lgAndUp ? 'mdi-menu-open' : 'mdi-close'"
+            variant="text"
+            size="small"
+            class="sidebar-brand__action"
+            :aria-label="lgAndUp ? 'Collapse sidebar' : 'Close sidebar'"
+            @click="drawerOpen = false"
+          ></v-btn>
+        </div>
+
+        <v-list class="sidebar-nav" density="comfortable" nav>
+          <v-list-item
+            link
+            title="GPIOViewer"
+            prepend-icon="mdi-view-dashboard-outline"
+            :active="route.name === 'gpioview'"
+            @click="navigateToRoute('gpioview')"
+          ></v-list-item>
+          <v-list-item
+            link
+            title="ESP32 Information"
+            prepend-icon="mdi-chip"
+            :active="route.name === 'espinfo'"
+            @click="navigateToRoute('espinfo')"
+          ></v-list-item>
+          <v-list-item
+            link
+            title="Memory Map"
+            prepend-icon="mdi-memory"
+            :active="route.name === 'memorymap'"
+            @click="navigateToRoute('memorymap')"
+          ></v-list-item>
+          <v-list-item
+            link
+            title="Pin Data Graph"
+            prepend-icon="mdi-chart-line"
+            :active="route.name === 'pinplotter'"
+            @click="navigateToRoute('pinplotter')"
+          ></v-list-item>
+        </v-list>
+
+        <v-divider class="sidebar-divider"></v-divider>
+
+        <v-list class="sidebar-nav sidebar-nav--resources" density="comfortable" nav>
+          <v-list-subheader class="sidebar-subheader">Resources</v-list-subheader>
+          <v-list-item
+            v-for="item in resourceLinks"
+            :key="item.title"
+            link
+            :title="item.title"
+            :prepend-icon="item.icon"
+            append-icon="mdi-open-in-new"
+            @click="openExternalResource(item.url)"
+          ></v-list-item>
+          <v-list-item
+            link
+            title="About"
+            prepend-icon="mdi-information-outline"
+            :active="route.name === 'about'"
+            @click="navigateToRoute('about')"
+          ></v-list-item>
+          <v-list-item
+            link
+            title="Maker Tools"
+            prepend-icon="mdi-tools"
+            :active="route.name === 'makertools'"
+            @click="navigateToRoute('makertools')"
+          ></v-list-item>
+        </v-list>
         <template v-slot:append>
-          <v-divider></v-divider>
-          <div class="pa-2 text-caption text-medium-emphasis">
-            GPIOViewer library v{{ store.GPIOViewerRelease }}
+          <div class="sidebar-footer">
+            <span class="sidebar-footer__label">Library</span>
+            <span class="sidebar-footer__version">v{{ store.GPIOViewerRelease }}</span>
           </div>
         </template>
       </v-navigation-drawer>
@@ -394,5 +433,131 @@ async function fetchSamplingInterval() {
 .sidebar--full-height {
   top: 0 !important;
   height: 100vh !important;
+}
+
+.sidebar {
+  border-right: 1px solid color-mix(in srgb, rgb(var(--v-theme-on-surface)) 10%, transparent);
+}
+
+.sidebar-brand {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) 32px;
+  gap: 10px;
+  align-items: center;
+  margin: 10px;
+  padding: 14px 10px;
+  border-radius: 8px;
+  color: rgb(var(--v-theme-on-primary));
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, rgb(var(--v-theme-primary)) 92%, rgb(var(--v-theme-info)) 8%) 0%,
+      color-mix(in srgb, rgb(var(--v-theme-info)) 34%, rgb(var(--v-theme-primary)) 66%) 56%,
+      color-mix(in srgb, rgb(var(--v-theme-success)) 40%, rgb(var(--v-theme-primary)) 60%) 100%
+    );
+  box-shadow: 0 10px 26px color-mix(in srgb, rgb(var(--v-theme-primary)) 28%, transparent);
+}
+
+.sidebar-brand__mark {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  font-size: 1.35rem;
+}
+
+.sidebar-brand__copy {
+  min-width: 0;
+}
+
+.sidebar-brand__title {
+  font-size: 1.18rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.sidebar-brand__version {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 6px;
+  padding: 0.16rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.sidebar-brand__action {
+  color: rgb(var(--v-theme-on-primary));
+}
+
+.sidebar-nav {
+  padding: 2px 8px 8px;
+}
+
+.sidebar-nav--resources {
+  padding-top: 4px;
+}
+
+.sidebar-divider {
+  margin: 2px 10px 6px;
+  opacity: 0.7;
+}
+
+.sidebar-subheader {
+  min-height: 30px;
+  padding-inline: 8px;
+  color: color-mix(in srgb, rgb(var(--v-theme-on-surface)) 66%, transparent);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.sidebar :deep(.v-list-item) {
+  margin: 2px 0;
+  border-radius: 8px;
+}
+
+.sidebar :deep(.v-list-item-title) {
+  font-weight: 600;
+}
+
+.sidebar :deep(.v-list-item--active) {
+  color: rgb(var(--v-theme-info));
+  background: color-mix(in srgb, rgb(var(--v-theme-info)) 12%, transparent);
+}
+
+.sidebar :deep(.v-list-item--active .v-list-item__overlay) {
+  opacity: 0;
+}
+
+.sidebar-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 8px 10px 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: color-mix(in srgb, rgb(var(--v-theme-secondary)) 72%, transparent);
+  color: rgb(var(--v-theme-on-secondary));
+  font-size: 0.78rem;
+}
+
+.sidebar-footer__label {
+  font-weight: 700;
+}
+
+.sidebar-footer__version {
+  font-family: "Lucida Console", monospace;
+  font-weight: 800;
+  white-space: nowrap;
 }
 </style>
