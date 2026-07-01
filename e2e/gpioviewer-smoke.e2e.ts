@@ -1,4 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
+import { readFileSync } from 'node:fs'
+
+const packageJson = JSON.parse(readFileSync('package.json', 'utf-8')) as { version: string }
 
 async function mockEsp32(page: Page) {
   await page.addInitScript(() => {
@@ -225,7 +228,7 @@ test.describe('GPIOViewer mocked ESP32 smoke test', () => {
     await expect(page.locator('.info-section').first()).toHaveCSS('background-color', 'rgb(30, 41, 59)')
 
     await clickDrawerItem(page, 'About')
-    await expect(page.getByText('Web application v2.2.7')).toBeVisible()
+    await expect(page.getByText(`Web application v${packageJson.version}`)).toBeVisible()
 
     await clickDrawerItem(page, 'Memory Map')
     await expect(page.getByText('app0', { exact: true })).toBeVisible()
