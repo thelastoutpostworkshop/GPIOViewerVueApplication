@@ -342,6 +342,39 @@ function pinTypeLabel(pinType: number): string {
       return 'Unknown';
 }
 
+function pinTypeIcon(pinType: number): string {
+      if (pinType === PinType.Digital) {
+            return 'mdi-state-machine';
+      }
+      if (pinType === PinType.Analog) {
+            return 'mdi-sine-wave';
+      }
+      if (pinType === PinType.PWM) {
+            return 'mdi-pulse';
+      }
+      return 'mdi-help-circle-outline';
+}
+
+function pinModeIcon(mode: string): string {
+      if (mode === PinModeBroad.OUTPUT) {
+            return 'mdi-arrow-up-bold-box-outline';
+      }
+      if (mode === PinModeBroad.INPUT) {
+            return 'mdi-arrow-down-bold-box-outline';
+      }
+      return 'mdi-minus-box-outline';
+}
+
+function pinModeLabel(mode: string): string {
+      if (mode === PinModeBroad.OUTPUT) {
+            return 'Output';
+      }
+      if (mode === PinModeBroad.INPUT) {
+            return 'Input';
+      }
+      return 'Mode not set';
+}
+
 </script>
 
 <template>
@@ -412,10 +445,13 @@ function pinTypeLabel(pinType: number): string {
                         <v-chip v-for="pin in activePins" :key="pin.gpio" :value="pin.gpio" color="blue" filter
                               density="comfortable" size="small" variant="flat">
                               GPIO {{ pin.gpio }}
-                              <span class="pin-chip-meta">
-                                    {{ pinTypeLabel(pin.type) }}
-                                    <span aria-hidden="true">&middot;</span>
-                                    {{ pin.mode }}
+                              <span class="pin-chip-icons">
+                                    <v-icon :icon="pinTypeIcon(pin.type)" size="14"
+                                          :title="pinTypeLabel(pin.type)"
+                                          :aria-label="pinTypeLabel(pin.type)"></v-icon>
+                                    <v-icon :icon="pinModeIcon(pin.mode)" size="14"
+                                          :title="pinModeLabel(pin.mode)"
+                                          :aria-label="pinModeLabel(pin.mode)"></v-icon>
                               </span>
                         </v-chip>
                   </v-chip-group>
@@ -550,10 +586,17 @@ function pinTypeLabel(pinType: number): string {
       overflow: auto;
 }
 
-.pin-chip-meta {
-      margin-left: 0.45rem;
-      font-size: 0.72rem;
-      opacity: 0.78;
+.pin-chip-icons {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.18rem;
+      margin-left: 0.35rem;
+      opacity: 0.82;
+}
+
+.pin-chip-icons :deep(.v-icon) {
+      width: 1rem;
+      height: 1rem;
 }
 
 .plotter-chart {
