@@ -852,9 +852,18 @@ onMounted(async () => {
 }
 
 .reclaim-hint {
-  background: linear-gradient(135deg, rgba(255, 171, 64, 0.22), rgba(255, 214, 102, 0.28));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, #f59e0b 18%, rgb(var(--v-theme-surface))),
+    color-mix(in srgb, #facc15 14%, rgb(var(--v-theme-surface)))
+  ) !important;
   border-left-width: 6px !important;
-  border-color: rgba(255, 143, 0, 0.8) !important;
+  border-color: #f59e0b !important;
+  color: rgb(var(--v-theme-on-surface)) !important;
+}
+
+.reclaim-hint :deep(.v-alert__prepend) {
+  color: #f59e0b;
 }
 
 .reclaim-hint--inline {
@@ -863,7 +872,7 @@ onMounted(async () => {
 
 .reclaim-highlight {
   font-weight: 700;
-  color: #c05621;
+  color: color-mix(in srgb, #f59e0b 82%, rgb(var(--v-theme-on-surface)));
 }
 
 @media (min-width: 1024px) {
@@ -880,9 +889,10 @@ onMounted(async () => {
 }
 
 .reclaim-link {
-  color: rgb(var(--v-theme-info));
+  color: color-mix(in srgb, rgb(var(--v-theme-info)) 78%, rgb(var(--v-theme-on-surface)));
   font-weight: 600;
   text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .reclaim-link:hover {
