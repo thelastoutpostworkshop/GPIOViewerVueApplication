@@ -3,7 +3,7 @@ import type { PinStateMap } from '@/types/types';
 import { ref, watch, computed } from 'vue';
 import { Line } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, PointElement, LineElement, CategoryScale, LinearScale, Filler } from 'chart.js'
-import type { ChartData, ChartOptions } from 'chart.js';
+import type { ChartData, ChartDataset, ChartOptions } from 'chart.js';
 import { gpioStore } from '@/stores/gpiostore'
 import { PinType, GraphColors, PinModeBroad } from '@/const';
 import { pinBroadMode } from '@/functions'
@@ -20,16 +20,14 @@ ChartJS.register(
       Legend
 )
 
-const pinsData: ChartData<'line'> = {
+const pinsData = ref<ChartData<'line', number[], string>>({
       labels: [],
       datasets: [],
-};
+});
 
 const store = gpioStore();
 const theme = useTheme();
 
-const dataAvailable = ref<boolean>(false);
-const cle = ref<number>(0);
 const selectedPins = ref<number[]>([]);
 const activePins = computed(() =>
       [...store.lastPinValues]
@@ -42,7 +40,9 @@ const activePins = computed(() =>
             }))
 );
 const chartHasSelection = computed(() => selectedPins.value.length > 0);
-const chartHasData = computed(() => dataAvailable.value && pinsData.datasets.length > 0);
+const chartHasData = computed(() =>
+      pinsData.value.datasets.some((dataset) => Array.isArray(dataset.data) && dataset.data.length > 0)
+);
 const chartOptions = computed<ChartOptions<'line'>>(() => {
       const currentTheme = theme.global.current.value;
       const foreground = currentTheme.dark ? '#e2e8f0' : '#1f2937';
@@ -91,7 +91,7 @@ const chartOptions = computed<ChartOptions<'line'>>(() => {
                         },
                         title: {
                               display: true,
-                              text: 'Samples',
+                              text: 'Time offset',
                               color: foreground
                         }
                   },
@@ -113,28 +113,8 @@ const chartOptions = computed<ChartOptions<'line'>>(() => {
       };
 });
 
-watch(selectedPins, (newVal) => {
-      newVal.forEach(pin => {
-            addDataset(pinsData, {
-                  label: `GPIO ${pin}`,
-                  backgroundColor: getGraphColor(pin),
-                  borderColor: getGraphColor(pin),
-                  data: [],
-                  stepped: true,
-                  yAxisID: 'y',
-                  pointRadius: 1.5,
-                  borderWidth: 2,
-                  tension: 0
-            }, pin)
-
-      })
-      pinsData.datasets.forEach(datasets => {
-            const gpio = Number(String(datasets.label).replace('GPIO ', ''));
-            if (!selectedPins.value.includes(gpio)) {
-                  removeDatasetByLabel(pinsData, String(datasets.label));
-                  cle.value += 1;
-            }
-      })
+watch(selectedPins, () => {
+      syncChartData();
 });
 
 watch(
@@ -176,76 +156,66 @@ const isPinBroadModeAvailable = (mode: string) => computed(() => {
 
 function reset() {
       selectedPins.value = [];
-      pinsData.datasets = [];
-      pinsData.labels = [];
-      dataAvailable.value = false;
-      cle.value += 1;
-}
-
-function removeDatasetByLabel(chart: ChartData, label: string) {
-      if (!chart.datasets) return;
-
-      const index = chart.datasets.findIndex(dataset => dataset.label === label);
-
-      if (index > -1) {
-            chart.datasets.splice(index, 1);
-      }
-}
-
-function addDataset(chart: ChartData, newDataset: any, pin: number) {
-      if (!chart.datasets) {
-            chart.datasets = [];
-      }
-
-      const exists = chart.datasets.some(dataset => dataset.label === newDataset.label);
-
-      if (!exists) {
-            chart.datasets.push(newDataset);
-            addDataToDatasetByLabel(chart, pin);
-      }
+      pinsData.value = {
+            labels: [],
+            datasets: []
+      };
 }
 
 function updatePinStates(states: PinStateMap | null) {
-      if (states) {
-            for (const [gpioId, pinState] of Object.entries(states)) {
-                  const gpioIdNum = parseInt(gpioId);
-                  addDataToDatasetByLabel(pinsData, gpioIdNum);
-            }
-      }
-}
-
-function addDataToDatasetByLabel(chart: ChartData, gpio: number) {
-      if (!chart.datasets) {
+      if (!states) {
             return;
       }
-      const datasetIndex = chart.datasets.findIndex(dataset => dataset.label === `GPIO ${gpio}`);
-
-      if (datasetIndex !== -1) {
-            let pinEntry = store.lastPinValues.find(p => p.gpio === gpio);
-            if (pinEntry) {
-                  const dataset = chart.datasets[datasetIndex];
-                  if (!dataset) {
-                        return;
-                  }
-                  if (pinEntry.values) {
-                        dataset.data = [...pinEntry.values];
-                        chart.labels = createSampleLabels(pinEntry.values.length);
-
-                  } else {
-                        dataset.data = [];
-                        chart.labels = [];
-                  }
-                  cle.value += 1;
-                  dataAvailable.value = true;
-            }
+      if (!Object.keys(states).some((gpioId) => selectedPins.value.includes(parseInt(gpioId)))) {
+            return;
       }
+
+      syncChartData();
 }
 
-function createSampleLabels(length: number): string[] {
+function syncChartData() {
+      const nextDatasets = selectedPins.value.map((pin) => createDatasetForPin(pin));
+      const longestSeriesLength = nextDatasets.reduce(
+            (longest, dataset) => Math.max(longest, dataset.data.length),
+            0
+      );
+
+      pinsData.value = {
+            labels: createTimeLabels(longestSeriesLength),
+            datasets: nextDatasets
+      };
+}
+
+function createDatasetForPin(pin: number): ChartDataset<'line', number[]> {
+      const pinEntry = store.lastPinValues.find((entry) => entry.gpio === pin);
+      return {
+            label: `GPIO ${pin}`,
+            backgroundColor: getGraphColor(pin),
+            borderColor: getGraphColor(pin),
+            data: pinEntry?.values ? [...pinEntry.values] : [],
+            stepped: true,
+            yAxisID: 'y',
+            pointRadius: 1.5,
+            borderWidth: 2,
+            tension: 0
+      };
+}
+
+function createTimeLabels(length: number): string[] {
       return Array.from({ length }, (_, index) => {
             const samplesAgo = length - index - 1;
-            return samplesAgo === 0 ? 'now' : `-${samplesAgo}`;
+            if (samplesAgo === 0) {
+                  return 'now';
+            }
+            return formatTimeOffset(samplesAgo * store.SamplingInterval);
       });
+}
+
+function formatTimeOffset(milliseconds: number): string {
+      if (milliseconds >= 1000) {
+            return `-${(milliseconds / 1000).toFixed(milliseconds % 1000 === 0 ? 0 : 1)}s`;
+      }
+      return `-${milliseconds}ms`;
 }
 
 function getGraphColor(pin: number): string {
@@ -306,7 +276,7 @@ function pinTypeLabel(pinType: number): string {
             </section>
 
             <v-sheet class="plotter-chart" elevation="10">
-                  <Line v-if="chartHasData" :data="pinsData" :options="chartOptions" :key="cle" />
+                  <Line v-if="chartHasData" :data="pinsData" :options="chartOptions" update-mode="none" />
                   <div v-else class="plotter-empty-state">
                         <v-icon icon="mdi-chart-line" size="44"></v-icon>
                         <div class="plotter-empty-state__title">
