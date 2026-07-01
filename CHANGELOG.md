@@ -8,6 +8,7 @@
 - Added a persistent light/dark theme system using Vuetify themes and local storage.
 - Added first-activity animations for GPIO pins, pin labels, value pills, and progress fills.
 - Added a responsive sidebar that stays open on wide screens and remains temporary on compact screens.
+- Added a digital logic-lane graph mode for GPIO history, with one high/low lane per selected digital pin.
 
 ### Changed
 - Improved the main board view overlays for readability in light and dark mode.
