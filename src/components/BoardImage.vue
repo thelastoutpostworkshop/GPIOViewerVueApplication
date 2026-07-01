@@ -10,17 +10,20 @@ const props = defineProps({
     board: Object as () => BoardData | null
 });
 const store = gpioStore();
-const wifiActivity = ref(false);
+const wifiPulseActive = ref(false);
+const wifiPulseKey = ref(0);
+let wifiPulseTimer: ReturnType<typeof setTimeout> | undefined;
+
 watch([() => store.currentStates, () => store.freeHeap, () => store.wifiActivity, () => store.freePSRAM, () => store.freeSketch], () => {
-    wifiActivity.value = !wifiActivity.value;
-}, { immediate: true });
+    triggerWifiPulse();
+});
 
 const wifiClass = computed(() => {
     if (pinsConf?.value?.wifiFeedback.background === WifiFeedbackConfigKey.Light) {
 
-        return wifiActivity.value ? 'wifi-icon-light animate-wifi-light' : 'wifi-icon-light';
+        return 'wifi-icon-light';
     } else {
-        return wifiActivity.value ? 'wifi-icon-dark animate-wifi-dark' : 'wifi-icon-dark';
+        return 'wifi-icon-dark';
     }
 });
 
@@ -85,6 +88,7 @@ function restorePinsState(newPinsConf: PinsConfiguration) {
 onUnmounted(() => {
     store.pinsPreserved = pinsConf?.value ?? null;
     clearActivationTimers();
+    clearWifiPulseTimer();
 });
 
 function updatePinStates(newStates: PinStateMap, pinsConfiguration: PinsConfiguration) {
@@ -136,6 +140,27 @@ async function playBoardIntroAnimations() {
 function clearActivationTimers() {
     activationTimers.forEach((timer) => clearTimeout(timer));
     activationTimers.clear();
+}
+
+function triggerWifiPulse() {
+    if (!store.connectedToESP32) {
+        return;
+    }
+
+    wifiPulseKey.value += 1;
+    wifiPulseActive.value = true;
+    clearWifiPulseTimer();
+    wifiPulseTimer = setTimeout(() => {
+        wifiPulseActive.value = false;
+        wifiPulseTimer = undefined;
+    }, 1150);
+}
+
+function clearWifiPulseTimer() {
+    if (wifiPulseTimer) {
+        clearTimeout(wifiPulseTimer);
+        wifiPulseTimer = undefined;
+    }
 }
 
 watch(
@@ -320,11 +345,15 @@ function isPinActivating(gpioid: number): boolean {
         <div v-if="pinsConf && pinsConf.stats" class="stats"
             :style="{ top: pinsConf.stats.top + pinsConf.stats.gap * 2 + '%', left: pinsConf.stats.left + '%', fontSize: pinsConf.stats.fontSize + 'dvb' }">
             Free PSRAM:{{ store.freePSRAM || 'No PSRAM' }}</div>
-        <div v-if="pinsConf">
-            <img v-if="store.connectedToESP32" src="@/assets/images/wifiicon.webp" :class="wifiClass"
-                :style="{ top: pinsConf.wifiFeedback.top + '%', left: pinsConf.wifiFeedback.left + '%', width: pinsConf.wifiFeedback.width + '% ' }" />
-            <img v-else src="@/assets/images/noconnection.webp" :class="wifiClass"
-                :style="{ top: pinsConf.wifiFeedback.top + '%', left: pinsConf.wifiFeedback.left + '%', width: pinsConf.wifiFeedback.width + '% ' }" />
+        <div v-if="pinsConf" :class="['wifi-feedback', { 'wifi-feedback--active': wifiPulseActive }]"
+            :style="{ top: pinsConf.wifiFeedback.top + '%', left: pinsConf.wifiFeedback.left + '%', width: pinsConf.wifiFeedback.width + '%' }"
+            aria-label="ESP connection status">
+            <div v-if="store.connectedToESP32 && wifiPulseActive" :key="wifiPulseKey" class="wifi-feedback__pulse" aria-hidden="true">
+                <span class="wifi-feedback__ring"></span>
+                <span class="wifi-feedback__ring wifi-feedback__ring--delayed"></span>
+            </div>
+            <img v-if="store.connectedToESP32" src="@/assets/images/wifiicon.webp" :class="wifiClass" />
+            <img v-else src="@/assets/images/noconnection.webp" :class="wifiClass" />
         </div>
 
         <PinInfo :pin="selectedPin" :showPinInfo="showPinInfoCard" @update:modelValue="showPinInfoCard = $event">
@@ -338,31 +367,57 @@ function isPinActivating(gpioid: number): boolean {
     /* Change the cursor to indicate non-interactive */
 }
 
+.wifi-feedback {
+    position: absolute;
+    line-height: 0;
+    pointer-events: none;
+}
+
+.wifi-feedback img {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.wifi-feedback__pulse {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 210%;
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+}
+
+.wifi-feedback__ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    transform-origin: center;
+    border: 3px solid rgba(0, 122, 255, 0.95);
+    background: rgba(0, 122, 255, 0.18);
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.42),
+        0 0 18px rgba(0, 122, 255, 0.7);
+    opacity: 0;
+    animation: wifi-radio-pulse 1100ms ease-out both;
+}
+
+.wifi-feedback__ring--delayed {
+    animation-delay: 220ms;
+}
+
 .wifi-icon-dark {
-    position: absolute;
-    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
-    /* Subtle glow */
-    transition: filter 0.05s ease-in-out;
+    filter:
+        drop-shadow(0 0 6px rgba(255, 255, 255, 0.45))
+        drop-shadow(0 6px 16px rgba(15, 23, 42, 0.35));
 }
 
-.animate-wifi-dark {
-    position: absolute;
-    filter: drop-shadow(0 0 20px rgba(255, 255, 255, 1));
-    /* Pronounced glow */
-}
-
-/* Style for light background */
 .wifi-icon-light {
-    position: absolute;
-    filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
-    /* Subtle glow */
-    transition: filter 0.05s ease-in-out;
-}
-
-.animate-wifi-light {
-    position: absolute;
-    filter: drop-shadow(0 0 20px rgba(0, 0, 0, 1));
-    /* Pronounced glow */
+    filter:
+        drop-shadow(0 0 5px rgba(0, 0, 0, 0.35))
+        drop-shadow(0 6px 14px rgba(15, 23, 42, 0.24));
 }
 
 .stats {
@@ -674,6 +729,32 @@ function isPinActivating(gpioid: number): boolean {
 
     100% {
         transform: scaleY(1);
+    }
+}
+
+@keyframes wifi-radio-pulse {
+    0% {
+        opacity: 0.92;
+        transform: scale(0.54);
+    }
+
+    70% {
+        opacity: 0.32;
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(1.72);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wifi-feedback__ring {
+        animation: none;
+    }
+
+    .wifi-feedback__pulse {
+        display: none;
     }
 }
 </style>
