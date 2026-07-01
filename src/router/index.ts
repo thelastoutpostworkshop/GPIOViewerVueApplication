@@ -4,16 +4,19 @@ import ESPInfo from '@/views/ESPInfo.vue'
 import About from '@/views/About.vue'
 import Memory from '@/views/MemoryMap.vue'
 import Plotter from '@/views/Plotter.vue'
+import MakerTools from '@/views/MakerTools.vue'
 import AboutBar from '@/components/AboutBar.vue'
 import MemoryBar from '@/components/MemoryMapBar.vue'
 import AboutBottomBar from '@/components/AboutBottomBar.vue'
 import MemoryBottomBar from '@/components/MemoryMapBottomBar.vue'
 import PlotterInfoBar from '@/components/PlotterInfoBar.vue'
+import MakerToolsBar from '@/components/MakerToolsBar.vue'
 import GPIOViewBar from '@/components/BoardImageBar.vue'
 import GPIOViewBottomBar from '@/components/BoardImageBottomBar.vue'
 import ESPInfoBar from '@/components/ESPInfoBar.vue'
 import ESPInfoBottomBar from '@/components/ESP32InfoBottomBar.vue'
 import PlotterBottomBar from '@/components/PlotterBottomBar.vue'
+import MakerToolsBottomBar from '@/components/MakerToolsBottomBar.vue'
 
 const router = createRouter({
 
@@ -62,6 +65,15 @@ const router = createRouter({
         default: Plotter,
         "AppBar": PlotterInfoBar,
         "BottomBar": PlotterBottomBar
+      }
+    },
+    {
+      path: '/maker-tools',
+      name: "makertools",
+      components: {
+        default: MakerTools,
+        "AppBar": MakerToolsBar,
+        "BottomBar": MakerToolsBottomBar
       }
     },
   ]

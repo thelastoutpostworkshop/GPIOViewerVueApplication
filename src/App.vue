@@ -16,6 +16,24 @@ const maxLastPinValuesStored = 100;
 const router = useRouter()
 const { currentThemeName, isDarkTheme, loadSavedTheme, toggleTheme } = useAppTheme();
 
+const resourceLinks = [
+  {
+    title: 'Tutorial',
+    icon: 'mdi-school-outline',
+    url: 'https://youtu.be/JJzRXcQrl3I'
+  },
+  {
+    title: 'Buy Me a Coffee',
+    icon: 'mdi-coffee-outline',
+    url: 'https://buymeacoffee.com/thelastoutpostworkshop'
+  },
+  {
+    title: 'Get Help',
+    icon: 'mdi-help-circle-outline',
+    url: 'https://github.com/thelastoutpostworkshop/gpio_viewer/discussions'
+  }
+] as const;
+
 store.WebApplicationRelease = __APP_VERSION__;
 
 declare var window: any;
@@ -35,11 +53,6 @@ watch(lgAndUp, (isWideScreen) => {
   drawerOpen.value = isWideScreen;
 });
 
-function goToTutorial() {
-  closeDrawerOnCompactScreen();
-  window.open('https://youtu.be/JJzRXcQrl3I', '_blank');
-}
-
 function navigateToRoute(routeName: string) {
   closeDrawerOnCompactScreen();
   router.push({ name: routeName });
@@ -54,6 +67,11 @@ function closeDrawerOnCompactScreen() {
   if (!lgAndUp.value) {
     drawerOpen.value = false;
   }
+}
+
+function openExternalResource(url: string) {
+  closeDrawerOnCompactScreen();
+  window.open(url, '_blank', 'noopener');
 }
 
 function addLastPinValues(states: PinStateMap) {
@@ -285,13 +303,33 @@ async function fetchSamplingInterval() {
           </template>
         </v-list-item>
         <v-divider></v-divider>
-        <v-list-item link title="About" @click="navigateToRoute('about')"></v-list-item>
         <v-list-item link title="GPIOViewer" @click="navigateToRoute('gpioview')"></v-list-item>
         <v-list-item link title="ESP32 Information" @click="navigateToRoute('espinfo')"></v-list-item>
         <v-list-item link title="Memory Map" @click="navigateToRoute('memorymap')"></v-list-item>
         <v-list-item link title="Pin Data Graph" @click="navigateToRoute('pinplotter')"></v-list-item>
         <v-divider></v-divider>
-        <v-list-item link title="Tutorial" @click="goToTutorial()" append-icon="mdi-open-in-new"></v-list-item>
+        <v-list-subheader>Resources</v-list-subheader>
+        <v-list-item
+          v-for="item in resourceLinks"
+          :key="item.title"
+          link
+          :title="item.title"
+          :prepend-icon="item.icon"
+          append-icon="mdi-open-in-new"
+          @click="openExternalResource(item.url)"
+        ></v-list-item>
+        <v-list-item
+          link
+          title="About"
+          prepend-icon="mdi-information-outline"
+          @click="navigateToRoute('about')"
+        ></v-list-item>
+        <v-list-item
+          link
+          title="Maker Tools"
+          prepend-icon="mdi-tools"
+          @click="navigateToRoute('makertools')"
+        ></v-list-item>
         <template v-slot:append>
           <v-divider></v-divider>
           <div class="pa-2 text-caption text-medium-emphasis">

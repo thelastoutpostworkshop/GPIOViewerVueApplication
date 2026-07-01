@@ -234,6 +234,11 @@ test.describe('GPIOViewer mocked ESP32 smoke test', () => {
     await expect(page.getByText('Web application')).toBeVisible()
     await expect(page.locator('.about-hero__meta').getByText(`v${packageJson.version}`)).toBeVisible()
 
+    await clickDrawerItem(page, 'Maker Tools')
+    await expect(page.getByRole('heading', { name: 'Maker Tools' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'ESPConnect' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'ESP32 Partition Builder' })).toBeVisible()
+
     await clickDrawerItem(page, 'Memory Map')
     await expect(page.getByText('app0', { exact: true })).toBeVisible()
     await expect(page.locator('.memory-pane').first()).toHaveCSS('background-color', 'rgb(30, 41, 59)')
