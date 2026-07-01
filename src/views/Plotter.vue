@@ -29,6 +29,7 @@ const store = gpioStore();
 const theme = useTheme();
 
 const selectedPins = ref<number[]>([]);
+const graphPaused = ref(false);
 const activePins = computed(() =>
       [...store.lastPinValues]
             .sort((a, b) => a.gpio - b.gpio)
@@ -43,6 +44,43 @@ const chartHasSelection = computed(() => selectedPins.value.length > 0);
 const chartHasData = computed(() =>
       pinsData.value.datasets.some((dataset) => Array.isArray(dataset.data) && dataset.data.length > 0)
 );
+const selectedSampleCount = computed(() =>
+      selectedPins.value.reduce((highest, pin) => {
+            const pinEntry = store.lastPinValues.find((entry) => entry.gpio === pin);
+            return Math.max(highest, pinEntry?.values.length ?? 0);
+      }, 0)
+);
+const samplingStatus = computed(() =>
+      store.SamplingInterval > 0 ? `@${store.SamplingInterval}ms` : '@--ms'
+);
+const graphStatus = computed(() => {
+      if (graphPaused.value) {
+            return {
+                  label: 'Paused',
+                  color: 'warning',
+                  icon: 'mdi-pause-circle-outline'
+            };
+      }
+      if (chartHasData.value) {
+            return {
+                  label: 'Live',
+                  color: 'success',
+                  icon: 'mdi-pulse'
+            };
+      }
+      if (chartHasSelection.value) {
+            return {
+                  label: 'Waiting',
+                  color: 'warning',
+                  icon: 'mdi-timer-sand'
+            };
+      }
+      return {
+            label: 'Idle',
+            color: 'default',
+            icon: 'mdi-chart-line'
+      };
+});
 const chartOptions = computed<ChartOptions<'line'>>(() => {
       const currentTheme = theme.global.current.value;
       const foreground = currentTheme.dark ? '#e2e8f0' : '#1f2937';
@@ -163,7 +201,7 @@ function reset() {
 }
 
 function updatePinStates(states: PinStateMap | null) {
-      if (!states) {
+      if (!states || graphPaused.value) {
             return;
       }
       if (!Object.keys(states).some((gpioId) => selectedPins.value.includes(parseInt(gpioId)))) {
@@ -171,6 +209,13 @@ function updatePinStates(states: PinStateMap | null) {
       }
 
       syncChartData();
+}
+
+function toggleGraphPaused() {
+      graphPaused.value = !graphPaused.value;
+      if (!graphPaused.value) {
+            syncChartData();
+      }
 }
 
 function syncChartData() {
@@ -243,9 +288,26 @@ function pinTypeLabel(pinType: number): string {
                   <div class="plotter-toolbar__header">
                         <div>
                               <h2>Pin Data Graph</h2>
-                              <p>{{ selectedPins.length }} selected · {{ activePins.length }} active pins</p>
+                              <p>
+                                    <span>{{ selectedPins.length }} selected</span>
+                                    <span class="plotter-separator" aria-hidden="true">&middot;</span>
+                                    <span>{{ activePins.length }} active pins</span>
+                              </p>
                         </div>
                         <div class="plotter-toolbar__actions">
+                              <div class="plotter-status" aria-live="polite">
+                                    <v-chip :color="graphStatus.color" density="comfortable" size="small" variant="tonal">
+                                          <v-icon :icon="graphStatus.icon" size="16" start></v-icon>
+                                          {{ graphStatus.label }}
+                                    </v-chip>
+                                    <span class="plotter-status__meta">{{ selectedSampleCount }} / 100 samples</span>
+                                    <span class="plotter-status__meta">{{ samplingStatus }}</span>
+                              </div>
+                              <v-btn @click="toggleGraphPaused" size="small" variant="tonal"
+                                    :disabled="!chartHasSelection">
+                                    <v-icon :icon="graphPaused ? 'mdi-play' : 'mdi-pause'" size="16" start></v-icon>
+                                    {{ graphPaused ? 'Resume graph' : 'Pause graph' }}
+                              </v-btn>
                               <v-btn @click="selectAllPins" size="small" variant="tonal"
                                     :disabled="activePins.length === 0">Select all</v-btn>
                               <v-btn @click="reset" size="small" variant="text"
@@ -270,7 +332,11 @@ function pinTypeLabel(pinType: number): string {
                         <v-chip v-for="pin in activePins" :key="pin.gpio" :value="pin.gpio" color="blue" filter
                               density="comfortable" size="small" variant="flat">
                               GPIO {{ pin.gpio }}
-                              <span class="pin-chip-meta">{{ pinTypeLabel(pin.type) }} · {{ pin.mode }}</span>
+                              <span class="pin-chip-meta">
+                                    {{ pinTypeLabel(pin.type) }}
+                                    <span aria-hidden="true">&middot;</span>
+                                    {{ pin.mode }}
+                              </span>
                         </v-chip>
                   </v-chip-group>
             </section>
@@ -280,11 +346,13 @@ function pinTypeLabel(pinType: number): string {
                   <div v-else class="plotter-empty-state">
                         <v-icon icon="mdi-chart-line" size="44"></v-icon>
                         <div class="plotter-empty-state__title">
-                              {{ chartHasSelection ? 'Waiting for samples' : 'Select pins to plot' }}
+                              {{ chartHasSelection ? (graphPaused ? 'Graph paused' : 'Waiting for samples') : 'Select pins to plot' }}
                         </div>
                         <div class="plotter-empty-state__text">
                               {{ chartHasSelection
-                                    ? 'Selected pins will appear here when GPIO samples arrive.'
+                                    ? (graphPaused
+                                          ? 'Resume graph updates to continue plotting incoming samples.'
+                                          : 'Selected pins will appear here when GPIO samples arrive.')
                                     : 'Select one or more active GPIO pins to plot their last 100 samples.' }}
                         </div>
                   </div>
@@ -339,6 +407,24 @@ function pinTypeLabel(pinType: number): string {
 
 .plotter-toolbar__actions {
       justify-content: flex-end;
+      align-items: center;
+}
+
+.plotter-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      min-height: 2rem;
+}
+
+.plotter-status__meta {
+      color: color-mix(in srgb, rgb(var(--v-theme-on-surface)) 68%, transparent);
+      font-size: 0.82rem;
+      white-space: nowrap;
+}
+
+.plotter-separator {
+      margin: 0 0.35rem;
 }
 
 .pin-chip-group {

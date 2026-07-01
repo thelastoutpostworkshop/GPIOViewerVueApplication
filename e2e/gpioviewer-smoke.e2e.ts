@@ -284,9 +284,18 @@ test.describe('GPIOViewer mocked ESP32 smoke test', () => {
 
     await clickDrawerItem(page, 'Pin Data Graph')
     await expect(page.getByText('Select pins to plot')).toBeVisible()
+    await expect(page.getByText('Idle')).toBeVisible()
     await expect(page.locator('.v-chip').filter({ hasText: /GPIO 0/ })).toBeVisible()
 
     await page.getByRole('button', { name: 'Digital' }).click()
     await expect(page.locator('canvas')).toBeVisible()
+    await expect(page.getByText('Live')).toBeVisible()
+    await expect(page.getByText('2 / 100 samples')).toBeVisible()
+
+    await page.getByRole('button', { name: 'Pause graph' }).click()
+    await expect(page.getByText('Paused')).toBeVisible()
+
+    await page.getByRole('button', { name: 'Resume graph' }).click()
+    await expect(page.getByText('Live')).toBeVisible()
   })
 })
