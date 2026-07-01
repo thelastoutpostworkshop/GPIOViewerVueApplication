@@ -235,10 +235,19 @@ async function fetchSamplingInterval() {
   <v-layout :theme="currentThemeName">
     <div v-if="localNetworkAdressKnown">
 
-      <v-app-bar color="primary" rounded elevated density="compact">
+      <v-app-bar
+        color="primary"
+        rounded
+        elevated
+        density="compact"
+        :class="{ 'app-bar--with-sidebar': lgAndUp && drawerOpen }"
+      >
 
         <template v-slot:prepend>
-          <v-app-bar-nav-icon @click="drawerOpen = !drawerOpen"></v-app-bar-nav-icon>
+          <v-app-bar-nav-icon
+            v-if="!lgAndUp || !drawerOpen"
+            @click="drawerOpen = !drawerOpen"
+          ></v-app-bar-nav-icon>
         </template>
         <RouterView name="AppBar" />
         <v-spacer></v-spacer>
@@ -258,8 +267,24 @@ async function fetchSamplingInterval() {
 
       </v-app-bar>
 
-      <v-navigation-drawer color="primary" v-model="drawerOpen" :temporary="!lgAndUp" :permanent="lgAndUp">
-        <v-list-item title="GPIOViewer" :subtitle="'v' + store.GPIOViewerRelease"></v-list-item>
+      <v-navigation-drawer
+        color="primary"
+        v-model="drawerOpen"
+        :temporary="!lgAndUp"
+        :permanent="lgAndUp"
+        :class="{ 'sidebar--full-height': lgAndUp && drawerOpen }"
+      >
+        <v-list-item title="GPIOViewer" :subtitle="'v' + store.GPIOViewerRelease">
+          <template v-if="lgAndUp" #prepend>
+            <v-btn
+              icon="mdi-menu"
+              variant="text"
+              size="small"
+              aria-label="Collapse sidebar"
+              @click="drawerOpen = false"
+            ></v-btn>
+          </template>
+        </v-list-item>
         <v-divider></v-divider>
         <v-list-item link title="About" @click="navigateToRoute('about')"></v-list-item>
         <v-list-item link title="GPIOViewer" @click="navigateToRoute('gpioview')"></v-list-item>
@@ -296,5 +321,15 @@ async function fetchSamplingInterval() {
   overflow: hidden;
   background: rgb(var(--v-theme-background));
   color: rgb(var(--v-theme-on-background));
+}
+
+.app-bar--with-sidebar {
+  margin-left: 256px;
+  width: calc(100% - 256px) !important;
+}
+
+.sidebar--full-height {
+  top: 0 !important;
+  height: 100vh !important;
 }
 </style>
