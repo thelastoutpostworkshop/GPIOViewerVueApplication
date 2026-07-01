@@ -810,23 +810,24 @@ onMounted(async () => {
   padding: 0 0 0.25rem;
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: 0.7rem;
 }
 
 .stacked-legend li {
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  column-gap: 0.4rem;
-  font-size: 0.86rem;
+  column-gap: 0.7rem;
+  font-size: 0.98rem;
   color: rgb(var(--v-theme-on-surface));
+  min-height: 28px;
 }
 
 .stacked-legend__color {
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
   display: inline-block;
-  border-radius: 5px;
+  border-radius: 6px;
   box-shadow: inset 0 0 0 1px color-mix(in srgb, rgb(var(--v-theme-on-surface)) 12%, transparent);
   flex-shrink: 0;
 }
@@ -837,18 +838,19 @@ onMounted(async () => {
 }
 
 .stacked-legend__type {
-  margin-left: 0.4rem;
-  font-size: 0.72rem;
+  margin-left: 0.5rem;
+  font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: color-mix(in srgb, rgb(var(--v-theme-on-surface)) 64%, transparent);
+  color: color-mix(in srgb, rgb(var(--v-theme-on-surface)) 70%, transparent);
   font-weight: 600;
 }
 
 .stacked-legend__value {
   font-variant-numeric: tabular-nums;
-  color: color-mix(in srgb, rgb(var(--v-theme-on-surface)) 78%, transparent);
+  color: color-mix(in srgb, rgb(var(--v-theme-on-surface)) 82%, transparent);
   justify-self: end;
+  font-weight: 500;
 }
 
 .reclaim-hint {
@@ -878,7 +880,7 @@ onMounted(async () => {
 @media (min-width: 1024px) {
   .stacked-column-wrapper {
     flex-direction: row;
-    gap: 1.2rem;
+    gap: 1.5rem;
     align-items: stretch;
   }
 
