@@ -588,7 +588,7 @@ onMounted(() => {
 .esp-info-dashboard {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1.5rem 0 2.5rem;
+  padding: 1.5rem clamp(1.25rem, 3vw, 2.5rem) 2.5rem;
   display: flex;
   flex-direction: column;
   gap: 1.75rem;
