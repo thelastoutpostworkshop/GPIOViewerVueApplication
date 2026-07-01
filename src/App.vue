@@ -236,7 +236,7 @@ async function fetchSamplingInterval() {
     <div v-if="localNetworkAdressKnown">
 
       <v-app-bar
-        color="primary"
+        color="surface"
         rounded
         elevated
         density="compact"
@@ -269,13 +269,13 @@ async function fetchSamplingInterval() {
       </v-app-bar>
 
       <v-navigation-drawer
-        color="primary"
+        color="surface"
         v-model="drawerOpen"
         :temporary="!lgAndUp"
         :permanent="lgAndUp"
         :class="{ 'sidebar--full-height': lgAndUp && drawerOpen }"
       >
-        <v-list-item title="GPIOViewer" :subtitle="'v' + store.GPIOViewerRelease">
+        <v-list-item title="GPIOViewer" :subtitle="'v' + store.WebApplicationRelease">
           <template v-if="lgAndUp" #prepend>
             <v-btn
               icon="mdi-menu"
@@ -296,8 +296,8 @@ async function fetchSamplingInterval() {
         <v-list-item link title="Tutorial" @click="goToTutorial()" append-icon="mdi-open-in-new"></v-list-item>
         <template v-slot:append>
           <v-divider></v-divider>
-          <div class="pa-2 text-caption text-grey-lighten-1">
-            Web application v{{ store.WebApplicationRelease }}
+          <div class="pa-2 text-caption text-medium-emphasis">
+            GPIOViewer library v{{ store.GPIOViewerRelease }}
           </div>
         </template>
       </v-navigation-drawer>

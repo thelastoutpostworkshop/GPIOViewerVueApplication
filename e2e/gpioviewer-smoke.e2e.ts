@@ -209,6 +209,9 @@ test.describe('GPIOViewer mocked ESP32 smoke test', () => {
     })
 
     await bootMockedApp(page)
+    await expect(page.getByText(`v${packageJson.version}`).first()).toBeVisible()
+    await expect(page.locator('.v-app-bar')).toHaveCSS('background-color', 'rgb(255, 255, 255)')
+    await expect(page.locator('.v-navigation-drawer')).toHaveCSS('background-color', 'rgb(255, 255, 255)')
 
     await page.evaluate(() => {
       window.__emitGpioEvent('gpio-state', JSON.stringify({ 0: { s: 255, t: 0, v: 1 } }))
@@ -228,7 +231,8 @@ test.describe('GPIOViewer mocked ESP32 smoke test', () => {
     await expect(page.locator('.info-section').first()).toHaveCSS('background-color', 'rgb(30, 41, 59)')
 
     await clickDrawerItem(page, 'About')
-    await expect(page.getByText(`Web application v${packageJson.version}`)).toBeVisible()
+    await expect(page.getByText('Web application')).toBeVisible()
+    await expect(page.locator('.about-hero__meta').getByText(`v${packageJson.version}`)).toBeVisible()
 
     await clickDrawerItem(page, 'Memory Map')
     await expect(page.getByText('app0', { exact: true })).toBeVisible()
