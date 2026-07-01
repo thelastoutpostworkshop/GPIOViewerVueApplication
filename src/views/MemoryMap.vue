@@ -405,7 +405,10 @@ onMounted(async () => {
       class="memory-grid"
       :class="{ 'memory-grid--two-column': heapOverview || psramOverview }"
     >
-      <section class="memory-pane memory-pane--flash-stack">
+      <section
+        class="memory-pane memory-pane--flash-stack"
+        :style="{ '--entry-index': 0 }"
+      >
         <header class="pane-header">
           <h2>Flash Stack Map</h2>
         </header>
@@ -438,7 +441,7 @@ onMounted(async () => {
           <div class="stacked-column-wrapper">
             <div class="stacked-column">
               <v-tooltip
-                v-for="segment in stackedColumnSegments"
+                v-for="(segment, segmentIndex) in stackedColumnSegments"
                 :key="segment.id"
                 :text="formatSegmentTooltip(segment)"
                 location="right"
@@ -448,7 +451,12 @@ onMounted(async () => {
                     :class="['stacked-column__segment', { 'stacked-column__segment--free': segment.usageKind === 'Unused' }]"
                     v-bind="props"
                     :style="[
-                      { height: segment.percent + '%', background: segment.background, color: segment.textColor },
+                      {
+                        height: segment.percent + '%',
+                        background: segment.background,
+                        color: segment.textColor,
+                        '--segment-index': segmentIndex
+                      },
                       segment.percent < 6 ? { minHeight: '28px' } : {}
                     ]"
                   >
@@ -477,7 +485,11 @@ onMounted(async () => {
       </section>
 
       <div v-if="heapOverview || psramOverview" class="memory-right-column">
-        <section v-if="heapOverview" class="memory-pane memory-pane--heap">
+        <section
+          v-if="heapOverview"
+          class="memory-pane memory-pane--heap"
+          :style="{ '--entry-index': 1 }"
+        >
           <header class="pane-header">
             <h2>Heap Usage</h2>
             <span class="pane-meta">Total {{ formatBytes(heapOverview.totalBytes) }}</span>
@@ -504,7 +516,11 @@ onMounted(async () => {
           </div>
         </section>
 
-        <section v-if="psramOverview" class="memory-pane memory-pane--psram">
+        <section
+          v-if="psramOverview"
+          class="memory-pane memory-pane--psram"
+          :style="{ '--entry-index': heapOverview ? 2 : 1 }"
+        >
           <header class="pane-header">
             <h2>PSRAM Usage</h2>
             <span class="pane-meta">Total {{ formatBytes(psramOverview.totalBytes) }}</span>
@@ -622,6 +638,21 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  opacity: 0;
+  animation: memory-card-enter 0.38s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--entry-index) * 70ms);
+}
+
+@keyframes memory-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .pane-header {
@@ -703,6 +734,20 @@ onMounted(async () => {
   flex-direction: column;
   box-shadow: inset 0 0 0 1px color-mix(in srgb, rgb(var(--v-theme-on-surface)) 12%, transparent);
   background: color-mix(in srgb, rgb(var(--v-theme-background)) 62%, rgb(var(--v-theme-surface)));
+  transform-origin: bottom;
+  animation: stack-map-enter 0.58s cubic-bezier(0.2, 0.8, 0.2, 1) 180ms both;
+}
+
+@keyframes stack-map-enter {
+  from {
+    opacity: 0;
+    transform: scaleY(0.08);
+  }
+
+  to {
+    opacity: 1;
+    transform: scaleY(1);
+  }
 }
 
 @media (max-width: 600px) {
@@ -729,6 +774,19 @@ onMounted(async () => {
   font-weight: 600;
   padding: 0.35rem 0.25rem;
   text-align: center;
+  opacity: 0;
+  animation: stack-segment-enter 0.3s ease-out both;
+  animation-delay: calc(420ms + (var(--segment-index) * 35ms));
+}
+
+@keyframes stack-segment-enter {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .stacked-column__segment--free {
@@ -845,5 +903,15 @@ onMounted(async () => {
   font-size: 0.9rem;
   color: color-mix(in srgb, rgb(var(--v-theme-on-surface)) 68%, transparent);
   text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .memory-pane,
+  .stacked-column,
+  .stacked-column__segment {
+    opacity: 1;
+    animation: none;
+    transform: none;
+  }
 }
 </style>
