@@ -508,11 +508,12 @@ onMounted(() => {
       <div class="content-grid__left">
         <section v-if="summaryCards.length" class="summary-grid">
           <component
-            v-for="card in summaryCards"
+            v-for="(card, cardIndex) in summaryCards"
             :key="card.title"
             :is="card.routeName ? RouterLink : 'div'"
             class="summary-card-link"
             :class="{ 'summary-card-link--interactive': Boolean(card.routeName) }"
+            :style="{ '--entry-index': cardIndex }"
             v-bind="card.routeName ? { to: { name: card.routeName } } : {}"
           >
             <v-card
@@ -543,7 +544,12 @@ onMounted(() => {
 
       <div class="content-grid__right">
         <section class="info-sections">
-          <article v-for="section in infoSections" :key="section.title" class="info-section">
+          <article
+            v-for="(section, sectionIndex) in infoSections"
+            :key="section.title"
+            class="info-section"
+            :style="{ '--entry-index': summaryCards.length + sectionIndex }"
+          >
             <header class="info-section__header">
               <v-icon :icon="section.icon" size="22"></v-icon>
               <span>{{ section.title }}</span>
@@ -635,6 +641,9 @@ onMounted(() => {
   display: block;
   text-decoration: none;
   color: inherit;
+  opacity: 0;
+  animation: card-enter 0.38s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--entry-index) * 55ms);
 }
 
 .summary-card-link--interactive {
@@ -721,6 +730,21 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  opacity: 0;
+  animation: card-enter 0.38s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--entry-index) * 55ms);
+}
+
+@keyframes card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .info-section__header {
@@ -834,6 +858,14 @@ onMounted(() => {
 
   .info-sections {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .summary-card-link,
+  .info-section {
+    opacity: 1;
+    animation: none;
   }
 }
 </style>
