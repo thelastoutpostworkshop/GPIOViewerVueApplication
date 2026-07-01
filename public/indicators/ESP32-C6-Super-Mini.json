@@ -40,8 +40,8 @@
     "gap": 3
   },
   "wifiFeedback": {
-    "top": 23.5,
-    "left": 41.5,
+    "top": 27,
+    "left": 43,
     "width": 15,
     "background": "dark"
   }
