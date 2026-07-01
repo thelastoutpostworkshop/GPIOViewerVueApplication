@@ -441,6 +441,31 @@ function pinModeLabel(mode: string): string {
                         </span>
                   </div>
 
+                  <div class="pin-icon-legend" aria-label="Pin chip icon legend">
+                        <span class="pin-icon-legend__title">Pin icons</span>
+                        <span class="pin-icon-legend__item">
+                              <v-icon :icon="pinTypeIcon(PinType.Digital)" size="15"></v-icon>
+                              Digital
+                        </span>
+                        <span class="pin-icon-legend__item">
+                              <v-icon :icon="pinTypeIcon(PinType.Analog)" size="15"></v-icon>
+                              Analog
+                        </span>
+                        <span class="pin-icon-legend__item">
+                              <v-icon :icon="pinTypeIcon(PinType.PWM)" size="15"></v-icon>
+                              PWM
+                        </span>
+                        <span class="pin-icon-legend__divider" aria-hidden="true"></span>
+                        <span class="pin-icon-legend__item">
+                              <v-icon :icon="pinModeIcon(PinModeBroad.INPUT)" size="15"></v-icon>
+                              Input
+                        </span>
+                        <span class="pin-icon-legend__item">
+                              <v-icon :icon="pinModeIcon(PinModeBroad.OUTPUT)" size="15"></v-icon>
+                              Output
+                        </span>
+                  </div>
+
                   <v-chip-group column multiple v-model="selectedPins" class="pin-chip-group">
                         <v-chip v-for="pin in activePins" :key="pin.gpio" :value="pin.gpio" color="blue" filter
                               density="comfortable" size="small" variant="flat">
@@ -449,7 +474,7 @@ function pinModeLabel(mode: string): string {
                                     <v-icon :icon="pinTypeIcon(pin.type)" size="14"
                                           :title="pinTypeLabel(pin.type)"
                                           :aria-label="pinTypeLabel(pin.type)"></v-icon>
-                                    <v-icon :icon="pinModeIcon(pin.mode)" size="14"
+                                    <v-icon v-if="pin.mode !== PinModeBroad.UNKNOWN" :icon="pinModeIcon(pin.mode)" size="14"
                                           :title="pinModeLabel(pin.mode)"
                                           :aria-label="pinModeLabel(pin.mode)"></v-icon>
                               </span>
@@ -579,6 +604,33 @@ function pinModeLabel(mode: string): string {
 .plotter-mode-help {
       color: color-mix(in srgb, rgb(var(--v-theme-on-surface)) 64%, transparent);
       font-size: 0.82rem;
+}
+
+.pin-icon-legend {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.45rem 0.65rem;
+      color: color-mix(in srgb, rgb(var(--v-theme-on-surface)) 70%, transparent);
+      font-size: 0.78rem;
+}
+
+.pin-icon-legend__title {
+      color: color-mix(in srgb, rgb(var(--v-theme-on-surface)) 82%, transparent);
+      font-weight: 700;
+}
+
+.pin-icon-legend__item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      white-space: nowrap;
+}
+
+.pin-icon-legend__divider {
+      width: 1px;
+      height: 1rem;
+      background: color-mix(in srgb, rgb(var(--v-theme-on-surface)) 18%, transparent);
 }
 
 .pin-chip-group {
