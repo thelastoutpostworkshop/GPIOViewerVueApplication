@@ -11,7 +11,19 @@ import { useDisplay } from 'vuetify';
 
 const store = gpioStore();
 const { lgAndUp } = useDisplay();
-const drawerOpen = ref(lgAndUp.value);
+const desktopDrawerOpen = ref(lgAndUp.value);
+const mobileDrawerOpen = ref(false);
+const drawerOpen = computed({
+  get: () => lgAndUp.value ? desktopDrawerOpen.value : mobileDrawerOpen.value,
+  set: (isOpen: boolean) => {
+    if (lgAndUp.value) {
+      desktopDrawerOpen.value = isOpen;
+      return;
+    }
+
+    mobileDrawerOpen.value = isOpen;
+  }
+});
 const maxLastPinValuesStored = 100;
 const router = useRouter()
 const { currentThemeName, isDarkTheme, loadSavedTheme, toggleTheme } = useAppTheme();
@@ -50,8 +62,13 @@ onMounted(() => {
 });
 
 watch(lgAndUp, (isWideScreen) => {
-  drawerOpen.value = isWideScreen;
-});
+  if (isWideScreen) {
+    desktopDrawerOpen.value = true;
+    return;
+  }
+
+  mobileDrawerOpen.value = false;
+}, { immediate: true });
 
 function navigateToRoute(routeName: string) {
   closeDrawerOnCompactScreen();
@@ -285,6 +302,7 @@ async function fetchSamplingInterval() {
       </v-app-bar>
 
       <v-navigation-drawer
+        :key="lgAndUp ? 'desktop-drawer' : 'mobile-drawer'"
         color="surface"
         v-model="drawerOpen"
         :temporary="!lgAndUp"
