@@ -715,7 +715,7 @@ onMounted(async () => {
   .stacked-column {
     flex: 0 0 120px;
     width: 120px;
-    height: 320px;
+    height: clamp(420px, calc(100dvh - 340px), 620px);
     min-height: 0;
   }
 }
