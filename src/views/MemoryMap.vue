@@ -26,7 +26,7 @@ interface MemoryUsageOverview {
 const espInfo = ref<ESPInfo>();
 const espPartitions = ref<ESPPartition[]>([]);
 const flashStackSegments = ref<FlashStackSegment[]>([]);
-const stackedColumnSegments = computed(() => [...flashStackSegments.value].reverse());
+const stackedColumnSegments = computed(() => flashStackSegments.value);
 const heapOverview = ref<MemoryUsageOverview | null>(null);
 const psramOverview = ref<MemoryUsageOverview | null>(null);
 const isLoading = ref(true);
