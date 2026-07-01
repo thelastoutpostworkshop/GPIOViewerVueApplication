@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { RouterView, useRouter } from 'vue-router'
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import ParamsError from '@/components/ParamsError.vue';
 import type { Memory, PinStateMap, GPIOViewerRelease, SamplingInterval, PinMode, BoardPinsFunction } from "@/types/types";
 import type { BoardData } from "@/types/types";
 import { gpioStore } from '@/stores/gpiostore'
 import { getAPIUrl } from "@/functions";
 import { useAppTheme } from '@/composables/useAppTheme';
+import { useDisplay } from 'vuetify';
 
 const store = gpioStore();
-const drawerOpen = ref(false);
+const { lgAndUp } = useDisplay();
+const drawerOpen = ref(lgAndUp.value);
 const maxLastPinValuesStored = 100;
 const router = useRouter()
 const { currentThemeName, isDarkTheme, loadSavedTheme, toggleTheme } = useAppTheme();
@@ -29,19 +31,31 @@ onMounted(() => {
   }
 });
 
+watch(lgAndUp, (isWideScreen) => {
+  if (isWideScreen) {
+    drawerOpen.value = true;
+  }
+});
+
 function goToTutorial() {
-  drawerOpen.value = false;
+  closeDrawerOnCompactScreen();
   window.open('https://youtu.be/JJzRXcQrl3I', '_blank');
 }
 
 function navigateToRoute(routeName: string) {
-  drawerOpen.value = false;
+  closeDrawerOnCompactScreen();
   router.push({ name: routeName });
 }
 
 function handleThemeToggle() {
   toggleTheme();
-  drawerOpen.value = false;
+  closeDrawerOnCompactScreen();
+}
+
+function closeDrawerOnCompactScreen() {
+  if (!lgAndUp.value) {
+    drawerOpen.value = false;
+  }
 }
 
 function addLastPinValues(states: PinStateMap) {
@@ -244,7 +258,7 @@ async function fetchSamplingInterval() {
 
       </v-app-bar>
 
-      <v-navigation-drawer color="primary" v-model="drawerOpen" temporary>
+      <v-navigation-drawer color="primary" v-model="drawerOpen" :temporary="!lgAndUp" :permanent="lgAndUp">
         <v-list-item title="GPIOViewer" :subtitle="'v' + store.GPIOViewerRelease"></v-list-item>
         <v-divider></v-divider>
         <v-list-item link title="About" @click="navigateToRoute('about')"></v-list-item>

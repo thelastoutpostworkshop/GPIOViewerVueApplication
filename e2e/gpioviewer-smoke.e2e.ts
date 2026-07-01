@@ -274,8 +274,7 @@ test.describe('GPIOViewer mocked ESP32 smoke test', () => {
     await page.evaluate(() => window.__disconnectGpioEvents())
     await expect(page.locator('img.wifi-icon-light')).toHaveAttribute('src', /noconnection/)
 
-    await page.locator('.v-app-bar .v-btn').first().click()
-    await page.getByText('Pin Data Graph', { exact: true }).click()
+    await clickDrawerItem(page, 'Pin Data Graph')
     await expect(page.getByText('Select any active GPIO pins')).toBeVisible()
     await expect(page.locator('.v-chip').filter({ hasText: /^0$/ })).toBeVisible()
 
