@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import type { PinStateMap } from '@/types/types';
-import { ref, watch, onMounted, computed } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { Line } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, PointElement, LineElement, CategoryScale, LinearScale, Filler } from 'chart.js'
 import type { ChartData, ChartOptions } from 'chart.js';
 import { gpioStore } from '@/stores/gpiostore'
 import { PinType, GraphColors, PinModeBroad } from '@/const';
 import { pinBroadMode } from '@/functions'
+import { useTheme } from 'vuetify';
 
 ChartJS.register(
       CategoryScale,
@@ -24,60 +25,112 @@ const pinsData: ChartData<'line'> = {
       datasets: [],
 };
 
-const options: ChartOptions<'line'> = {
-      responsive: true,
-      animation: false,
-      maintainAspectRatio: false,
-      plugins: {
-            tooltip: {
-                  callbacks: {
-                        title: function (context) { return '' }
-                  }
-            },
-            title: {
-                  display: true,
-                  text: "Last 100 values"
-            }
-      },
-      scales: {
-            x: {
-                  title: {
-                        display: true,
-                        text: "ms (approximative)"
-                  }
-            },
-            y: {
-                  type: "linear",
-                  title: {
-                        display: true,
-                        text: 'Value'
-                  }
-            }
-
-      }
-}
-
 const store = gpioStore();
+const theme = useTheme();
 
 const dataAvailable = ref<boolean>(false);
 const cle = ref<number>(0);
 const selectedPins = ref<number[]>([]);
-const pins = ref<number[]>([]);
+const activePins = computed(() =>
+      [...store.lastPinValues]
+            .sort((a, b) => a.gpio - b.gpio)
+            .map((pin) => ({
+                  gpio: pin.gpio,
+                  type: pin.gpioType,
+                  mode: pinBroadMode(pin.gpioType, pin.gpio),
+                  sampleCount: pin.values.length
+            }))
+);
+const chartHasSelection = computed(() => selectedPins.value.length > 0);
+const chartHasData = computed(() => dataAvailable.value && pinsData.datasets.length > 0);
+const chartOptions = computed<ChartOptions<'line'>>(() => {
+      const currentTheme = theme.global.current.value;
+      const foreground = currentTheme.dark ? '#e2e8f0' : '#1f2937';
+      const mutedForeground = currentTheme.dark ? '#94a3b8' : '#64748b';
+      const gridColor = currentTheme.dark ? 'rgba(148, 163, 184, 0.18)' : 'rgba(15, 23, 42, 0.12)';
+      const tooltipBackground = currentTheme.dark ? '#0f172a' : '#ffffff';
+      return {
+            responsive: true,
+            animation: false,
+            maintainAspectRatio: false,
+            plugins: {
+                  legend: {
+                        labels: {
+                              color: foreground,
+                              boxWidth: 14,
+                              boxHeight: 14
+                        }
+                  },
+                  tooltip: {
+                        backgroundColor: tooltipBackground,
+                        titleColor: foreground,
+                        bodyColor: foreground,
+                        borderColor: gridColor,
+                        borderWidth: 1,
+                        callbacks: {
+                              title: () => ''
+                        }
+                  },
+                  title: {
+                        display: true,
+                        text: 'Last 100 values',
+                        color: foreground,
+                        font: {
+                              size: 14,
+                              weight: 600
+                        }
+                  }
+            },
+            scales: {
+                  x: {
+                        grid: {
+                              color: gridColor
+                        },
+                        ticks: {
+                              color: mutedForeground
+                        },
+                        title: {
+                              display: true,
+                              text: 'Samples',
+                              color: foreground
+                        }
+                  },
+                  y: {
+                        type: 'linear',
+                        grid: {
+                              color: gridColor
+                        },
+                        ticks: {
+                              color: mutedForeground
+                        },
+                        title: {
+                              display: true,
+                              text: 'Value',
+                              color: foreground
+                        }
+                  }
+            }
+      };
+});
 
-watch(selectedPins, (newVal, oldVal) => {
+watch(selectedPins, (newVal) => {
       newVal.forEach(pin => {
             addDataset(pinsData, {
-                  label: pin.toString(),
-                  backgroundColor: 'rgb(0,0,0)',
-                  borderColor: GraphColors[Number(pin)],
+                  label: `GPIO ${pin}`,
+                  backgroundColor: getGraphColor(pin),
+                  borderColor: getGraphColor(pin),
                   data: [],
                   stepped: true,
-                  yAxisID: 'y'
-            }, pin.toString())
+                  yAxisID: 'y',
+                  pointRadius: 1.5,
+                  borderWidth: 2,
+                  tension: 0
+            }, pin)
 
       })
       pinsData.datasets.forEach(datasets => {
-            if (!selectedPins.value.includes(Number(datasets.label))) {
+            const gpio = Number(String(datasets.label).replace('GPIO ', ''));
+            if (!selectedPins.value.includes(gpio)) {
                   removeDatasetByLabel(pinsData, String(datasets.label));
                   cle.value += 1;
             }
@@ -91,25 +144,23 @@ watch(
       }
 );
 
-onMounted(() => {
-      store.lastPinValues.sort((a, b) => a.gpio - b.gpio).forEach(pin => {
-            pins.value.push(pin.gpio);
-      })
-});
-
 function selectPinTypes(pintype: number) {
       reset();
-      const digitalPins = store.lastPinValues.filter(pin => pin.gpioType === pintype);
-      digitalPins.forEach(pin => { selectedPins.value.push(pin.gpio) })
+      selectedPins.value = store.lastPinValues
+            .filter(pin => pin.gpioType === pintype)
+            .map(pin => pin.gpio);
 }
 
 function selectPinBroadMode(mode: string) {
       reset();
-      store.lastPinValues.forEach(pin => {
-            if (pinBroadMode(pin.gpioType, pin.gpio) === mode) {
-                  selectedPins.value.push(pin.gpio)
-            }
-      })
+      selectedPins.value = store.lastPinValues
+            .filter(pin => pinBroadMode(pin.gpioType, pin.gpio) === mode)
+            .map(pin => pin.gpio);
+}
+
+function selectAllPins() {
+      reset();
+      selectedPins.value = activePins.value.map(pin => pin.gpio);
 }
 
 const isPinTypeAvailable = (pintype: number) => computed(() => {
@@ -127,6 +178,7 @@ function reset() {
       selectedPins.value = [];
       pinsData.datasets = [];
       pinsData.labels = [];
+      dataAvailable.value = false;
       cle.value += 1;
 }
 
@@ -140,7 +192,7 @@ function removeDatasetByLabel(chart: ChartData, label: string) {
       }
 }
 
-function addDataset(chart: ChartData, newDataset: any, pin: string) {
+function addDataset(chart: ChartData, newDataset: any, pin: number) {
       if (!chart.datasets) {
             chart.datasets = [];
       }
@@ -149,7 +201,7 @@ function addDataset(chart: ChartData, newDataset: any, pin: string) {
 
       if (!exists) {
             chart.datasets.push(newDataset);
-            addDataToDatasetByLabel(chart, Number(pin), false);
+            addDataToDatasetByLabel(chart, pin);
       }
 }
 
@@ -157,16 +209,16 @@ function updatePinStates(states: PinStateMap | null) {
       if (states) {
             for (const [gpioId, pinState] of Object.entries(states)) {
                   const gpioIdNum = parseInt(gpioId);
-                  addDataToDatasetByLabel(pinsData, gpioIdNum, pinState.t === PinType.Digital);
+                  addDataToDatasetByLabel(pinsData, gpioIdNum);
             }
       }
 }
 
-function addDataToDatasetByLabel(chart: ChartData, gpio: number, digitalPin: boolean) {
+function addDataToDatasetByLabel(chart: ChartData, gpio: number) {
       if (!chart.datasets) {
             return;
       }
-      const datasetIndex = chart.datasets.findIndex(dataset => dataset.label === gpio.toString());
+      const datasetIndex = chart.datasets.findIndex(dataset => dataset.label === `GPIO ${gpio}`);
 
       if (datasetIndex !== -1) {
             let pinEntry = store.lastPinValues.find(p => p.gpio === gpio);
@@ -177,7 +229,7 @@ function addDataToDatasetByLabel(chart: ChartData, gpio: number, digitalPin: boo
                   }
                   if (pinEntry.values) {
                         dataset.data = [...pinEntry.values];
-                        chart.labels = new Array(pinEntry.values.length).fill(store.SamplingInterval.toString());
+                        chart.labels = createSampleLabels(pinEntry.values.length);
 
                   } else {
                         dataset.data = [];
@@ -189,39 +241,189 @@ function addDataToDatasetByLabel(chart: ChartData, gpio: number, digitalPin: boo
       }
 }
 
+function createSampleLabels(length: number): string[] {
+      return Array.from({ length }, (_, index) => {
+            const samplesAgo = length - index - 1;
+            return samplesAgo === 0 ? 'now' : `-${samplesAgo}`;
+      });
+}
+
+function getGraphColor(pin: number): string {
+      return GraphColors[pin % GraphColors.length] ?? '#60a5fa';
+}
+
+function pinTypeLabel(pinType: number): string {
+      if (pinType === PinType.Digital) {
+            return 'Digital';
+      }
+      if (pinType === PinType.Analog) {
+            return 'Analog';
+      }
+      if (pinType === PinType.PWM) {
+            return 'PWM';
+      }
+      return 'Unknown';
+}
+
 </script>
 
 <template>
-      <v-container fluid>
-            <v-card elevation="16">
-                  <v-card-title>
-                        Select any active GPIO pins
-                  </v-card-title>
-                  <v-card-text>
-                        <v-chip-group column multiple v-model="selectedPins">
-                              <v-chip v-for="pin in pins" :key="pin" :value="pin" color="blue" filter
-                                    density="comfortable" size="small" variant="flat">{{
-                                          pin.toString() }}</v-chip>
-                        </v-chip-group>
+      <v-container class="plotter-page" fluid>
+            <section class="plotter-toolbar">
+                  <div class="plotter-toolbar__header">
+                        <div>
+                              <h2>Pin Data Graph</h2>
+                              <p>{{ selectedPins.length }} selected · {{ activePins.length }} active pins</p>
+                        </div>
+                        <div class="plotter-toolbar__actions">
+                              <v-btn @click="selectAllPins" size="small" variant="tonal"
+                                    :disabled="activePins.length === 0">Select all</v-btn>
+                              <v-btn @click="reset" size="small" variant="text"
+                                    :disabled="selectedPins.length === 0">Clear</v-btn>
+                        </div>
+                  </div>
 
-                  </v-card-text>
-                  <v-card-actions>
-                        <v-btn @click="reset()" elevation="4" size="x-small" class="pa-1"
-                              :disabled="selectedPins.length == 0">Reset</v-btn>
+                  <div class="plotter-filter-row">
                         <v-btn :disabled="!isPinTypeAvailable(PinType.Digital).value"
-                              @click="selectPinTypes(PinType.Digital)" size="x-small" class="pa-1">Digital</v-btn>
+                              @click="selectPinTypes(PinType.Digital)" size="small" variant="tonal">Digital</v-btn>
                         <v-btn :disabled="!isPinTypeAvailable(PinType.Analog).value"
-                              @click="selectPinTypes(PinType.Analog)" size="x-small" class="pa-1">Analog</v-btn>
+                              @click="selectPinTypes(PinType.Analog)" size="small" variant="tonal">Analog</v-btn>
                         <v-btn :disabled="!isPinTypeAvailable(PinType.PWM).value" @click="selectPinTypes(PinType.PWM)"
-                              size="x-small" class="pa-1">PWM</v-btn>
+                              size="small" variant="tonal">PWM</v-btn>
                         <v-btn :disabled="!isPinBroadModeAvailable(PinModeBroad.OUTPUT).value"
-                              @click="selectPinBroadMode(PinModeBroad.OUTPUT)" size="x-small" class="pa-1">Output</v-btn>
+                              @click="selectPinBroadMode(PinModeBroad.OUTPUT)" size="small" variant="tonal">Output</v-btn>
                         <v-btn :disabled="!isPinBroadModeAvailable(PinModeBroad.INPUT).value"
-                              @click="selectPinBroadMode(PinModeBroad.INPUT)" size="x-small" class="pa-1">Input</v-btn>
-                  </v-card-actions>
-            </v-card>
-            <v-sheet class="mt-6" elevation="16" height="65vh">
-                  <Line v-if="dataAvailable" :data="pinsData" :options="options" :key="cle" />
+                              @click="selectPinBroadMode(PinModeBroad.INPUT)" size="small" variant="tonal">Input</v-btn>
+                  </div>
+
+                  <v-chip-group column multiple v-model="selectedPins" class="pin-chip-group">
+                        <v-chip v-for="pin in activePins" :key="pin.gpio" :value="pin.gpio" color="blue" filter
+                              density="comfortable" size="small" variant="flat">
+                              GPIO {{ pin.gpio }}
+                              <span class="pin-chip-meta">{{ pinTypeLabel(pin.type) }} · {{ pin.mode }}</span>
+                        </v-chip>
+                  </v-chip-group>
+            </section>
+
+            <v-sheet class="plotter-chart" elevation="10">
+                  <Line v-if="chartHasData" :data="pinsData" :options="chartOptions" :key="cle" />
+                  <div v-else class="plotter-empty-state">
+                        <v-icon icon="mdi-chart-line" size="44"></v-icon>
+                        <div class="plotter-empty-state__title">
+                              {{ chartHasSelection ? 'Waiting for samples' : 'Select pins to plot' }}
+                        </div>
+                        <div class="plotter-empty-state__text">
+                              {{ chartHasSelection
+                                    ? 'Selected pins will appear here when GPIO samples arrive.'
+                                    : 'Select one or more active GPIO pins to plot their last 100 samples.' }}
+                        </div>
+                  </div>
             </v-sheet>
       </v-container>
 </template>
+
+<style scoped>
+.plotter-page {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 1.25rem clamp(1rem, 2.5vw, 2rem) 1.75rem;
+}
+
+.plotter-toolbar {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      padding: 1rem;
+      border-radius: 12px;
+      background: rgb(var(--v-theme-surface));
+      color: rgb(var(--v-theme-on-surface));
+      box-shadow: 0 2px 8px color-mix(in srgb, rgb(var(--v-theme-on-surface)) 9%, transparent);
+}
+
+.plotter-toolbar__header {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: flex-start;
+}
+
+.plotter-toolbar__header h2 {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 650;
+}
+
+.plotter-toolbar__header p {
+      margin: 0.2rem 0 0;
+      color: color-mix(in srgb, rgb(var(--v-theme-on-surface)) 68%, transparent);
+      font-size: 0.88rem;
+}
+
+.plotter-toolbar__actions,
+.plotter-filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+}
+
+.plotter-toolbar__actions {
+      justify-content: flex-end;
+}
+
+.pin-chip-group {
+      max-height: 9.5rem;
+      overflow: auto;
+}
+
+.pin-chip-meta {
+      margin-left: 0.45rem;
+      font-size: 0.72rem;
+      opacity: 0.78;
+}
+
+.plotter-chart {
+      height: 65vh;
+      min-height: 360px;
+      padding: 1rem;
+      border-radius: 12px;
+      background: rgb(var(--v-theme-surface));
+      color: rgb(var(--v-theme-on-surface));
+}
+
+.plotter-empty-state {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.55rem;
+      text-align: center;
+      color: color-mix(in srgb, rgb(var(--v-theme-on-surface)) 62%, transparent);
+}
+
+.plotter-empty-state__title {
+      font-size: 1.05rem;
+      font-weight: 650;
+      color: rgb(var(--v-theme-on-surface));
+}
+
+.plotter-empty-state__text {
+      max-width: 34rem;
+      font-size: 0.92rem;
+}
+
+@media (max-width: 640px) {
+      .plotter-toolbar__header {
+            flex-direction: column;
+      }
+
+      .plotter-toolbar__actions {
+            justify-content: flex-start;
+      }
+
+      .plotter-chart {
+            min-height: 320px;
+      }
+}
+</style>
