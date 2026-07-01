@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.2.8
+## 2.3.0
 
 ### Added
 - Added automated coverage with Vitest and Playwright for board configuration, board rendering, GPIO store helpers, utility functions, diagnostic views, theme behavior, and mocked ESP32 smoke flows.
