@@ -205,6 +205,11 @@
         "pins": "indicators/ESP32-S3-Zero-S3FH4R2.json"
     },
     {
+        "name": "FireBeetle 2 ESP32-S3 (N4)",
+        "image": "devboards_images/FireBeetle-2-ESP32-S3-N4.png",
+        "pins": "indicators/FireBeetle-2-ESP32-S3-N4.json"
+    },
+    {
         "name": "Sailor Hat ESP32",
         "image": "devboards_images/Sailor-Hat-ESP32.png",
         "pins": "indicators/Sailor-Hat-ESP32.json"
