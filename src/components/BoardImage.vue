@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { BoardData, PinsConfiguration, PinState, Pins, PinStateMap } from '@/types/types';
-import { ref, watch, computed, onUnmounted } from 'vue';
+import { ref, watch, computed, onUnmounted, nextTick } from 'vue';
 import { gpioStore } from '@/stores/gpiostore'
 import PinInfo from '@/components/PinInformation.vue';
 import { pinBroadMode } from '@/functions'
@@ -60,6 +60,10 @@ watch(() => props.board, async (newBoard, oldBoard) => {
                 restorePinsState(store.pinsPreserved);
             }
         }
+        if (store.currentStates && pinsConf.value) {
+            updatePinStates(store.currentStates, pinsConf.value);
+        }
+        void playBoardIntroAnimations();
         store.magnifyImage = 80;
     }
 }, { immediate: true }); // immediate: true ensures the effect runs on mount
@@ -117,6 +121,16 @@ function triggerPinActivation(gpioid: number) {
         activatingPins.value = remainingActivatingPins;
         activationTimers.delete(gpioid);
     }, 700));
+}
+
+async function playBoardIntroAnimations() {
+    clearActivationTimers();
+    activatingPins.value = new Set();
+    await nextTick();
+
+    pinsConf.value?.pins
+        .filter((pin) => Boolean(pin.displayValue))
+        .forEach((pin) => triggerPinActivation(pin.gpioid));
 }
 
 function clearActivationTimers() {
