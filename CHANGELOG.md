@@ -16,6 +16,7 @@
 - Updated digital pin value colors so `High` is red and `Low` is green.
 - Redesigned the pin detail dialog with a clearer layout, theme-aware styling, function chips, and a value meter.
 - Improved ESP32 Information and Memory Map views to use Vuetify theme tokens instead of custom dark-mode branches.
+- Improved the Memory Map ESP32 Partition Builder link so it opens the builder with the current partition table and flash size preloaded.
 - Moved the theme toggle into the top app bar.
 - Derived the displayed web app version from `package.json` instead of hardcoding it.
 - Updated dependencies including `@vue/tsconfig`, Vite, Vue Router, Vuetify, and TypeScript.
