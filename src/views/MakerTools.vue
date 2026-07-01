@@ -1,8 +1,15 @@
 <script setup lang="ts">
+import arduinoMakerWorkshopThumbnail from '@/assets/tool-thumbnails/arduino-maker-workshop.jpg';
+import espConnectThumbnail from '@/assets/tool-thumbnails/espconnect.jpg';
+import gpioViewerThumbnail from '@/assets/tool-thumbnails/gpio-viewer.jpg';
+import partitionBuilderThumbnail from '@/assets/tool-thumbnails/partition-builder.jpg';
+import videoConversionThumbnail from '@/assets/tool-thumbnails/video-conversion.jpg';
+
 interface ToolItem {
   key: string;
   title: string;
   icon: string;
+  thumbnail: string;
   url: string;
   description: string;
   actionLabel?: string;
@@ -18,6 +25,7 @@ const toolItems: ToolItem[] = [
     key: 'espconnect',
     title: 'ESPConnect',
     icon: 'mdi-connection',
+    thumbnail: espConnectThumbnail,
     url: 'https://thelastoutpostworkshop.github.io/ESPConnect/',
     description:
       'A browser utility for ESP devices. Inspect hardware details, manage filesystem content, back up flash, and deploy firmware from a Chromium browser.',
@@ -29,6 +37,7 @@ const toolItems: ToolItem[] = [
     key: 'partition-builder',
     title: 'ESP32 Partition Builder',
     icon: 'mdi-table-cog',
+    thumbnail: partitionBuilderThumbnail,
     url: 'https://thelastoutpostworkshop.github.io/ESP32PartitionBuilder/',
     description:
       'Plan and create custom ESP32 partition layouts, including flash-size-aware partition tables for embedded projects.',
@@ -40,6 +49,7 @@ const toolItems: ToolItem[] = [
     key: 'video-conversion',
     title: 'Video Conversion Studio',
     icon: 'mdi-movie-cog-outline',
+    thumbnail: videoConversionThumbnail,
     url: 'https://thelastoutpostworkshop.github.io/video_conversion/',
     description:
       'Convert video and audio assets into output suitable for ESP32 display projects and embedded media experiments.',
@@ -51,6 +61,7 @@ const toolItems: ToolItem[] = [
     key: 'gpio-viewer',
     title: 'GPIOViewer',
     icon: 'mdi-chip',
+    thumbnail: gpioViewerThumbnail,
     url: 'https://www.youtube.com/watch?v=JJzRXcQrl3I',
     description:
       'Visualize GPIO pin activity in real time from a web browser so wiring, signal changes, and board behavior are easier to troubleshoot.',
@@ -62,6 +73,7 @@ const toolItems: ToolItem[] = [
     key: 'arduino-maker-workshop',
     title: 'Arduino Maker Workshop',
     icon: 'mdi-microsoft-visual-studio-code',
+    thumbnail: arduinoMakerWorkshopThumbnail,
     url: 'https://marketplace.visualstudio.com/items?itemName=TheLastOutpostWorkshop.arduino-maker-workshop',
     description:
       'A VS Code extension for Arduino-centered maker development, focused on a tighter workflow for sketch-driven embedded projects.',
@@ -72,6 +84,10 @@ const toolItems: ToolItem[] = [
 
 function openExternal(url: string) {
   window.open(url, '_blank', 'noopener');
+}
+
+function getThumbnailActionUrl(tool: ToolItem): string {
+  return tool.tutorialUrl ?? tool.url;
 }
 </script>
 
@@ -99,9 +115,20 @@ function openExternal(url: string) {
         :style="{ '--entry-index': index }"
       >
         <v-card-text class="tool-card__body">
-          <div class="tool-card__icon" aria-hidden="true">
-            <v-icon :icon="tool.icon" size="30" />
-          </div>
+          <button
+            class="tool-card__thumbnail"
+            type="button"
+            :aria-label="`Open ${tool.title}`"
+            @click="openExternal(getThumbnailActionUrl(tool))"
+          >
+            <img :src="tool.thumbnail" :alt="`${tool.title} preview`" loading="lazy" />
+            <span class="tool-card__thumbnail-icon" aria-hidden="true">
+              <v-icon :icon="tool.icon" size="18" />
+            </span>
+            <span class="tool-card__play-badge" aria-hidden="true">
+              <v-icon icon="mdi-play" size="24" />
+            </span>
+          </button>
           <div class="tool-card__copy">
             <h2>{{ tool.title }}</h2>
             <p>{{ tool.description }}</p>
@@ -197,21 +224,87 @@ function openExternal(url: string) {
 .tool-card__body {
   display: grid;
   flex: 1 1 auto;
-  grid-template-columns: 56px minmax(0, 1fr);
+  grid-template-columns: minmax(150px, 190px) minmax(0, 1fr);
   gap: 1rem;
 }
 
-.tool-card__icon {
-  display: grid;
-  width: 52px;
-  height: 52px;
-  place-items: center;
-  border: 1px solid color-mix(in srgb, rgb(var(--v-theme-primary)) 28%, transparent);
+.tool-card__thumbnail {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, rgb(var(--v-theme-on-surface)) 15%, transparent);
   border-radius: 10px;
   background:
-    linear-gradient(135deg, color-mix(in srgb, rgb(var(--v-theme-primary)) 16%, transparent), transparent),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, rgb(var(--v-theme-primary)) 16%, transparent),
+      color-mix(in srgb, rgb(var(--v-theme-info)) 10%, transparent)
+    ),
     rgb(var(--v-theme-surface));
-  color: rgb(var(--v-theme-primary));
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.tool-card__thumbnail img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition:
+    filter 180ms ease,
+    transform 180ms ease;
+}
+
+.tool-card__thumbnail::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.04), rgba(15, 23, 42, 0.34)),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.38), transparent 52%);
+}
+
+.tool-card__thumbnail:hover img {
+  filter: saturate(1.08) contrast(1.03);
+  transform: scale(1.025);
+}
+
+.tool-card__thumbnail:focus-visible {
+  outline: 2px solid rgb(var(--v-theme-primary));
+  outline-offset: 3px;
+}
+
+.tool-card__thumbnail-icon,
+.tool-card__play-badge {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 10px 24px rgba(3, 13, 10, 0.22);
+}
+
+.tool-card__thumbnail-icon {
+  top: 0.5rem;
+  left: 0.5rem;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.64);
+  backdrop-filter: blur(6px);
+}
+
+.tool-card__play-badge {
+  top: 50%;
+  left: 50%;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: color-mix(in srgb, rgb(var(--v-theme-primary)) 88%, #000000 12%);
+  transform: translate(-50%, -50%);
 }
 
 .tool-card__copy h2 {
@@ -276,6 +369,10 @@ function openExternal(url: string) {
 
   .tool-card__body {
     grid-template-columns: 1fr;
+  }
+
+  .tool-card__thumbnail {
+    max-width: 420px;
   }
 }
 
