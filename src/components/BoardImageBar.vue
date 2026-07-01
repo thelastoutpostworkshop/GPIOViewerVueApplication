@@ -64,7 +64,18 @@ const store = gpioStore();
                     </v-list>
                 </v-menu>
             </v-btn>
-            <div class="board-image-bar__sampling">@{{ store.SamplingInterval }}ms</div>
+            <v-tooltip location="bottom">
+                <template #activator="{ props }">
+                    <div
+                        v-bind="props"
+                        class="board-image-bar__sampling"
+                        tabindex="0"
+                    >
+                        @{{ store.SamplingInterval }}ms
+                    </div>
+                </template>
+                <span>GPIO sampling interval reported by the ESP32</span>
+            </v-tooltip>
         </div>
     </div>
 </template>
