@@ -3,6 +3,8 @@
 ## 2.3.0
 
 ### Added
+- New Board : FireBeetle 2 ESP32-S3 (N4)
+- New Board : ESP32-C6 Super Mini
 - Added automated coverage with Vitest and Playwright for board configuration, board rendering, GPIO store helpers, utility functions, diagnostic views, theme behavior, and mocked ESP32 smoke flows.
 - Added a mocked Playwright smoke test for the ESP32 event/API workflow, including GPIO updates, disconnect feedback, dark theme navigation, memory map, ESP info, and plotter navigation.
 - Added a persistent light/dark theme system using Vuetify themes and local storage.
