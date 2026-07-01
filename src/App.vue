@@ -32,9 +32,7 @@ onMounted(() => {
 });
 
 watch(lgAndUp, (isWideScreen) => {
-  if (isWideScreen) {
-    drawerOpen.value = true;
-  }
+  drawerOpen.value = isWideScreen;
 });
 
 function goToTutorial() {

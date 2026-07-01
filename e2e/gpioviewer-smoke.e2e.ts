@@ -267,6 +267,21 @@ test.describe('GPIOViewer mocked ESP32 smoke test', () => {
     await expect(page.locator('.value_right').filter({ hasText: 'Low' })).toBeVisible()
   })
 
+  test('closes the sidebar when the viewport becomes compact', async ({ page }) => {
+    await bootMockedApp(page)
+
+    const drawer = page.locator('.v-navigation-drawer')
+    await expect(drawer).toHaveClass(/v-navigation-drawer--active/)
+
+    await page.setViewportSize({ width: 375, height: 667 })
+    await expect(drawer).not.toHaveClass(/v-navigation-drawer--active/)
+
+    const menuButton = page.locator('.v-app-bar .v-app-bar-nav-icon')
+    await expect(menuButton).toBeVisible()
+    await menuButton.click()
+    await expect(drawer).toHaveClass(/v-navigation-drawer--active/)
+  })
+
   test('updates stats, disconnect feedback, and plotter history from events', async ({ page }) => {
     await bootMockedApp(page)
 
