@@ -11,6 +11,11 @@ import { useTheme } from 'vuetify';
 
 type GraphMode = 'logic' | 'line';
 
+const LOGIC_LANE_PLOT_START = 132;
+const LOGIC_LANE_PLOT_END = 884;
+const LOGIC_LANE_LATEST_X = 900;
+const LOGIC_LANE_LATEST_WIDTH = 74;
+
 ChartJS.register(
       CategoryScale,
       LinearScale,
@@ -305,23 +310,21 @@ function createLogicLanePath(values: number[], rowIndex: number): string {
             return '';
       }
 
-      const left = 98;
-      const right = 28;
-      const chartWidth = 1000 - left - right;
+      const chartWidth = LOGIC_LANE_PLOT_END - LOGIC_LANE_PLOT_START;
       const rowTop = 40 + (rowIndex * 58);
       const highY = rowTop + 12;
       const lowY = rowTop + 40;
       const step = values.length > 1 ? chartWidth / (values.length - 1) : chartWidth;
       const yForValue = (value: number) => value > 0 ? highY : lowY;
-      let path = `M ${left} ${yForValue(values[0] ?? 0)}`;
+      let path = `M ${LOGIC_LANE_PLOT_START} ${yForValue(values[0] ?? 0)}`;
 
       for (let index = 1; index < values.length; index += 1) {
-            const x = left + (index * step);
+            const x = LOGIC_LANE_PLOT_START + (index * step);
             const nextY = yForValue(values[index] ?? 0);
             path += ` H ${x} V ${nextY}`;
       }
 
-      path += ` H ${left + chartWidth}`;
+      path += ` H ${LOGIC_LANE_PLOT_END}`;
       return path;
 }
 
@@ -487,15 +490,15 @@ function pinModeLabel(mode: string): string {
                         <svg class="logic-lanes__svg" role="img" aria-label="Digital logic lanes"
                               :style="{ minHeight: `${logicSvgHeight}px` }"
                               :viewBox="`0 0 1000 ${logicSvgHeight}`" preserveAspectRatio="none">
-                              <text x="98" y="24" class="logic-lanes__axis-label">{{ logicTimeRangeLabel }}</text>
-                              <text x="972" y="24" class="logic-lanes__axis-label logic-lanes__axis-label--end">now</text>
+                              <text :x="LOGIC_LANE_PLOT_START" y="24" class="logic-lanes__axis-label">{{ logicTimeRangeLabel }}</text>
+                              <text :x="LOGIC_LANE_PLOT_END" y="24" class="logic-lanes__axis-label logic-lanes__axis-label--end">now</text>
 
                               <g v-for="(lane, index) in logicLaneRows" :key="lane.gpio">
                                     <rect x="86" :y="36 + (index * 58)" width="902" height="48" rx="10"
                                           class="logic-lanes__row-background"></rect>
-                                    <line x1="98" x2="972" :y1="52 + (index * 58)" :y2="52 + (index * 58)"
+                                    <line :x1="LOGIC_LANE_PLOT_START" :x2="LOGIC_LANE_PLOT_END" :y1="52 + (index * 58)" :y2="52 + (index * 58)"
                                           class="logic-lanes__state-guide"></line>
-                                    <line x1="98" x2="972" :y1="80 + (index * 58)" :y2="80 + (index * 58)"
+                                    <line :x1="LOGIC_LANE_PLOT_START" :x2="LOGIC_LANE_PLOT_END" :y1="80 + (index * 58)" :y2="80 + (index * 58)"
                                           class="logic-lanes__state-guide"></line>
                                     <text x="18" :y="66 + (index * 58)" class="logic-lanes__pin-label">
                                           GPIO {{ lane.gpio }}
@@ -503,9 +506,9 @@ function pinModeLabel(mode: string): string {
                                     <text x="104" :y="49 + (index * 58)" class="logic-lanes__state-label">H</text>
                                     <text x="104" :y="82 + (index * 58)" class="logic-lanes__state-label">L</text>
                                     <path :d="lane.path" class="logic-lanes__path" :style="{ stroke: lane.color }"></path>
-                                    <rect x="900" :y="46 + (index * 58)" width="74" height="28" rx="14"
+                                    <rect :x="LOGIC_LANE_LATEST_X" :y="46 + (index * 58)" :width="LOGIC_LANE_LATEST_WIDTH" height="28" rx="14"
                                           :class="['logic-lanes__latest', lane.latestHigh ? 'logic-lanes__latest--high' : 'logic-lanes__latest--low']"></rect>
-                                    <text x="937" :y="64 + (index * 58)" class="logic-lanes__latest-label">
+                                    <text :x="LOGIC_LANE_LATEST_X + (LOGIC_LANE_LATEST_WIDTH / 2)" :y="64 + (index * 58)" class="logic-lanes__latest-label">
                                           {{ lane.latestLabel }}
                                     </text>
                               </g>
