@@ -311,9 +311,6 @@ async function fetchSamplingInterval() {
         :permanent="lgAndUp"
       >
         <div class="sidebar-brand">
-          <div class="sidebar-brand__mark" aria-hidden="true">
-            <v-icon icon="mdi-chip"></v-icon>
-          </div>
           <div class="sidebar-brand__copy">
             <div class="sidebar-brand__title">GPIOViewer</div>
             <div class="sidebar-brand__version">App v{{ store.WebApplicationRelease }}</div>
@@ -441,11 +438,11 @@ async function fetchSamplingInterval() {
 
 .sidebar-brand {
   display: grid;
-  grid-template-columns: 42px minmax(0, 1fr) 32px;
+  grid-template-columns: minmax(0, 1fr) 32px;
   gap: 10px;
   align-items: center;
   margin: 10px;
-  padding: 14px 10px;
+  padding: 16px 12px;
   border-radius: 8px;
   color: rgb(var(--v-theme-on-primary));
   background:
@@ -458,23 +455,12 @@ async function fetchSamplingInterval() {
   box-shadow: 0 10px 26px color-mix(in srgb, rgb(var(--v-theme-primary)) 28%, transparent);
 }
 
-.sidebar-brand__mark {
-  display: grid;
-  width: 42px;
-  height: 42px;
-  place-items: center;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.16);
-  border: 1px solid rgba(255, 255, 255, 0.24);
-  font-size: 1.35rem;
-}
-
 .sidebar-brand__copy {
   min-width: 0;
 }
 
 .sidebar-brand__title {
-  font-size: 1.18rem;
+  font-size: 1.42rem;
   font-weight: 800;
   line-height: 1.1;
 }
@@ -482,12 +468,12 @@ async function fetchSamplingInterval() {
 .sidebar-brand__version {
   display: inline-flex;
   align-items: center;
-  margin-top: 6px;
-  padding: 0.16rem 0.45rem;
+  margin-top: 7px;
+  padding: 0.2rem 0.55rem;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.18);
   border: 1px solid rgba(255, 255, 255, 0.22);
-  font-size: 0.76rem;
+  font-size: 0.86rem;
   font-weight: 700;
   line-height: 1.2;
   white-space: nowrap;
