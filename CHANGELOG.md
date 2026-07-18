@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.3.1
+
+### Added
+- New Board : Freenove ESP32-WROVER-CAM
+
 ## 2.3.0
 
 ### Added
