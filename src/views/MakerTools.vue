@@ -8,7 +8,6 @@ import videoConversionThumbnail from '@/assets/tool-thumbnails/video-conversion.
 interface ToolItem {
   key: string;
   title: string;
-  icon: string;
   thumbnail: string;
   url: string;
   description: string;
@@ -24,7 +23,6 @@ const toolItems: ToolItem[] = [
   {
     key: 'espconnect',
     title: 'ESPConnect',
-    icon: 'mdi-connection',
     thumbnail: espConnectThumbnail,
     url: 'https://thelastoutpostworkshop.github.io/ESPConnect/',
     description:
@@ -36,7 +34,6 @@ const toolItems: ToolItem[] = [
   {
     key: 'partition-builder',
     title: 'ESP32 Partition Builder',
-    icon: 'mdi-table-cog',
     thumbnail: partitionBuilderThumbnail,
     url: 'https://thelastoutpostworkshop.github.io/ESP32PartitionBuilder/',
     description:
@@ -48,7 +45,6 @@ const toolItems: ToolItem[] = [
   {
     key: 'video-conversion',
     title: 'Video Conversion Studio',
-    icon: 'mdi-movie-cog-outline',
     thumbnail: videoConversionThumbnail,
     url: 'https://thelastoutpostworkshop.github.io/video_conversion/',
     description:
@@ -60,7 +56,6 @@ const toolItems: ToolItem[] = [
   {
     key: 'gpio-viewer',
     title: 'GPIOViewer',
-    icon: 'mdi-chip',
     thumbnail: gpioViewerThumbnail,
     url: 'https://www.youtube.com/watch?v=JJzRXcQrl3I',
     description:
@@ -72,7 +67,6 @@ const toolItems: ToolItem[] = [
   {
     key: 'arduino-maker-workshop',
     title: 'Arduino Maker Workshop',
-    icon: 'mdi-microsoft-visual-studio-code',
     thumbnail: arduinoMakerWorkshopThumbnail,
     url: 'https://marketplace.visualstudio.com/items?itemName=TheLastOutpostWorkshop.arduino-maker-workshop',
     description:
@@ -122,12 +116,6 @@ function getThumbnailActionUrl(tool: ToolItem): string {
             @click="openExternal(getThumbnailActionUrl(tool))"
           >
             <img :src="tool.thumbnail" :alt="`${tool.title} preview`" loading="lazy" />
-            <span class="tool-card__thumbnail-icon" aria-hidden="true">
-              <v-icon :icon="tool.icon" size="18" />
-            </span>
-            <span class="tool-card__play-badge" aria-hidden="true">
-              <v-icon icon="mdi-play" size="24" />
-            </span>
           </button>
           <div class="tool-card__copy">
             <h2>{{ tool.title }}</h2>
@@ -275,36 +263,6 @@ function getThumbnailActionUrl(tool: ToolItem): string {
 .tool-card__thumbnail:focus-visible {
   outline: 2px solid rgb(var(--v-theme-primary));
   outline-offset: 3px;
-}
-
-.tool-card__thumbnail-icon,
-.tool-card__play-badge {
-  position: absolute;
-  z-index: 1;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 10px 24px rgba(3, 13, 10, 0.22);
-}
-
-.tool-card__thumbnail-icon {
-  top: 0.5rem;
-  left: 0.5rem;
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  background: rgba(15, 23, 42, 0.64);
-  backdrop-filter: blur(6px);
-}
-
-.tool-card__play-badge {
-  top: 50%;
-  left: 50%;
-  width: 44px;
-  height: 44px;
-  border-radius: 999px;
-  background: color-mix(in srgb, rgb(var(--v-theme-primary)) 88%, #000000 12%);
-  transform: translate(-50%, -50%);
 }
 
 .tool-card__copy h2 {
