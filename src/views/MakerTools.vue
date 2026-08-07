@@ -137,7 +137,7 @@ function getThumbnailActionUrl(tool: ToolItem): string {
         <v-card-actions>
           <v-btn
             v-if="tool.tutorialUrl"
-            color="primary"
+            color="info"
             variant="text"
             prepend-icon="mdi-youtube"
             @click="openExternal(tool.tutorialUrl)"
@@ -145,7 +145,7 @@ function getThumbnailActionUrl(tool: ToolItem): string {
             Watch tutorial
           </v-btn>
           <v-spacer />
-          <v-btn color="primary" variant="tonal" prepend-icon="mdi-open-in-new" @click="openExternal(tool.url)">
+          <v-btn color="info" variant="tonal" prepend-icon="mdi-open-in-new" @click="openExternal(tool.url)">
             {{ tool.actionLabel ?? 'Open tool' }}
           </v-btn>
         </v-card-actions>
