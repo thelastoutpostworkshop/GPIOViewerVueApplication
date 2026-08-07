@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.3.2
+
+### Changed
+- Updated `npm-run-all2` to v9.0.3.
+- Simplified Maker Tools preview cards by removing the play and tool-logo overlays.
+- Improved Maker Tools action-button contrast in dark mode.
+
 ## 2.3.1
 
 ### Added
