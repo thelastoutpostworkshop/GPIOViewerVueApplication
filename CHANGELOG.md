@@ -2,6 +2,9 @@
 
 ## 2.3.2
 
+### Added
+- Added ESP Pinout Explorer to Maker Tools.
+
 ### Changed
 - Updated `npm-run-all2` to v9.0.3.
 - Simplified Maker Tools preview cards by removing the play and tool-logo overlays.

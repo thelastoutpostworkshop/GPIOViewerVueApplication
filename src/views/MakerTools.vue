@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import arduinoMakerWorkshopThumbnail from '@/assets/tool-thumbnails/arduino-maker-workshop.jpg';
 import espConnectThumbnail from '@/assets/tool-thumbnails/espconnect.jpg';
+import espPinoutExplorerThumbnail from '@/assets/tool-thumbnails/esp-pinout-explorer.png';
 import gpioViewerThumbnail from '@/assets/tool-thumbnails/gpio-viewer.jpg';
 import partitionBuilderThumbnail from '@/assets/tool-thumbnails/partition-builder.jpg';
 import videoConversionThumbnail from '@/assets/tool-thumbnails/video-conversion.jpg';
@@ -20,6 +21,17 @@ interface ToolItem {
 const coffeeUrl = 'https://buymeacoffee.com/thelastoutpostworkshop';
 
 const toolItems: ToolItem[] = [
+  {
+    key: 'esp-pinout-explorer',
+    title: 'ESP Pinout Explorer',
+    thumbnail: espPinoutExplorerThumbnail,
+    url: 'https://thelastoutpostworkshop.github.io/esp-pinout-explorer/',
+    description:
+      'An interactive bench-side reference for ESP development boards, modules, and chip packages. Find pins, functions, header labels, and documented wiring constraints before connecting hardware.',
+    sourceUrl: 'https://github.com/thelastoutpostworkshop/esp-pinout-explorer',
+    sourceLabel: 'thelastoutpostworkshop/esp-pinout-explorer',
+    tutorialUrl: 'https://youtu.be/l357x8bTJg0'
+  },
   {
     key: 'espconnect',
     title: 'ESPConnect',
