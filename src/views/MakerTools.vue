@@ -212,7 +212,7 @@ function getThumbnailActionUrl(tool: ToolItem): string {
 .tool-card__body {
   display: grid;
   flex: 1 1 auto;
-  grid-template-columns: minmax(150px, 190px) minmax(0, 1fr);
+  grid-template-columns: minmax(210px, 260px) minmax(0, 1fr);
   gap: 1rem;
 }
 
