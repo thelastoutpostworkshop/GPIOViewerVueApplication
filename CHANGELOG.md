@@ -4,7 +4,7 @@
 
 ### Added
 
-- Added Waveshare ESP32-P4-Module-DEV-KIT with a clean board photo and indicators for all 28 GPIOs on its 40-pin header ([#206](https://github.com/thelastoutpostworkshop/gpio_viewer/issues/206)).
+- Added Waveshare ESP32-P4-Module-DEV-KIT with a transparent board photo and indicators for all 28 GPIOs on its 40-pin header ([#206](https://github.com/thelastoutpostworkshop/gpio_viewer/issues/206)).
 
 ### Fixed
 

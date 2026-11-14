@@ -76,7 +76,7 @@
     },
     {
         "name": "Waveshare ESP32-P4-Module-DEV-KIT",
-        "image": "devboards_images/Waveshare-ESP32-P4-Module-DEV-KIT.jpg",
+        "image": "devboards_images/Waveshare-ESP32-P4-Module-DEV-KIT.png",
         "pins": "indicators/Waveshare-ESP32-P4-Module-DEV-KIT.json"
     },
     {
