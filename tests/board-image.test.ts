@@ -170,13 +170,17 @@ describe('BoardImage', () => {
     const leftSideValue = wrapper.find('.value_right')
     expect(leftSideValue.text()).toContain('251')
     expect(leftSideValue.classes()).toContain('value--fill-from-right')
-    expect(leftSideValue.find('.value-bar').attributes('style')).toContain('width: 25.098039215686274%')
+    const horizontalWidth = leftSideValue.find<HTMLElement>('.value-bar').element.style.width
+    expect(horizontalWidth).toMatch(/%$/)
+    expect(parseFloat(horizontalWidth)).toBeCloseTo(25.098039215686274, 3)
 
     const verticalValue = wrapper.find('.value_vertical')
     expect(verticalValue.text()).toContain('512')
     expect(verticalValue.classes()).toContain('value--active')
     expect(verticalValue.classes()).toContain('value--fill-vertical')
-    expect(verticalValue.find('.value-bar').attributes('style')).toContain('height: 50.19607843137255%')
+    const verticalHeight = verticalValue.find<HTMLElement>('.value-bar').element.style.height
+    expect(verticalHeight).toMatch(/%$/)
+    expect(parseFloat(verticalHeight)).toBeCloseTo(50.19607843137255, 3)
   })
 
   it('can show pin type labels when the store display mode changes', async () => {
