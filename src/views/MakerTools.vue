@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import arduinoMakerWorkshopThumbnail from '@/assets/tool-thumbnails/arduino-maker-workshop.jpg';
 import espConnectThumbnail from '@/assets/tool-thumbnails/espconnect.jpg';
+import espImageServerThumbnail from '@/assets/tool-thumbnails/esp-image-server.png';
 import espPinoutExplorerThumbnail from '@/assets/tool-thumbnails/esp-pinout-explorer.png';
 import gpioViewerThumbnail from '@/assets/tool-thumbnails/gpio-viewer.jpg';
 import partitionBuilderThumbnail from '@/assets/tool-thumbnails/partition-builder.jpg';
@@ -21,6 +22,18 @@ interface ToolItem {
 const coffeeUrl = 'https://buymeacoffee.com/thelastoutpostworkshop';
 
 const toolItems: ToolItem[] = [
+  {
+    key: 'esp-image-server',
+    title: 'ESPImageServer',
+    thumbnail: espImageServerThumbnail,
+    url: 'https://github.com/thelastoutpostworkshop/ESPImageServer/releases/latest',
+    description:
+      'Create AI images and videos locally on your computer with a supported NVIDIA GPU, then send them over Wi-Fi to compatible ESP32 displays. Free to use, with no API keys or subscriptions.',
+    actionLabel: 'Download app',
+    sourceUrl: 'https://github.com/thelastoutpostworkshop/ESPImageServer',
+    sourceLabel: 'thelastoutpostworkshop/ESPImageServer',
+    tutorialUrl: 'https://youtu.be/4_eT38NmxBw'
+  },
   {
     key: 'esp-pinout-explorer',
     title: 'ESP Pinout Explorer',
@@ -294,6 +307,7 @@ function getThumbnailActionUrl(tool: ToolItem): string {
   color: rgb(var(--v-theme-info));
   font: inherit;
   font-size: 0.86rem;
+  overflow-wrap: anywhere;
 }
 
 .tool-card__source {
