@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.3.3
+
+### Added
+
+- Added Waveshare ESP32-P4-Module-DEV-KIT with a clean board photo and indicators for all 28 GPIOs on its 40-pin header ([#206](https://github.com/thelastoutpostworkshop/gpio_viewer/issues/206)).
+
+### Fixed
+
+- Extended Generic View to include GPIO50–54 and adjusted spacing to fit all 55 GPIOs.
+- Added missing GPIO26 and GPIO27 indicators (USB1-N/P) to the Olimex ESP32-P4 view, completing coverage of all 31 GPIOs on its visible headers.
+
 ## 2.3.2
 
 ### Added

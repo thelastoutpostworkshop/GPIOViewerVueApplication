@@ -19,6 +19,8 @@
     { "gpioid": 3, "top": 75, "left": 12, "valueJustify": -1 },
     { "gpioid": 2, "top": 78, "left": 12, "valueJustify": -1 },
 
+    { "gpioid": 26, "top": 36.1, "left": 90, "valueJustify": 0 },
+    { "gpioid": 27, "top": 39.3, "left": 90, "valueJustify": 0 },
     { "gpioid": 20, "top": 48, "left": 90, "valueJustify": 0 },
     { "gpioid": 21, "top": 51, "left": 90, "valueJustify": 0 },
     { "gpioid": 22, "top": 54, "left": 90, "valueJustify": 0 },
