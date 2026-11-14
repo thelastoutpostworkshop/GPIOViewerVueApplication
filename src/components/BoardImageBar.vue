@@ -12,12 +12,14 @@ const store = gpioStore();
         <div class="board-image-bar__actions">
             <v-btn icon :disabled="store.pinTypeDisplay === 0">
                 <v-icon>mdi-tooltip</v-icon>
-                <v-menu activator="parent" location="bottom end" transition="fade-transition" width="175">
+                <v-menu activator="parent" location="bottom end" transition="fade-transition"
+                    :width="store.pinTypeDisplay === 3 ? 260 : 175">
                     <v-list density="compact" rounded="lg" slim>
                         <v-list-item v-if="store.pinTypeDisplay === 1" prepend-icon="mdi-pin" title="Pin Types"
                             link></v-list-item>
                         <v-list-item v-if="store.pinTypeDisplay === 2" prepend-icon="mdi-pin" title="Pin Modes"
                             link></v-list-item>
+                        <v-list-item v-if="store.pinTypeDisplay === 3" prepend-icon="mdi-label-outline" title="Pin Labels"></v-list-item>
 
                         <v-divider class="my-2"></v-divider>
 
@@ -60,6 +62,10 @@ const store = gpioStore();
                                     Not Set
                                 </template>
                             </v-list-item>
+                        </div>
+                        <div v-if="store.pinTypeDisplay === 3" class="px-4 pb-3 text-body-2">
+                            Device labels appear beside live values. GPIO numbers remain visible.
+                            Hover over a pin or open its details to read the full label.
                         </div>
                     </v-list>
                 </v-menu>

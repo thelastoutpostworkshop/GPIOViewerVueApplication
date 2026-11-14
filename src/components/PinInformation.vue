@@ -85,6 +85,7 @@ function pinIcon(pin: Pins | null | undefined): string {
 }
 
 const pinFunctions = computed(() => functionsOfThePin(props.pin?.gpioid));
+const pinLabel = computed(() => props.pin ? store.getPinLabel(props.pin.gpioid) : '');
 const pinValuePercent = computed(() => Math.max(0, Math.min(props.pin?.displayBarValue ?? 0, 100)));
 const pinDisplayValue = computed(() => props.pin?.displayValue || "No activity");
 
@@ -122,6 +123,10 @@ const pinDisplayValue = computed(() => props.pin?.displayValue || "No activity")
                     </div>
 
                     <div class="pin-detail__facts">
+                        <div v-if="pinLabel" class="fact-row">
+                            <span class="fact-row__label">Label</span>
+                            <span class="fact-row__value pin-detail__label">{{ pinLabel }}</span>
+                        </div>
                         <div class="fact-row">
                             <span class="fact-row__label">Type</span>
                             <span class="fact-row__value">{{ pinType(pin) }} pin</span>
@@ -268,6 +273,11 @@ const pinDisplayValue = computed(() => props.pin?.displayValue || "No activity")
 
 .fact-row__value {
     font-weight: 600;
+}
+
+.pin-detail__label {
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 .pin-detail__section {

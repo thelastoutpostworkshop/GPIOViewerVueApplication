@@ -1,9 +1,13 @@
 import { expect, test, type Page } from '@playwright/test'
 import { readFileSync } from 'node:fs'
+import type { PinMode } from '../src/types/types'
 
 const packageJson = JSON.parse(readFileSync('package.json', 'utf-8')) as { version: string }
 
-async function mockEsp32(page: Page) {
+async function mockEsp32(page: Page, pinModes: PinMode[] = [
+  { pin: 0, mode: 3 },
+  { pin: 1, mode: 5 }
+]) {
   await page.addInitScript(() => {
     type ListenerMap = Record<string, Array<(event: MessageEvent | Event) => void>>
 
@@ -75,10 +79,7 @@ async function mockEsp32(page: Page) {
   await page.route('http://gpioviewer.local:8080/**', async (route) => {
     const path = new URL(route.request().url()).pathname
     const payloads: Record<string, unknown> = {
-      '/pinmodes': [
-        { pin: 0, mode: 3 },
-        { pin: 1, mode: 5 }
-      ],
+      '/pinmodes': pinModes,
       '/pinfunctions': {
         boardpinsfunction: [
           {
@@ -160,8 +161,8 @@ declare global {
   }
 }
 
-async function bootMockedApp(page: Page) {
-  await mockEsp32(page)
+async function bootMockedApp(page: Page, pinModes?: PinMode[]) {
+  await mockEsp32(page, pinModes)
   await page.goto('/')
 
   await expect(page.getByRole('img').first()).toBeVisible()
@@ -195,6 +196,111 @@ async function clickDrawerItem(page: Page, label: string) {
 }
 
 test.describe('GPIOViewer mocked ESP32 smoke test', () => {
+  test('displays optional firmware labels alongside GPIO values and keeps pin numbers', async ({ page }) => {
+    const requestedPaths: string[] = []
+    page.on('request', (request) => requestedPaths.push(new URL(request.url()).pathname))
+    const longLabel = 'Modbus energy meter receive channel'
+
+    await bootMockedApp(page, [
+      { pin: 0, mode: 3, label: ` ${longLabel} ` },
+      { pin: '1', mode: '5', label: 'Switch1' },
+      { pin: 2, mode: 3, label: '   ' },
+      { pin: '3', mode: '3' }
+    ])
+
+    await expect(page.locator('.value__pin-label')).toHaveCount(0)
+    await expect(page.locator('.indicator#gpio0')).toHaveAttribute('title', `GPIO 0 · ${longLabel}`)
+
+    await page.getByRole('button', { name: 'Pin Numbers', exact: true }).click()
+    await expect(page.getByRole('button', { name: 'Pin Types', exact: true })).toBeVisible()
+    await page.getByRole('button', { name: 'Pin Types', exact: true }).click()
+    await expect(page.getByRole('button', { name: 'Pin Modes', exact: true })).toBeVisible()
+    await page.getByRole('button', { name: 'Pin Modes', exact: true }).click()
+    await expect(page.getByRole('button', { name: 'Pin Labels', exact: true })).toBeVisible()
+
+    // Labels arrive through /pinmodes and must not depend on a GPIO event.
+    await expect(page.locator('.value#gpio0 .value__pin-label')).toHaveText(longLabel)
+    await expect(page.locator('.value#gpio1 .value__pin-label')).toHaveText('Switch1')
+    await expect(page.locator('.value__pin-label')).toHaveCount(2)
+    await expect(page.locator('.value__label')).toHaveCount(0)
+    for (const gpio of [0, 1, 2, 3]) {
+      await expect(page.locator(`.indicator#gpio${gpio}`)).toHaveText(String(gpio))
+    }
+    await expect(page.locator('.value#gpio0')).toHaveAttribute('title', `GPIO 0 · ${longLabel}`)
+
+    await emitGpioState(page, 1)
+    await expect(page.locator('.value#gpio0 .value__pin-label')).toHaveText(longLabel)
+    await expect(page.locator('.value#gpio0 .value__label')).toHaveText('High')
+    await expect(page.locator('.value#gpio0')).toHaveAttribute('title', `GPIO 0 · ${longLabel} · High`)
+
+    await page.locator('.indicator#gpio0').click()
+    await expect(page.locator('.pin-detail__name')).toHaveText('Pin 0')
+    await expect(page.locator('.pin-detail__label')).toHaveText(longLabel)
+    await page.getByRole('button', { name: 'Close pin details' }).click()
+    await expect(page.locator('.pin-detail')).not.toBeVisible()
+
+    await page.screenshot({ path: test.info().outputPath('pin-labels-desktop.png'), fullPage: true, animations: 'disabled' })
+    await page.setViewportSize({ width: 375, height: 667 })
+    await expect(page.locator('.value#gpio0 .value__pin-label')).toBeVisible()
+    // Narrow layouts prioritize the label; the full label and value remain in details.
+    await expect(page.locator('.value#gpio0 .value__label')).toBeHidden()
+    const callout = await page.locator('.value#gpio0').boundingBox()
+    expect(callout?.x).toBeGreaterThanOrEqual(0)
+    expect((callout?.x ?? 0) + (callout?.width ?? 0)).toBeLessThanOrEqual(375)
+    await page.screenshot({ path: test.info().outputPath('pin-labels-compact.png'), fullPage: true, animations: 'disabled' })
+
+    await page.getByRole('button', { name: 'Pin Labels', exact: true }).click()
+    await expect(page.getByRole('button', { name: 'Pin Numbers', exact: true })).toBeVisible()
+    await expect(page.locator('.value__pin-label')).toHaveCount(0)
+    await expect(page.locator('.value#gpio0 .value__label')).toHaveText('High')
+    expect(requestedPaths).toContain('/pinmodes')
+    expect(requestedPaths).not.toContain('/cm')
+    expect(requestedPaths).not.toContain('/pinlabels')
+  })
+
+  test('fits labels on both sides of a dense board without moving its pin markers', async ({ page }) => {
+    const boards = JSON.parse(readFileSync('public/boards.json', 'utf-8')) as Array<{ name: string; pins: string }>
+    const board = boards.find((item) => item.name === 'Waveshare ESP32-P4-Module-DEV-KIT')!
+    const indicators = JSON.parse(readFileSync(`public/${board.pins}`, 'utf-8')) as {
+      pins: Array<{ gpioid: number; valueJustify: number }>
+    }
+    await page.route('**/boards.json', (route) => route.fulfill({ json: [board] }))
+    const pinModes = indicators.pins.map((pin, index) => ({
+      pin: String(pin.gpioid), mode: '3', label: `Relay_i${index + 1}`
+    }))
+    await bootMockedApp(page, pinModes)
+    const firstPin = page.locator(`.indicator#gpio${indicators.pins[0].gpioid}`)
+    const before = await firstPin.boundingBox()
+    for (const name of ['Pin Numbers', 'Pin Types', 'Pin Modes']) {
+      await page.getByRole('button', { name, exact: true }).click()
+    }
+    await expect(page.locator('.value__pin-label')).toHaveCount(indicators.pins.length)
+    expect(await firstPin.boundingBox()).toEqual(before)
+    for (const pin of indicators.pins) {
+      const marker = (await page.locator(`.indicator#gpio${pin.gpioid}`).boundingBox())!
+      const label = (await page.locator(`.value#gpio${pin.gpioid}`).boundingBox())!
+      if (pin.valueJustify === -1) {
+        expect(label.x + label.width).toBeLessThan(marker.x)
+      } else {
+        expect(label.x).toBeGreaterThan(marker.x + marker.width)
+      }
+    }
+    await page.screenshot({ path: test.info().outputPath('pin-labels-p4.png'), fullPage: true, animations: 'disabled' })
+  })
+
+  test('keeps the original three display modes when firmware has no labels', async ({ page }) => {
+    await bootMockedApp(page)
+
+    await page.getByRole('button', { name: 'Pin Numbers', exact: true }).click()
+    await expect(page.getByRole('button', { name: 'Pin Types', exact: true })).toBeVisible()
+    await page.getByRole('button', { name: 'Pin Types', exact: true }).click()
+    await expect(page.getByRole('button', { name: 'Pin Modes', exact: true })).toBeVisible()
+    await page.getByRole('button', { name: 'Pin Modes', exact: true }).click()
+    await expect(page.getByRole('button', { name: 'Pin Numbers', exact: true })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Pin Labels', exact: true })).toHaveCount(0)
+    await expect(page.locator('.value__pin-label')).toHaveCount(0)
+  })
+
   test('boots, connects to mocked events, renders GPIO activity, and navigates', async ({ page }) => {
     const consoleErrors: string[] = []
     const pageErrors: string[] = []

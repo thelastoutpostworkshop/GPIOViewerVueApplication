@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { type BoardData, type PinStateMap, type Memory, type PinsConfiguration, type LastPinValues, type PinMode, type PinsFunctions, type PinFunctionDescriptions, type BoardPinsFunction } from '@/types/types';
 import { PinModeValue } from '@/const';
 
@@ -10,6 +10,9 @@ export const gpioStore = defineStore('gpioviewer', () => {
   const pinsPreserved = ref<PinsConfiguration | null>(null)
   const lastPinValues = ref<LastPinValues[]>([])
   const pinModes = ref<PinMode[] | null>(null);
+  const hasPinLabels = computed(() => pinModes.value?.some(
+    pin => typeof pin.label === 'string' && pin.label.trim().length > 0
+  ) ?? false);
   const freeHeap = ref<Memory | null>(null)
   const freePSRAM = ref<Memory | null>(null)
   const freeSketch = ref<Memory | null>(null)
@@ -30,6 +33,10 @@ export const gpioStore = defineStore('gpioviewer', () => {
     }
     const pinWithMode = pinModes.value.find(p => Number(p.pin) === pin);
     return pinWithMode ? Number(pinWithMode.mode) : PinModeValue.NOT_SET;
+  }
+  function getPinLabel(pin: number): string {
+    const label = pinModes.value?.find(entry => Number(entry.pin) === pin)?.label;
+    return typeof label === 'string' ? label.trim() : '';
   }
   function getPinFunction(pin: number): PinFunctionDescriptions[] {
     if (!boardPinFunctions.value?.boardpinsfunction) {
@@ -56,6 +63,6 @@ export const gpioStore = defineStore('gpioviewer', () => {
   return {
     currentBoard, ipAddress, httpPort, currentStates, freeHeap, freePSRAM,
     freeSketch, freeze, boards, pinTypeDisplay, SamplingInterval, pinsPreserved, connectedToESP32, magnifyImage,
-    wifiActivity, GPIOViewerRelease, WebApplicationRelease, lastPinValues, pinModes, getPinModeValue, getPinFunction, boardPinFunctions
+    wifiActivity, GPIOViewerRelease, WebApplicationRelease, lastPinValues, pinModes, getPinModeValue, getPinLabel, hasPinLabels, getPinFunction, boardPinFunctions
   }
 })

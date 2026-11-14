@@ -18,6 +18,7 @@ const store = gpioStore();
     --board-view-dot-soft: color-mix(in srgb, rgb(var(--v-theme-info)) 34%, rgb(var(--v-theme-background)) 66%);
     --board-view-glow: color-mix(in srgb, rgb(var(--v-theme-info)) 8%, transparent);
     position: relative;
+    container-type: inline-size;
     isolation: isolate;
     display: flex;
     align-items: flex-start;

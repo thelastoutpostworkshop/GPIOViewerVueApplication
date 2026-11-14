@@ -116,8 +116,9 @@ export type ESPPartition = {
 
 // PinMode set in the code
 export type PinMode = {
-  pin: number;
-  mode: number;
+  pin: number | string;
+  mode: number | string;
+  label?: string;
 }
 
 export type PinFunctionDescriptions = {

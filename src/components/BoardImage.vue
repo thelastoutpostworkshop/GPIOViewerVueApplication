@@ -30,7 +30,7 @@ const wifiClass = computed(() => {
 const pinsConf = ref<PinsConfiguration | undefined>();
 const activatingPins = ref<Set<number>>(new Set());
 const activationTimers = new Map<number, ReturnType<typeof setTimeout>>();
-const activeValuePins = computed(() => pinsConf.value?.pins.filter((pin) => Boolean(pin.displayValue)) ?? []);
+const visibleValuePins = computed(() => pinsConf.value?.pins.filter((pin) => Boolean(pin.displayValue) || showsPinLabel(pin)) ?? []);
 async function loadIndicators(): Promise<PinsConfiguration | undefined> {
     try {
         if (props.board) {
@@ -228,11 +228,36 @@ const showPinInfo = (pin: Pins) => {
     showPinInfoCard.value = true;
 };
 
+function showsPinLabel(pin: Pins): boolean {
+    return store.pinTypeDisplay === 3 && Boolean(store.getPinLabel(pin.gpioid));
+}
+
+function getValueJustify(pin: Pins): number {
+    // Labels need a horizontal callout even on boards with vertical value bars.
+    if (showsPinLabel(pin) && pin.valueJustify === -2) {
+        return pin.left < 50 ? -1 : 0;
+    }
+    return pin.valueJustify;
+}
+
+function getPinTitle(pin: Pins): string {
+    const label = store.getPinLabel(pin.gpioid);
+    return [`GPIO ${pin.gpioid}`, label, pin.displayValue].filter(Boolean).join(' · ');
+}
+
+function getLabelPosition(pin: Pins) {
+    if (showsPinLabel(pin) && getValueJustify(pin) === -1 && pinsConf.value) {
+        // Anchor longer callouts away from the pin instead of growing over it.
+        return { left: 'auto', right: `${100 - pin.left + pinsConf.value.settings.valuePinMargin}%` };
+    }
+    return {};
+}
+
 function getLeftPosition(pin: Pins) {
     if (pinsConf.value) {
-        if (pin.valueJustify === -1) {
+        if (getValueJustify(pin) === -1) {
             return pin.left - pinsConf.value.settings.valueMinWidth - pinsConf.value.settings.valuePinMargin;
-        } else if (pin.valueJustify === -2) {
+        } else if (getValueJustify(pin) === -2) {
             // Example: center the vertical bar; adjust as needed for your UI
             return pin.left - (pinsConf.value.settings.pinWidth / 2);
         } else {
@@ -242,9 +267,9 @@ function getLeftPosition(pin: Pins) {
 }
 function getTopPosition(pin: Pins) {
     if (pinsConf.value) {
-        if (pin.valueJustify === -1) {
+        if (getValueJustify(pin) === -1) {
             return pin.top - (pinsConf.value.settings.pinHeight / 2);
-        } else if (pin.valueJustify === -2) {
+        } else if (getValueJustify(pin) === -2) {
             // Example: center the vertical bar; adjust as needed for your UI
             return pin.top + (pinsConf.value.settings.pinHeight / 2);
         } else {
@@ -254,7 +279,7 @@ function getTopPosition(pin: Pins) {
 }
 
 function getValueBarStyle(pin: Pins) {
-    if (pin.valueJustify === -2) {
+    if (getValueJustify(pin) === -2) {
         // For vertical bars, set the height dynamically and width to 100%
         return {
             height: `${pin.displayBarValue}%`
@@ -278,10 +303,10 @@ function getValueStateClass(pin: Pins): string {
 }
 
 function getValueFillClass(pin: Pins): string {
-    if (pin.valueJustify === -2) {
+    if (getValueJustify(pin) === -2) {
         return 'value--fill-vertical';
     }
-    if (pin.valueJustify === -1) {
+    if (getValueJustify(pin) === -1) {
         return 'value--fill-from-right';
     }
     return 'value--fill-from-left';
@@ -301,8 +326,8 @@ function isPinActivating(gpioid: number): boolean {
         <div v-if="pinsConf" v-for="pin in pinsConf.pins" :key="pin.gpioid"
             :class="['indicator', { 'indicator--activating': isPinActivating(pin.gpioid) }]"
             :style="{ top: pin.top + '%', left: pin.left + '%', width: pinsConf.settings.pinWidth + '%', height: pinsConf.settings.pinHeight + '%', backgroundColor: pin.color }"
-            :id="`gpio${pin.gpioid}`" @click="showPinInfo(pin)">
-            <div v-if="store.pinTypeDisplay === 0" class="non-clickable"
+            :id="`gpio${pin.gpioid}`" :title="getPinTitle(pin)" @click="showPinInfo(pin)">
+            <div v-if="store.pinTypeDisplay === 0 || store.pinTypeDisplay === 3" class="non-clickable"
                 :style="{ fontSize: pinsConf.settings.valueFontSize + 'dvb' }">
                 {{
                     pin.gpioid }}</div>
@@ -315,26 +340,30 @@ function isPinActivating(gpioid: number): boolean {
                 {{ pinBroadMode(pin.type, pin.gpioid) }}
             </div>
         </div>
-        <div v-if="pinsConf" v-for="pin in activeValuePins" :key="pin.gpioid" :class="{
-            'value': pin.valueJustify !== -1 && pin.valueJustify !== -2,
-            'value value_right': pin.valueJustify === -1,
-            'value_vertical': pin.valueJustify === -2,
+        <div v-if="pinsConf" v-for="pin in visibleValuePins" :key="pin.gpioid" :class="{
+            'value': getValueJustify(pin) !== -1 && getValueJustify(pin) !== -2,
+            'value value_right': getValueJustify(pin) === -1,
+            'value_vertical': getValueJustify(pin) === -2,
+            'value--labeled': showsPinLabel(pin),
             [getValueStateClass(pin)]: true,
             [getValueFillClass(pin)]: true,
             'value--activating': isPinActivating(pin.gpioid)
         }" :style="{
             top: getTopPosition(pin) + '%',
             left: getLeftPosition(pin) + '%',
+            ...getLabelPosition(pin),
             '--pin-height': pinsConf.settings.pinHeight - 0.25 + '%',
             '--min-width': pinsConf.settings.valueMinWidth + '%',
             '--bar-height': pin.displayBarValue,
             '--vertical-bar-height': pinsConf.settings.valueMinWidth + '%',
             '--vertical-bar-width': pinsConf.settings.pinWidth + '%',
+            '--label-space': `calc(50cqw + ${(getValueJustify(pin) === -1 ? pin.left : 100 - pin.left) - pinsConf.settings.valuePinMargin - 50}% - 6px)`,
             fontSize: pinsConf.settings.valueFontSize + 'dvb'
 
-        }" :id="`gpio${pin.gpioid}`">
-            <div class="value__label">{{ pin.displayValue }}</div>
-            <div class="value-bar" :style="getValueBarStyle(pin)"></div>
+        }" :id="`gpio${pin.gpioid}`" :title="getPinTitle(pin)" @click="showPinInfo(pin)">
+            <div v-if="showsPinLabel(pin)" class="value__pin-label">{{ store.getPinLabel(pin.gpioid) }}</div>
+            <div v-if="pin.displayValue" class="value__label">{{ pin.displayValue }}</div>
+            <div v-if="pin.displayValue" class="value-bar" :style="getValueBarStyle(pin)"></div>
         </div>
         <div v-if="pinsConf && pinsConf.stats" class="stats"
             :style="{ top: pinsConf.stats.top + '%', left: pinsConf.stats.left + '%', fontSize: pinsConf.stats.fontSize + 'dvb' }">
@@ -537,6 +566,34 @@ function isPinActivating(gpioid: number): boolean {
 .value__label {
     position: relative;
     z-index: 1;
+    flex-shrink: 0;
+}
+
+.value--labeled {
+    container: pin-label / inline-size;
+    width: min(24ch, max(0px, var(--label-space)));
+    min-width: 0;
+    gap: 0.6em;
+    cursor: pointer;
+}
+
+.value__pin-label {
+    position: relative;
+    z-index: 1;
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@container pin-label (max-width: 9ch) {
+    .value__label {
+        display: none;
+    }
+}
+
+.value--labeled.value--idle {
+    opacity: 1;
 }
 
 .value--activating {

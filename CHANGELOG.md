@@ -1,5 +1,22 @@
 # Changelog
 
+## 2.3.4
+
+### Added
+
+- Added support for optional GPIO labels from the existing `/pinmodes` response ([#207](https://github.com/thelastoutpostworkshop/gpio_viewer/issues/207)).
+- Added a **Pin Labels** display mode when device labels are available, keeping GPIO numbers visible and showing labels beside live values.
+- Added full labels to pin tooltips and the pin detail dialog, including before GPIO activity is received.
+
+### Changed
+
+- Constrained label callouts to the available screen space; narrow layouts prioritize labels, with full labels and values available in pin details.
+- Preserved the original three display modes for devices without labels and accepted both numeric and string GPIO/mode values.
+
+### Notes
+
+- Tasmota integration requires its GPIO Viewer driver to include the optional `label` field in `/pinmodes`. The web app does not call Tasmota's command API.
+
 ## 2.3.3
 
 ### Added

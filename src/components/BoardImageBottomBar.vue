@@ -1,30 +1,30 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { computed, watch } from 'vue';
 import { gpioStore } from '@/stores/gpiostore'
 
 const store = gpioStore();
 
 const fallbackPinShowState = { id: 0, name: "Pin Numbers" };
 
-const pinShowStates: Array<{ id: number; name: string }> = [
+const pinShowStates = computed(() => [
     fallbackPinShowState,
-    { id: 1, name: "Pin Type" },
-    { id: 2, name: "Pin Mode" }
-];
+    { id: 1, name: "Pin Types" },
+    { id: 2, name: "Pin Modes" },
+    ...(store.hasPinLabels ? [{ id: 3, name: "Pin Labels" }] : [])
+]);
+
+watch(() => store.hasPinLabels, (hasLabels) => {
+    if (!hasLabels && store.pinTypeDisplay === 3) {
+        store.pinTypeDisplay = 0;
+    }
+}, { immediate: true });
 
 function nextState() {
-    store.pinTypeDisplay = (store.pinTypeDisplay + 1) % pinShowStates.length;
+    store.pinTypeDisplay = (store.pinTypeDisplay + 1) % pinShowStates.value.length;
 }
 
 const currentPinShowState = computed((): { id: number; name: string } => {
-    if (pinShowStates.length === 0) {
-        return fallbackPinShowState;
-    }
-    const resolved = pinShowStates[store.pinTypeDisplay % pinShowStates.length];
-    if (resolved) {
-        return resolved;
-    }
-    return fallbackPinShowState;
+    return pinShowStates.value.find((state) => state.id === store.pinTypeDisplay) ?? fallbackPinShowState;
 });
 
 function increaseSize() {
@@ -43,15 +43,7 @@ function decreaseSize() {
     </v-btn>
     <v-btn @click="nextState">
         <v-icon>mdi-pin</v-icon>
-        <div v-if="currentPinShowState.id === 0">
-            Pin Numbers
-        </div>
-        <div v-if="currentPinShowState.id === 1">
-            Pin Types
-        </div>
-        <div v-if="currentPinShowState.id === 2">
-            Pin Modes
-        </div>
+        <div>{{ currentPinShowState.name }}</div>
     </v-btn>
     <v-btn @click="decreaseSize">
         <v-icon>mdi-magnify-minus</v-icon>
