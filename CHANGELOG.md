@@ -1,10 +1,15 @@
 # Changelog
 
-## 2.3.4
+## 2.3.5
 
 ### Added
 
 - Added M5Stack AtomS3-Lite (C124) with a transparent underside photo, a front-view Grove connector inset, and indicators for all eight exposed GPIOs ([#208](https://github.com/thelastoutpostworkshop/gpio_viewer/issues/208)).
+
+## 2.3.4
+
+### Added
+
 - Added support for optional GPIO labels from the existing `/pinmodes` response ([#207](https://github.com/thelastoutpostworkshop/gpio_viewer/issues/207)).
 - Added a **Pin Labels** display mode when device labels are available, keeping GPIO numbers visible and showing labels beside live values.
 - Added full labels to pin tooltips and the pin detail dialog, including before GPIO activity is received.
