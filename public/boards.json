@@ -195,6 +195,11 @@
         "pins": "indicators/Lolin-D32.json"
     },
     {
+        "name": "M5Stack AtomS3-Lite (C124)",
+        "image": "devboards_images/M5Stack-AtomS3-Lite.png",
+        "pins": "indicators/M5Stack-AtomS3-Lite.json"
+    },
+    {
         "name": "Nano ESP32",
         "image": "devboards_images/Nano-ESP32.png",
         "pins": "indicators/Nano-ESP32.json"
